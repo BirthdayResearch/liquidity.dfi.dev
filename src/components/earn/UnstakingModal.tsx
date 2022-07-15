@@ -1,27 +1,17 @@
-import { TransactionResponse } from '@ethersproject/providers'
-import { Trans } from '@lingui/macro'
-import StakingRewardsJson from '@uniswap/liquidity-staker/build/StakingRewards.json'
-import { useWeb3React } from '@web3-react/core'
-import { ReactNode, useState } from 'react'
-import styled from 'styled-components/macro'
-
-import { useContract } from '../../hooks/useContract'
-import { StakingInfo } from '../../state/stake/hooks'
-import { useTransactionAdder } from '../../state/transactions/hooks'
-import { TransactionType } from '../../state/transactions/types'
-import { CloseIcon, ThemedText } from '../../theme'
-import { ButtonError } from '../Button'
-import { AutoColumn } from '../Column'
-import FormattedCurrencyAmount from '../FormattedCurrencyAmount'
+import React, { useState } from 'react'
 import Modal from '../Modal'
-import { LoadingView, SubmittedView } from '../ModalViews'
+import { AutoColumn } from '../Column'
+import styled from 'styled-components'
 import { RowBetween } from '../Row'
-
-const { abi: STAKING_REWARDS_ABI } = StakingRewardsJson
-
-function useStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean) {
-  return useContract(stakingAddress, STAKING_REWARDS_ABI, withSignerIfPossible)
-}
+import { TYPE, CloseIcon } from '../../theme'
+import { ButtonError } from '../Button'
+import { StakingInfo } from '../../state/stake/hooks'
+import { useStakingContract } from '../../hooks/useContract'
+import { SubmittedView, LoadingView } from '../ModalViews'
+import { TransactionResponse } from '@ethersproject/providers'
+import { useTransactionAdder } from '../../state/transactions/hooks'
+import FormattedCurrencyAmount from '../FormattedCurrencyAmount'
+import { useActiveWeb3React } from '../../hooks'
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
@@ -35,14 +25,14 @@ interface StakingModalProps {
 }
 
 export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: StakingModalProps) {
-  const { account } = useWeb3React()
+  const { account } = useActiveWeb3React()
 
   // monitor call to help UI loading state
   const addTransaction = useTransactionAdder()
   const [hash, setHash] = useState<string | undefined>()
   const [attempting, setAttempting] = useState(false)
 
-  function wrappedOnDismiss() {
+  function wrappedOndismiss() {
     setHash(undefined)
     setAttempting(false)
     onDismiss()
@@ -57,9 +47,7 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
         .exit({ gasLimit: 300000 })
         .then((response: TransactionResponse) => {
           addTransaction(response, {
-            type: TransactionType.WITHDRAW_LIQUIDITY_STAKING,
-            token0Address: stakingInfo.tokens[0].address,
-            token1Address: stakingInfo.tokens[1].address,
+            summary: `Withdraw deposited liquidity`
           })
           setHash(response.hash)
         })
@@ -70,76 +58,60 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
     }
   }
 
-  let error: ReactNode | undefined
+  let error: string | undefined
   if (!account) {
-    error = <Trans>Connect a wallet</Trans>
+    error = 'Connect Wallet'
   }
   if (!stakingInfo?.stakedAmount) {
-    error = error ?? <Trans>Enter an amount</Trans>
+    error = error ?? 'Enter an amount'
   }
 
   return (
-    <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss} maxHeight={90}>
+    <Modal isOpen={isOpen} onDismiss={wrappedOndismiss} maxHeight={90}>
       {!attempting && !hash && (
         <ContentWrapper gap="lg">
           <RowBetween>
-            <ThemedText.MediumHeader>
-              <Trans>Withdraw</Trans>
-            </ThemedText.MediumHeader>
-            <CloseIcon onClick={wrappedOnDismiss} />
+            <TYPE.mediumHeader>Withdraw</TYPE.mediumHeader>
+            <CloseIcon onClick={wrappedOndismiss} />
           </RowBetween>
           {stakingInfo?.stakedAmount && (
             <AutoColumn justify="center" gap="md">
-              <ThemedText.Body fontWeight={600} fontSize={36}>
+              <TYPE.body fontWeight={600} fontSize={36}>
                 {<FormattedCurrencyAmount currencyAmount={stakingInfo.stakedAmount} />}
-              </ThemedText.Body>
-              <ThemedText.Body>
-                <Trans>Deposited liquidity:</Trans>
-              </ThemedText.Body>
+              </TYPE.body>
+              <TYPE.body>Deposited liquidity:</TYPE.body>
             </AutoColumn>
           )}
           {stakingInfo?.earnedAmount && (
             <AutoColumn justify="center" gap="md">
-              <ThemedText.Body fontWeight={600} fontSize={36}>
+              <TYPE.body fontWeight={600} fontSize={36}>
                 {<FormattedCurrencyAmount currencyAmount={stakingInfo?.earnedAmount} />}
-              </ThemedText.Body>
-              <ThemedText.Body>
-                <Trans>Unclaimed UNI</Trans>
-              </ThemedText.Body>
+              </TYPE.body>
+              <TYPE.body>Unclaimed UNI</TYPE.body>
             </AutoColumn>
           )}
-          <ThemedText.SubHeader style={{ textAlign: 'center' }}>
-            <Trans>When you withdraw, your UNI is claimed and your liquidity is removed from the mining pool.</Trans>
-          </ThemedText.SubHeader>
+          <TYPE.subHeader style={{ textAlign: 'center' }}>
+            When you withdraw, your UNI is claimed and your liquidity is removed from the mining pool.
+          </TYPE.subHeader>
           <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.stakedAmount} onClick={onWithdraw}>
-            {error ?? <Trans>Withdraw & Claim</Trans>}
+            {error ?? 'Withdraw & Claim'}
           </ButtonError>
         </ContentWrapper>
       )}
       {attempting && !hash && (
-        <LoadingView onDismiss={wrappedOnDismiss}>
+        <LoadingView onDismiss={wrappedOndismiss}>
           <AutoColumn gap="12px" justify={'center'}>
-            <ThemedText.Body fontSize={20}>
-              <Trans>Withdrawing {stakingInfo?.stakedAmount?.toSignificant(4)} UNI-V2</Trans>
-            </ThemedText.Body>
-            <ThemedText.Body fontSize={20}>
-              <Trans>Claiming {stakingInfo?.earnedAmount?.toSignificant(4)} UNI</Trans>
-            </ThemedText.Body>
+            <TYPE.body fontSize={20}>Withdrawing {stakingInfo?.stakedAmount?.toSignificant(4)} UNI-V2</TYPE.body>
+            <TYPE.body fontSize={20}>Claiming {stakingInfo?.earnedAmount?.toSignificant(4)} UNI</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
       {hash && (
-        <SubmittedView onDismiss={wrappedOnDismiss} hash={hash}>
+        <SubmittedView onDismiss={wrappedOndismiss} hash={hash}>
           <AutoColumn gap="12px" justify={'center'}>
-            <ThemedText.LargeHeader>
-              <Trans>Transaction Submitted</Trans>
-            </ThemedText.LargeHeader>
-            <ThemedText.Body fontSize={20}>
-              <Trans>Withdrew UNI-V2!</Trans>
-            </ThemedText.Body>
-            <ThemedText.Body fontSize={20}>
-              <Trans>Claimed UNI!</Trans>
-            </ThemedText.Body>
+            <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
+            <TYPE.body fontSize={20}>Withdrew UNI-V2!</TYPE.body>
+            <TYPE.body fontSize={20}>Claimed UNI!</TYPE.body>
           </AutoColumn>
         </SubmittedView>
       )}

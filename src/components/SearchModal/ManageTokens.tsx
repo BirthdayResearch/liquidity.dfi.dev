@@ -1,28 +1,26 @@
-import { Trans } from '@lingui/macro'
-import { Token } from '@uniswap/sdk-core'
-import { useWeb3React } from '@web3-react/core'
-import Card from 'components/Card'
+import React, { useRef, RefObject, useCallback, useState, useMemo } from 'react'
 import Column from 'components/Column'
-import CurrencyLogo from 'components/CurrencyLogo'
+import { PaddedColumn, Separator, SearchInput } from './styleds'
 import Row, { RowBetween, RowFixed } from 'components/Row'
+import { TYPE, ExternalLinkIcon, TrashIcon, ButtonText, ExternalLink } from 'theme'
 import { useToken } from 'hooks/Tokens'
-import { RefObject, useCallback, useMemo, useRef, useState } from 'react'
-import { useRemoveUserAddedToken, useUserAddedTokens } from 'state/user/hooks'
-import styled from 'styled-components/macro'
-import { ButtonText, ExternalLink, ExternalLinkIcon, ThemedText, TrashIcon } from 'theme'
-import { isAddress } from 'utils'
-
-import useTheme from '../../hooks/useTheme'
-import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
-import { CurrencyModalView } from './CurrencySearchModal'
+import styled from 'styled-components'
+import { useUserAddedTokens, useRemoveUserAddedToken } from 'state/user/hooks'
+import { Token } from '@uniswap/sdk'
+import CurrencyLogo from 'components/CurrencyLogo'
+import { getEtherscanLink, isAddress } from 'utils'
+import { useActiveWeb3React } from 'hooks'
+import Card from 'components/Card'
 import ImportRow from './ImportRow'
-import { PaddedColumn, SearchInput, Separator } from './styleds'
+import useTheme from '../../hooks/useTheme'
+
+import { CurrencyModalView } from './CurrencySearchModal'
 
 const Wrapper = styled.div`
   width: 100%;
   height: calc(100% - 60px);
   position: relative;
-  padding-bottom: 80px;
+  padding-bottom: 60px;
 `
 
 const Footer = styled.div`
@@ -39,19 +37,19 @@ const Footer = styled.div`
 
 export default function ManageTokens({
   setModalView,
-  setImportToken,
+  setImportToken
 }: {
   setModalView: (view: CurrencyModalView) => void
   setImportToken: (token: Token) => void
 }) {
-  const { chainId } = useWeb3React()
+  const { chainId } = useActiveWeb3React()
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const theme = useTheme()
 
   // manage focus on modal show
   const inputRef = useRef<HTMLInputElement>()
-  const handleInput = useCallback((event) => {
+  const handleInput = useCallback(event => {
     const input = event.target.value
     const checksummedInput = isAddress(input)
     setSearchQuery(checksummedInput || input)
@@ -67,7 +65,7 @@ export default function ManageTokens({
 
   const handleRemoveAll = useCallback(() => {
     if (chainId && userAddedTokens) {
-      userAddedTokens.map((token) => {
+      userAddedTokens.map(token => {
         return removeToken(chainId, token.address)
       })
     }
@@ -76,19 +74,19 @@ export default function ManageTokens({
   const tokenList = useMemo(() => {
     return (
       chainId &&
-      userAddedTokens.map((token) => (
+      userAddedTokens.map(token => (
         <RowBetween key={token.address} width="100%">
           <RowFixed>
             <CurrencyLogo currency={token} size={'20px'} />
-            <ExternalLink href={getExplorerLink(chainId, token.address, ExplorerDataType.ADDRESS)}>
-              <ThemedText.Main ml={'10px'} fontWeight={600}>
+            <ExternalLink href={getEtherscanLink(chainId, token.address, 'address')}>
+              <TYPE.main ml={'10px'} fontWeight={600}>
                 {token.symbol}
-              </ThemedText.Main>
+              </TYPE.main>
             </ExternalLink>
           </RowFixed>
           <RowFixed>
             <TrashIcon onClick={() => removeToken(chainId, token.address)} />
-            <ExternalLinkIcon href={getExplorerLink(chainId, token.address, ExplorerDataType.ADDRESS)} />
+            <ExternalLinkIcon href={getEtherscanLink(chainId, token.address, 'address')} />
           </RowFixed>
         </RowBetween>
       ))
@@ -97,7 +95,7 @@ export default function ManageTokens({
 
   return (
     <Wrapper>
-      <Column style={{ width: '100%', height: '100%', flex: '1 1' }}>
+      <Column style={{ width: '100%', flex: '1 1' }}>
         <PaddedColumn gap="14px">
           <Row>
             <SearchInput
@@ -110,11 +108,7 @@ export default function ManageTokens({
               onChange={handleInput}
             />
           </Row>
-          {searchQuery !== '' && !isAddressSearch && (
-            <ThemedText.Error error={true}>
-              <Trans>Enter valid token address</Trans>
-            </ThemedText.Error>
-          )}
+          {searchQuery !== '' && !isAddressSearch && <TYPE.error error={true}>Enter valid token address</TYPE.error>}
           {searchToken && (
             <Card backgroundColor={theme.bg2} padding="10px 0">
               <ImportRow
@@ -127,16 +121,14 @@ export default function ManageTokens({
           )}
         </PaddedColumn>
         <Separator />
-        <PaddedColumn gap="lg" style={{ overflow: 'auto', marginBottom: '10px' }}>
+        <PaddedColumn gap="lg">
           <RowBetween>
-            <ThemedText.Main fontWeight={600}>
-              <Trans>{userAddedTokens?.length} Custom Tokens</Trans>
-            </ThemedText.Main>
+            <TYPE.main fontWeight={600}>
+              {userAddedTokens?.length} Custom {userAddedTokens.length === 1 ? 'Token' : 'Tokens'}
+            </TYPE.main>
             {userAddedTokens.length > 0 && (
               <ButtonText onClick={handleRemoveAll}>
-                <ThemedText.Blue>
-                  <Trans>Clear all</Trans>
-                </ThemedText.Blue>
+                <TYPE.blue>Clear all</TYPE.blue>
               </ButtonText>
             )}
           </RowBetween>
@@ -144,9 +136,7 @@ export default function ManageTokens({
         </PaddedColumn>
       </Column>
       <Footer>
-        <ThemedText.DarkGray>
-          <Trans>Tip: Custom tokens are stored locally in your browser</Trans>
-        </ThemedText.DarkGray>
+        <TYPE.darkGray>Tip: Custom tokens are stored locally in your browser</TYPE.darkGray>
       </Footer>
     </Wrapper>
   )

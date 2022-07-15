@@ -1,22 +1,20 @@
-import { Trans } from '@lingui/macro'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
-import { useWeb3React } from '@web3-react/core'
-import { sendEvent } from 'components/analytics'
-import { useCallback, useEffect } from 'react'
-import { Heart, X } from 'react-feather'
-import styled, { keyframes } from 'styled-components/macro'
-
+import { TokenAmount } from '@uniswap/sdk'
+import React, { useEffect } from 'react'
+import { X } from 'react-feather'
+import styled, { keyframes } from 'styled-components'
 import tokenLogo from '../../assets/images/token-logo.png'
+import { ButtonPrimary } from '../../components/Button'
+import { useActiveWeb3React } from '../../hooks'
+import { ApplicationModal } from '../../state/application/actions'
 import {
-  useModalIsOpen,
+  useModalOpen,
   useShowClaimPopup,
   useToggleSelfClaimModal,
-  useToggleShowClaimPopup,
+  useToggleShowClaimPopup
 } from '../../state/application/hooks'
-import { ApplicationModal } from '../../state/application/reducer'
+
 import { useUserHasAvailableClaim, useUserUnclaimedAmount } from '../../state/claim/hooks'
-import { ThemedText } from '../../theme'
-import { ButtonPrimary } from '../Button'
+import { TYPE } from '../../theme'
 import { AutoColumn } from '../Column'
 import { CardBGImage, CardNoise } from '../earn/styled'
 
@@ -55,34 +53,23 @@ const UniToken = styled.img`
 `
 
 export default function ClaimPopup() {
-  const { account } = useWeb3React()
+  const { account } = useActiveWeb3React()
 
   // dont store these in persisted state yet
   const showClaimPopup: boolean = useShowClaimPopup()
   const toggleShowClaimPopup = useToggleShowClaimPopup()
 
   // toggle for showing this modal
-  const showClaimModal = useModalIsOpen(ApplicationModal.SELF_CLAIM)
+  const showClaimModal = useModalOpen(ApplicationModal.SELF_CLAIM)
   const toggleSelfClaimModal = useToggleSelfClaimModal()
-  const handleToggleSelfClaimModal = useCallback(() => {
-    sendEvent({
-      category: 'MerkleDrop',
-      action: 'Toggle self claim modal',
-    })
-    toggleSelfClaimModal()
-  }, [toggleSelfClaimModal])
 
   // const userHasAvailableclaim = useUserHasAvailableClaim()
   const userHasAvailableclaim: boolean = useUserHasAvailableClaim(account)
-  const unclaimedAmount: CurrencyAmount<Token> | undefined = useUserUnclaimedAmount(account)
+  const unclaimedAmount: TokenAmount | undefined = useUserUnclaimedAmount(account)
 
   // listen for available claim and show popup if needed
   useEffect(() => {
     if (userHasAvailableclaim) {
-      sendEvent({
-        category: 'MerkleDrop',
-        action: 'Show claim popup',
-      })
       toggleShowClaimPopup()
     }
     // the toggleShowClaimPopup function changes every time the popup changes, so this will cause an infinite loop.
@@ -98,27 +85,25 @@ export default function ClaimPopup() {
           <StyledClose stroke="white" onClick={toggleShowClaimPopup} />
           <AutoColumn style={{ padding: '2rem 0', zIndex: 10 }} justify="center">
             <UniToken width="48px" src={tokenLogo} />{' '}
-            <ThemedText.White style={{ marginTop: '1rem' }} fontSize={36} fontWeight={600}>
+            <TYPE.white style={{ marginTop: '1rem' }} fontSize={36} fontWeight={600}>
               {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} UNI
-            </ThemedText.White>
-            <ThemedText.White style={{ paddingTop: '1.25rem', textAlign: 'center' }} fontWeight={600} color="white">
+            </TYPE.white>
+            <TYPE.white style={{ paddingTop: '1.25rem', textAlign: 'center' }} fontWeight={600} color="white">
               <span role="img" aria-label="party">
                 🎉
               </span>{' '}
-              <Trans>UNI has arrived</Trans>{' '}
+              UNI has arrived{' '}
               <span role="img" aria-label="party">
                 🎉
               </span>
-            </ThemedText.White>
-            <ThemedText.SubHeader style={{ paddingTop: '0.5rem', textAlign: 'center' }} color="white">
-              <Trans>
-                Thanks for being part of the Uniswap community <Heart size={12} />
-              </Trans>
-            </ThemedText.SubHeader>
+            </TYPE.white>
+            <TYPE.subHeader style={{ paddingTop: '0.5rem', textAlign: 'center' }} color="white">
+              {`Thanks for being part of the Uniswap community <3`}
+            </TYPE.subHeader>
           </AutoColumn>
           <AutoColumn style={{ zIndex: 10 }} justify="center">
-            <ButtonPrimary padding="8px" $borderRadius="8px" width={'fit-content'} onClick={handleToggleSelfClaimModal}>
-              <Trans>Claim your UNI tokens</Trans>
+            <ButtonPrimary padding="8px" borderRadius="8px" width={'fit-content'} onClick={toggleSelfClaimModal}>
+              Claim your UNI tokens
             </ButtonPrimary>
           </AutoColumn>
         </StyledClaimPopup>

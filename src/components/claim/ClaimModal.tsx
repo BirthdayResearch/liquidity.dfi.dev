@@ -1,24 +1,22 @@
-import { isAddress } from '@ethersproject/address'
-import { Trans } from '@lingui/macro'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
-import { useWeb3React } from '@web3-react/core'
-import JSBI from 'jsbi'
-import { useEffect, useState } from 'react'
+import { JSBI, TokenAmount } from '@uniswap/sdk'
+import { isAddress } from 'ethers/lib/utils'
+import React, { useEffect, useState } from 'react'
 import { Text } from 'rebass'
-import styled from 'styled-components/macro'
-
+import styled from 'styled-components'
 import Circle from '../../assets/images/blue-loader.svg'
 import tokenLogo from '../../assets/images/token-logo.png'
-import { useModalIsOpen, useToggleSelfClaimModal } from '../../state/application/hooks'
-import { ApplicationModal } from '../../state/application/reducer'
+import { useActiveWeb3React } from '../../hooks'
+import { ApplicationModal } from '../../state/application/actions'
+import { useModalOpen, useToggleSelfClaimModal } from '../../state/application/hooks'
 import { useClaimCallback, useUserClaimData, useUserUnclaimedAmount } from '../../state/claim/hooks'
 import { useUserHasSubmittedClaim } from '../../state/transactions/hooks'
-import { CloseIcon, CustomLightSpinner, ExternalLink, ThemedText, UniTokenAnimated } from '../../theme'
-import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
+import { CloseIcon, CustomLightSpinner, ExternalLink, TYPE, UniTokenAnimated } from '../../theme'
+import { getEtherscanLink } from '../../utils'
 import { ButtonPrimary } from '../Button'
 import { AutoColumn, ColumnCenter } from '../Column'
 import Confetti from '../Confetti'
 import { Break, CardBGImage, CardBGImageSmaller, CardNoise, CardSection, DataCard } from '../earn/styled'
+
 import Modal from '../Modal'
 import { RowBetween } from '../Row'
 
@@ -48,10 +46,10 @@ const SOCKS_AMOUNT = 1000
 const USER_AMOUNT = 400
 
 export default function ClaimModal() {
-  const isOpen = useModalIsOpen(ApplicationModal.SELF_CLAIM)
+  const isOpen = useModalOpen(ApplicationModal.SELF_CLAIM)
   const toggleClaimModal = useToggleSelfClaimModal()
 
-  const { account, chainId } = useWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   // used for UI loading states
   const [attempting, setAttempting] = useState<boolean>(false)
@@ -61,7 +59,7 @@ export default function ClaimModal() {
 
   // monitor the status of the claim from contracts and txns
   const { claimCallback } = useClaimCallback(account)
-  const unclaimedAmount: CurrencyAmount<Token> | undefined = useUserUnclaimedAmount(account)
+  const unclaimedAmount: TokenAmount | undefined = useUserUnclaimedAmount(account)
   const { claimSubmitted, claimTxn } = useUserHasSubmittedClaim(account ?? undefined)
   const claimConfirmed = Boolean(claimTxn?.receipt)
 
@@ -69,7 +67,7 @@ export default function ClaimModal() {
     setAttempting(true)
     claimCallback()
       // reset modal and log error
-      .catch((error) => {
+      .catch(error => {
         setAttempting(false)
         console.log(error)
       })
@@ -100,72 +98,56 @@ export default function ClaimModal() {
             <CardNoise />
             <CardSection gap="md">
               <RowBetween>
-                <ThemedText.White fontWeight={500}>
-                  <Trans>Claim UNI</Trans>
-                </ThemedText.White>
+                <TYPE.white fontWeight={500}>Claim UNI</TYPE.white>
                 <CloseIcon onClick={toggleClaimModal} style={{ zIndex: 99 }} color="white" />
               </RowBetween>
-              <ThemedText.White fontWeight={700} fontSize={36}>
-                <Trans>{unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} UNI</Trans>
-              </ThemedText.White>
+              <TYPE.white fontWeight={700} fontSize={36}>
+                {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} UNI
+              </TYPE.white>
             </CardSection>
             <Break />
             <CardSection gap="sm">
               {userClaimData?.flags?.isSOCKS && (
                 <RowBetween>
-                  <ThemedText.SubHeader color="white">SOCKS</ThemedText.SubHeader>
-                  <ThemedText.SubHeader color="white">
-                    <Trans>{SOCKS_AMOUNT} UNI</Trans>
-                  </ThemedText.SubHeader>
+                  <TYPE.subHeader color="white">SOCKS</TYPE.subHeader>
+                  <TYPE.subHeader color="white">{SOCKS_AMOUNT} UNI</TYPE.subHeader>
                 </RowBetween>
               )}
               {userClaimData?.flags?.isLP &&
                 unclaimedAmount &&
-                JSBI.greaterThanOrEqual(unclaimedAmount.quotient, nonLPAmount) && (
+                JSBI.greaterThanOrEqual(unclaimedAmount.raw, nonLPAmount) && (
                   <RowBetween>
-                    <ThemedText.SubHeader color="white">
-                      <Trans>Liquidity</Trans>
-                    </ThemedText.SubHeader>
-                    <ThemedText.SubHeader color="white">
-                      <Trans>
-                        {unclaimedAmount
-                          .subtract(CurrencyAmount.fromRawAmount(unclaimedAmount.currency, nonLPAmount))
-                          .toFixed(0, { groupSeparator: ',' })}{' '}
-                        UNI
-                      </Trans>
-                    </ThemedText.SubHeader>
+                    <TYPE.subHeader color="white">Liquidity</TYPE.subHeader>
+                    <TYPE.subHeader color="white">
+                      {unclaimedAmount
+                        .subtract(new TokenAmount(unclaimedAmount.token, nonLPAmount))
+                        .toFixed(0, { groupSeparator: ',' })}{' '}
+                      UNI
+                    </TYPE.subHeader>
                   </RowBetween>
                 )}
               {userClaimData?.flags?.isUser && (
                 <RowBetween>
-                  <ThemedText.SubHeader color="white">
-                    <Trans>User</Trans>
-                  </ThemedText.SubHeader>
-                  <ThemedText.SubHeader color="white">
-                    <Trans>{USER_AMOUNT} UNI</Trans>
-                  </ThemedText.SubHeader>
+                  <TYPE.subHeader color="white">User</TYPE.subHeader>
+                  <TYPE.subHeader color="white">{USER_AMOUNT} UNI</TYPE.subHeader>
                 </RowBetween>
               )}
             </CardSection>
           </ModalUpper>
           <AutoColumn gap="md" style={{ padding: '1rem', paddingTop: '0' }} justify="center">
-            <ThemedText.SubHeader fontWeight={500}>
-              <Trans>
-                As a member of the Uniswap community you may claim UNI to be used for voting and governance.
-                <br />
-                <br />
-                <ExternalLink href="https://uniswap.org/blog/uni">Read more about UNI</ExternalLink>
-              </Trans>
-            </ThemedText.SubHeader>
+            <TYPE.subHeader fontWeight={500}>
+              As a member of the Uniswap community you may claim UNI to be used for voting and governance. <br /> <br />
+              <ExternalLink href="https://uniswap.org/blog/uni">Read more about UNI</ExternalLink>
+            </TYPE.subHeader>
             <ButtonPrimary
               disabled={!isAddress(account ?? '')}
               padding="16px 16px"
               width="100%"
-              $borderRadius="12px"
+              borderRadius="12px"
               mt="1rem"
               onClick={onClaim}
             >
-              <Trans>Claim UNI</Trans>
+              Claim UNI
             </ButtonPrimary>
           </AutoColumn>
         </ContentWrapper>
@@ -182,46 +164,39 @@ export default function ClaimModal() {
             {!claimConfirmed ? (
               <CustomLightSpinner src={Circle} alt="loader" size={'90px'} />
             ) : (
-              <UniTokenAnimated width="72px" src={tokenLogo} alt="UNI" />
+              <UniTokenAnimated width="72px" src={tokenLogo} />
             )}
           </ConfirmedIcon>
           <AutoColumn gap="100px" justify={'center'}>
             <AutoColumn gap="12px" justify={'center'}>
-              <ThemedText.LargeHeader fontWeight={600} color="black">
-                {claimConfirmed ? <Trans>Claimed!</Trans> : <Trans>Claiming</Trans>}
-              </ThemedText.LargeHeader>
+              <TYPE.largeHeader fontWeight={600} color="black">
+                {claimConfirmed ? 'Claimed!' : 'Claiming'}
+              </TYPE.largeHeader>
               {!claimConfirmed && (
                 <Text fontSize={36} color={'#ff007a'} fontWeight={800}>
-                  <Trans>{unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} UNI</Trans>
+                  {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} UNI
                 </Text>
               )}
             </AutoColumn>
             {claimConfirmed && (
               <>
-                <ThemedText.SubHeader fontWeight={500} color="black">
-                  <Trans>
-                    <span role="img" aria-label="party-hat">
-                      🎉{' '}
-                    </span>
-                    Welcome to team Unicorn :){' '}
-                    <span role="img" aria-label="party-hat">
-                      🎉
-                    </span>
-                  </Trans>
-                </ThemedText.SubHeader>
+                <TYPE.subHeader fontWeight={500} color="black">
+                  <span role="img" aria-label="party-hat">
+                    🎉{' '}
+                  </span>
+                  Welcome to team Unicorn :){' '}
+                  <span role="img" aria-label="party-hat">
+                    🎉
+                  </span>
+                </TYPE.subHeader>
               </>
             )}
             {attempting && !claimSubmitted && (
-              <ThemedText.SubHeader color="black">
-                <Trans>Confirm this transaction in your wallet</Trans>
-              </ThemedText.SubHeader>
+              <TYPE.subHeader color="black">Confirm this transaction in your wallet</TYPE.subHeader>
             )}
             {attempting && claimSubmitted && !claimConfirmed && chainId && claimTxn?.hash && (
-              <ExternalLink
-                href={getExplorerLink(chainId, claimTxn?.hash, ExplorerDataType.TRANSACTION)}
-                style={{ zIndex: 99 }}
-              >
-                <Trans>View transaction on Explorer</Trans>
+              <ExternalLink href={getEtherscanLink(chainId, claimTxn?.hash, 'transaction')} style={{ zIndex: 99 }}>
+                View transaction on Etherscan
               </ExternalLink>
             )}
           </AutoColumn>
