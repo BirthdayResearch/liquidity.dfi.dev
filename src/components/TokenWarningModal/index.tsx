@@ -1,13 +1,13 @@
-import { Token } from '@uniswap/sdk-core'
-import { ImportToken } from 'components/SearchModal/ImportToken'
-
+import { Token } from '@uniswap/sdk'
+import React from 'react'
 import Modal from '../Modal'
+import { ImportToken } from 'components/SearchModal/ImportToken'
 
 export default function TokenWarningModal({
   isOpen,
   tokens,
   onConfirm,
-  onDismiss,
+  onDismiss
 }: {
   isOpen: boolean
   tokens: Token[]

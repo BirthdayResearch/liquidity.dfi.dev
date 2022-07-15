@@ -1,15 +1,15 @@
-import { Trans } from '@lingui/macro'
-import { useWeb3React } from '@web3-react/core'
-import { useContext } from 'react'
+import React, { useContext } from 'react'
+import { useActiveWeb3React } from '../../hooks'
+
+import { AutoColumn, ColumnCenter } from '../Column'
+import styled, { ThemeContext } from 'styled-components'
+import { RowBetween } from '../Row'
+import { TYPE, CloseIcon, CustomLightSpinner } from '../../theme'
 import { ArrowUpCircle } from 'react-feather'
-import styled, { ThemeContext } from 'styled-components/macro'
 
 import Circle from '../../assets/images/blue-loader.svg'
-import { CloseIcon, CustomLightSpinner, ThemedText } from '../../theme'
+import { getEtherscanLink } from '../../utils'
 import { ExternalLink } from '../../theme/components'
-import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
-import { AutoColumn, ColumnCenter } from '../Column'
-import { RowBetween } from '../Row'
 
 const ConfirmOrLoadingWrapper = styled.div`
   width: 100%;
@@ -32,9 +32,7 @@ export function LoadingView({ children, onDismiss }: { children: any; onDismiss:
       </ConfirmedIcon>
       <AutoColumn gap="100px" justify={'center'}>
         {children}
-        <ThemedText.SubHeader>
-          <Trans>Confirm this transaction in your wallet</Trans>
-        </ThemedText.SubHeader>
+        <TYPE.subHeader>Confirm this transaction in your wallet</TYPE.subHeader>
       </AutoColumn>
     </ConfirmOrLoadingWrapper>
   )
@@ -43,14 +41,14 @@ export function LoadingView({ children, onDismiss }: { children: any; onDismiss:
 export function SubmittedView({
   children,
   onDismiss,
-  hash,
+  hash
 }: {
   children: any
   onDismiss: () => void
   hash: string | undefined
 }) {
   const theme = useContext(ThemeContext)
-  const { chainId } = useWeb3React()
+  const { chainId } = useActiveWeb3React()
 
   return (
     <ConfirmOrLoadingWrapper>
@@ -64,13 +62,8 @@ export function SubmittedView({
       <AutoColumn gap="100px" justify={'center'}>
         {children}
         {chainId && hash && (
-          <ExternalLink
-            href={getExplorerLink(chainId, hash, ExplorerDataType.TRANSACTION)}
-            style={{ marginLeft: '4px' }}
-          >
-            <ThemedText.SubHeader>
-              <Trans>View transaction on Explorer</Trans>
-            </ThemedText.SubHeader>
+          <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')} style={{ marginLeft: '4px' }}>
+            <TYPE.subHeader>View transaction on Etherscan</TYPE.subHeader>
           </ExternalLink>
         )}
       </AutoColumn>

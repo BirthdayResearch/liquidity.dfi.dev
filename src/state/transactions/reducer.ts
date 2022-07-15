@@ -1,9 +1,25 @@
-import { createSlice } from '@reduxjs/toolkit'
-
-import { updateVersion } from '../global/actions'
-import { TransactionDetails } from './types'
+import { createReducer } from '@reduxjs/toolkit'
+import {
+  addTransaction,
+  checkedTransaction,
+  clearAllTransactions,
+  finalizeTransaction,
+  SerializableTransactionReceipt
+} from './actions'
 
 const now = () => new Date().getTime()
+
+export interface TransactionDetails {
+  hash: string
+  approval?: { tokenAddress: string; spender: string }
+  summary?: string
+  claim?: { recipient: string }
+  receipt?: SerializableTransactionReceipt
+  lastCheckedBlockNumber?: number
+  addedTime: number
+  confirmedTime?: number
+  from: string
+}
 
 export interface TransactionState {
   [chainId: number]: {
@@ -13,23 +29,21 @@ export interface TransactionState {
 
 export const initialState: TransactionState = {}
 
-const transactionSlice = createSlice({
-  name: 'transactions',
-  initialState,
-  reducers: {
-    addTransaction(transactions, { payload: { chainId, from, hash, info } }) {
+export default createReducer(initialState, builder =>
+  builder
+    .addCase(addTransaction, (transactions, { payload: { chainId, from, hash, approval, summary, claim } }) => {
       if (transactions[chainId]?.[hash]) {
         throw Error('Attempted to add existing transaction.')
       }
       const txs = transactions[chainId] ?? {}
-      txs[hash] = { hash, info, from, addedTime: now() }
+      txs[hash] = { hash, approval, summary, claim, from, addedTime: now() }
       transactions[chainId] = txs
-    },
-    clearAllTransactions(transactions, { payload: { chainId } }) {
+    })
+    .addCase(clearAllTransactions, (transactions, { payload: { chainId } }) => {
       if (!transactions[chainId]) return
       transactions[chainId] = {}
-    },
-    checkedTransaction(transactions, { payload: { chainId, hash, blockNumber } }) {
+    })
+    .addCase(checkedTransaction, (transactions, { payload: { chainId, hash, blockNumber } }) => {
       const tx = transactions[chainId]?.[hash]
       if (!tx) {
         return
@@ -39,32 +53,13 @@ const transactionSlice = createSlice({
       } else {
         tx.lastCheckedBlockNumber = Math.max(blockNumber, tx.lastCheckedBlockNumber)
       }
-    },
-    finalizeTransaction(transactions, { payload: { hash, chainId, receipt } }) {
+    })
+    .addCase(finalizeTransaction, (transactions, { payload: { hash, chainId, receipt } }) => {
       const tx = transactions[chainId]?.[hash]
       if (!tx) {
         return
       }
       tx.receipt = receipt
       tx.confirmedTime = now()
-    },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(updateVersion, (transactions) => {
-      // in case there are any transactions in the store with the old format, remove them
-      Object.keys(transactions).forEach((chainId) => {
-        const chainTransactions = transactions[chainId as unknown as number]
-        Object.keys(chainTransactions).forEach((hash) => {
-          if (!('info' in chainTransactions[hash])) {
-            // clear old transactions that don't have the right format
-            delete chainTransactions[hash]
-          }
-        })
-      })
     })
-  },
-})
-
-export const { addTransaction, clearAllTransactions, checkedTransaction, finalizeTransaction } =
-  transactionSlice.actions
-export default transactionSlice.reducer
+)

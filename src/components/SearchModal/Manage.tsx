@@ -1,23 +1,20 @@
-import { Trans } from '@lingui/macro'
-import { Token } from '@uniswap/sdk-core'
-import { TokenList } from '@uniswap/token-lists'
+import React, { useState } from 'react'
+import { PaddedColumn, Separator } from './styleds'
 import { RowBetween } from 'components/Row'
-import { useState } from 'react'
 import { ArrowLeft } from 'react-feather'
 import { Text } from 'rebass'
-import styled from 'styled-components/macro'
 import { CloseIcon } from 'theme'
-
-import { CurrencyModalView } from './CurrencySearchModal'
+import styled from 'styled-components'
+import { Token } from '@uniswap/sdk'
 import { ManageLists } from './ManageLists'
 import ManageTokens from './ManageTokens'
-import { PaddedColumn, Separator } from './styleds'
+import { TokenList } from '@uniswap/token-lists'
+import { CurrencyModalView } from './CurrencySearchModal'
 
 const Wrapper = styled.div`
   width: 100%;
   position: relative;
-  display: flex;
-  flex-flow: column;
+  padding-bottom: 80px;
 `
 
 const ToggleWrapper = styled(RowBetween)`
@@ -49,7 +46,7 @@ export default function Manage({
   setModalView,
   setImportList,
   setImportToken,
-  setListUrl,
+  setListUrl
 }: {
   onDismiss: () => void
   setModalView: (view: CurrencyModalView) => void
@@ -66,7 +63,7 @@ export default function Manage({
         <RowBetween>
           <ArrowLeft style={{ cursor: 'pointer' }} onClick={() => setModalView(CurrencyModalView.search)} />
           <Text fontWeight={500} fontSize={20}>
-            <Trans>Manage</Trans>
+            Manage
           </Text>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
@@ -75,10 +72,10 @@ export default function Manage({
       <PaddedColumn style={{ paddingBottom: 0 }}>
         <ToggleWrapper>
           <ToggleOption onClick={() => setShowLists(!showLists)} active={showLists}>
-            <Trans>Lists</Trans>
+            Lists
           </ToggleOption>
           <ToggleOption onClick={() => setShowLists(!showLists)} active={!showLists}>
-            <Trans>Tokens</Trans>
+            Tokens
           </ToggleOption>
         </ToggleWrapper>
       </PaddedColumn>

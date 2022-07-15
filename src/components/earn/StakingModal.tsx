@@ -1,35 +1,25 @@
-import { TransactionResponse } from '@ethersproject/providers'
-import { Trans } from '@lingui/macro'
-import StakingRewardsJson from '@uniswap/liquidity-staker/build/StakingRewards.json'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
-import { Pair } from '@uniswap/v2-sdk'
-import { useWeb3React } from '@web3-react/core'
-import { useV2LiquidityTokenPermit } from 'hooks/useV2LiquidityTokenPermit'
-import { useCallback, useState } from 'react'
-import styled from 'styled-components/macro'
-
-import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
-import { useContract, usePairContract, useV2RouterContract } from '../../hooks/useContract'
+import React, { useState, useCallback } from 'react'
+import useIsArgentWallet from '../../hooks/useIsArgentWallet'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
-import { StakingInfo, useDerivedStakeInfo } from '../../state/stake/hooks'
-import { useTransactionAdder } from '../../state/transactions/hooks'
-import { TransactionType } from '../../state/transactions/types'
-import { CloseIcon, ThemedText } from '../../theme'
-import { formatCurrencyAmount } from '../../utils/formatCurrencyAmount'
-import { maxAmountSpend } from '../../utils/maxAmountSpend'
-import { ButtonConfirmed, ButtonError } from '../Button'
-import { AutoColumn } from '../Column'
-import CurrencyInputPanel from '../CurrencyInputPanel'
 import Modal from '../Modal'
-import { LoadingView, SubmittedView } from '../ModalViews'
-import ProgressCircles from '../ProgressSteps'
+import { AutoColumn } from '../Column'
+import styled from 'styled-components'
 import { RowBetween } from '../Row'
-
-const { abi: STAKING_REWARDS_ABI } = StakingRewardsJson
-
-function useStakingContract(stakingAddress?: string, withSignerIfPossible?: boolean) {
-  return useContract(stakingAddress, STAKING_REWARDS_ABI, withSignerIfPossible)
-}
+import { TYPE, CloseIcon } from '../../theme'
+import { ButtonConfirmed, ButtonError } from '../Button'
+import ProgressCircles from '../ProgressSteps'
+import CurrencyInputPanel from '../CurrencyInputPanel'
+import { TokenAmount, Pair } from '@uniswap/sdk'
+import { useActiveWeb3React } from '../../hooks'
+import { maxAmountSpend } from '../../utils/maxAmountSpend'
+import { usePairContract, useStakingContract } from '../../hooks/useContract'
+import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
+import { splitSignature } from 'ethers/lib/utils'
+import { StakingInfo, useDerivedStakeInfo } from '../../state/stake/hooks'
+import { wrappedCurrencyAmount } from '../../utils/wrappedCurrency'
+import { TransactionResponse } from '@ethersproject/providers'
+import { useTransactionAdder } from '../../state/transactions/hooks'
+import { LoadingView, SubmittedView } from '../ModalViews'
 
 const HypotheticalRewardRate = styled.div<{ dim: boolean }>`
   display: flex;
@@ -49,22 +39,18 @@ interface StakingModalProps {
   isOpen: boolean
   onDismiss: () => void
   stakingInfo: StakingInfo
-  userLiquidityUnstaked: CurrencyAmount<Token> | undefined
+  userLiquidityUnstaked: TokenAmount | undefined
 }
 
 export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiquidityUnstaked }: StakingModalProps) {
-  const { provider } = useWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
 
   // track and parse user input
   const [typedValue, setTypedValue] = useState('')
-  const { parsedAmount, error } = useDerivedStakeInfo(
-    typedValue,
-    stakingInfo.stakedAmount.currency,
-    userLiquidityUnstaked
-  )
-  const parsedAmountWrapped = parsedAmount?.wrapped
+  const { parsedAmount, error } = useDerivedStakeInfo(typedValue, stakingInfo.stakedAmount.token, userLiquidityUnstaked)
+  const parsedAmountWrapped = wrappedCurrencyAmount(parsedAmount, chainId)
 
-  let hypotheticalRewardRate: CurrencyAmount<Token> = CurrencyAmount.fromRawAmount(stakingInfo.rewardRate.currency, '0')
+  let hypotheticalRewardRate: TokenAmount = new TokenAmount(stakingInfo.rewardRate.token, '0')
   if (parsedAmountWrapped?.greaterThan('0')) {
     hypotheticalRewardRate = stakingInfo.getHypotheticalRewardRate(
       stakingInfo.stakedAmount.add(parsedAmountWrapped),
@@ -84,28 +70,25 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
   }, [onDismiss])
 
   // pair contract for this token to be staked
-  const dummyPair = new Pair(
-    CurrencyAmount.fromRawAmount(stakingInfo.tokens[0], '0'),
-    CurrencyAmount.fromRawAmount(stakingInfo.tokens[1], '0')
-  )
+  const dummyPair = new Pair(new TokenAmount(stakingInfo.tokens[0], '0'), new TokenAmount(stakingInfo.tokens[1], '0'))
   const pairContract = usePairContract(dummyPair.liquidityToken.address)
 
   // approval data for stake
   const deadline = useTransactionDeadline()
-  const router = useV2RouterContract()
-  const { signatureData, gatherPermitSignature } = useV2LiquidityTokenPermit(parsedAmountWrapped, router?.address)
+  const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
   const [approval, approveCallback] = useApproveCallback(parsedAmount, stakingInfo.stakingRewardAddress)
 
+  const isArgentWallet = useIsArgentWallet()
   const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress)
   async function onStake() {
     setAttempting(true)
     if (stakingContract && parsedAmount && deadline) {
       if (approval === ApprovalState.APPROVED) {
-        await stakingContract.stake(`0x${parsedAmount.quotient.toString(16)}`, { gasLimit: 350000 })
+        await stakingContract.stake(`0x${parsedAmount.raw.toString(16)}`, { gasLimit: 350000 })
       } else if (signatureData) {
         stakingContract
           .stakeWithPermit(
-            `0x${parsedAmount.quotient.toString(16)}`,
+            `0x${parsedAmount.raw.toString(16)}`,
             signatureData.deadline,
             signatureData.v,
             signatureData.r,
@@ -114,9 +97,7 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
           )
           .then((response: TransactionResponse) => {
             addTransaction(response, {
-              type: TransactionType.DEPOSIT_LIQUIDITY_STAKING,
-              token0Address: stakingInfo.tokens[0].address,
-              token1Address: stakingInfo.tokens[1].address,
+              summary: `Deposit liquidity`
             })
             setHash(response.hash)
           })
@@ -133,6 +114,7 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback((typedValue: string) => {
+    setSignatureData(null)
     setTypedValue(typedValue)
   }, [])
 
@@ -144,21 +126,70 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
   }, [maxAmountInput, onUserInput])
 
   async function onAttemptToApprove() {
-    if (!pairContract || !provider || !deadline) throw new Error('missing dependencies')
-    if (!parsedAmount) throw new Error('missing liquidity amount')
+    if (!pairContract || !library || !deadline) throw new Error('missing dependencies')
+    const liquidityAmount = parsedAmount
+    if (!liquidityAmount) throw new Error('missing liquidity amount')
 
-    if (gatherPermitSignature) {
-      try {
-        await gatherPermitSignature()
-      } catch (error) {
-        // try to approve if gatherPermitSignature failed for any reason other than the user rejecting it
-        if (error?.code !== 4001) {
-          await approveCallback()
-        }
-      }
-    } else {
-      await approveCallback()
+    if (isArgentWallet) {
+      return approveCallback()
     }
+
+    // try to gather a signature for permission
+    const nonce = await pairContract.nonces(account)
+
+    const EIP712Domain = [
+      { name: 'name', type: 'string' },
+      { name: 'version', type: 'string' },
+      { name: 'chainId', type: 'uint256' },
+      { name: 'verifyingContract', type: 'address' }
+    ]
+    const domain = {
+      name: 'Uniswap V2',
+      version: '1',
+      chainId: chainId,
+      verifyingContract: pairContract.address
+    }
+    const Permit = [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+      { name: 'nonce', type: 'uint256' },
+      { name: 'deadline', type: 'uint256' }
+    ]
+    const message = {
+      owner: account,
+      spender: stakingInfo.stakingRewardAddress,
+      value: liquidityAmount.raw.toString(),
+      nonce: nonce.toHexString(),
+      deadline: deadline.toNumber()
+    }
+    const data = JSON.stringify({
+      types: {
+        EIP712Domain,
+        Permit
+      },
+      domain,
+      primaryType: 'Permit',
+      message
+    })
+
+    library
+      .send('eth_signTypedData_v4', [account, data])
+      .then(splitSignature)
+      .then(signature => {
+        setSignatureData({
+          v: signature.v,
+          r: signature.r,
+          s: signature.s,
+          deadline: deadline.toNumber()
+        })
+      })
+      .catch(error => {
+        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
+        if (error?.code !== 4001) {
+          approveCallback()
+        }
+      })
   }
 
   return (
@@ -166,9 +197,7 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
       {!attempting && !hash && (
         <ContentWrapper gap="lg">
           <RowBetween>
-            <ThemedText.MediumHeader>
-              <Trans>Deposit</Trans>
-            </ThemedText.MediumHeader>
+            <TYPE.mediumHeader>Deposit</TYPE.mediumHeader>
             <CloseIcon onClick={wrappedOnDismiss} />
           </RowBetween>
           <CurrencyInputPanel
@@ -176,28 +205,23 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
             onUserInput={onUserInput}
             onMax={handleMax}
             showMaxButton={!atMaxAmount}
-            currency={stakingInfo.stakedAmount.currency}
+            currency={stakingInfo.stakedAmount.token}
             pair={dummyPair}
             label={''}
-            renderBalance={(amount) => <Trans>Available to deposit: {formatCurrencyAmount(amount, 4)}</Trans>}
+            disableCurrencySelect={true}
+            customBalanceText={'Available to deposit: '}
             id="stake-liquidity-token"
           />
 
           <HypotheticalRewardRate dim={!hypotheticalRewardRate.greaterThan('0')}>
             <div>
-              <ThemedText.Black fontWeight={600}>
-                <Trans>Weekly Rewards</Trans>
-              </ThemedText.Black>
+              <TYPE.black fontWeight={600}>Weekly Rewards</TYPE.black>
             </div>
 
-            <ThemedText.Black>
-              <Trans>
-                {hypotheticalRewardRate
-                  .multiply((60 * 60 * 24 * 7).toString())
-                  .toSignificant(4, { groupSeparator: ',' })}{' '}
-                UNI / week
-              </Trans>
-            </ThemedText.Black>
+            <TYPE.black>
+              {hypotheticalRewardRate.multiply((60 * 60 * 24 * 7).toString()).toSignificant(4, { groupSeparator: ',' })}{' '}
+              UNI / week
+            </TYPE.black>
           </HypotheticalRewardRate>
 
           <RowBetween>
@@ -207,14 +231,14 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
               confirmed={approval === ApprovalState.APPROVED || signatureData !== null}
               disabled={approval !== ApprovalState.NOT_APPROVED || signatureData !== null}
             >
-              <Trans>Approve</Trans>
+              Approve
             </ButtonConfirmed>
             <ButtonError
               disabled={!!error || (signatureData === null && approval !== ApprovalState.APPROVED)}
               error={!!error && !!parsedAmount}
               onClick={onStake}
             >
-              {error ?? <Trans>Deposit</Trans>}
+              {error ?? 'Deposit'}
             </ButtonError>
           </RowBetween>
           <ProgressCircles steps={[approval === ApprovalState.APPROVED || signatureData !== null]} disabled={true} />
@@ -223,24 +247,16 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
       {attempting && !hash && (
         <LoadingView onDismiss={wrappedOnDismiss}>
           <AutoColumn gap="12px" justify={'center'}>
-            <ThemedText.LargeHeader>
-              <Trans>Depositing Liquidity</Trans>
-            </ThemedText.LargeHeader>
-            <ThemedText.Body fontSize={20}>
-              <Trans>{parsedAmount?.toSignificant(4)} UNI-V2</Trans>
-            </ThemedText.Body>
+            <TYPE.largeHeader>Depositing Liquidity</TYPE.largeHeader>
+            <TYPE.body fontSize={20}>{parsedAmount?.toSignificant(4)} UNI-V2</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}
       {attempting && hash && (
         <SubmittedView onDismiss={wrappedOnDismiss} hash={hash}>
           <AutoColumn gap="12px" justify={'center'}>
-            <ThemedText.LargeHeader>
-              <Trans>Transaction Submitted</Trans>
-            </ThemedText.LargeHeader>
-            <ThemedText.Body fontSize={20}>
-              <Trans>Deposited {parsedAmount?.toSignificant(4)} UNI-V2</Trans>
-            </ThemedText.Body>
+            <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
+            <TYPE.body fontSize={20}>Deposited {parsedAmount?.toSignificant(4)} UNI-V2</TYPE.body>
           </AutoColumn>
         </SubmittedView>
       )}
