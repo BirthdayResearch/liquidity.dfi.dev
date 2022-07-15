@@ -1,71 +1,42 @@
-import { BigNumber } from '@ethersproject/bignumber'
-import { Trans } from '@lingui/macro'
-import { CurrencyAmount, Fraction, Token } from '@uniswap/sdk-core'
-import { useWeb3React } from '@web3-react/core'
-import ExecuteModal from 'components/vote/ExecuteModal'
-import QueueModal from 'components/vote/QueueModal'
-import { useActiveLocale } from 'hooks/useActiveLocale'
-import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
-import JSBI from 'jsbi'
-import useBlockNumber from 'lib/hooks/useBlockNumber'
-import ms from 'ms.macro'
-import { useState } from 'react'
-import { ArrowLeft } from 'react-feather'
-import ReactMarkdown from 'react-markdown'
-import { RouteComponentProps } from 'react-router-dom'
-import styled from 'styled-components/macro'
-
-import { ButtonPrimary } from '../../components/Button'
-import { GreyCard } from '../../components/Card'
+import React, { useState } from 'react'
 import { AutoColumn } from '../../components/Column'
+import styled from 'styled-components'
+
+import { RouteComponentProps } from 'react-router-dom'
+import { TYPE, StyledInternalLink, ExternalLink } from '../../theme'
+import { RowFixed, RowBetween } from '../../components/Row'
 import { CardSection, DataCard } from '../../components/earn/styled'
-import { RowBetween, RowFixed } from '../../components/Row'
-import { SwitchLocaleLink } from '../../components/SwitchLocaleLink'
-import DelegateModal from '../../components/vote/DelegateModal'
-import VoteModal from '../../components/vote/VoteModal'
-import {
-  AVERAGE_BLOCK_TIME_IN_SECS,
-  COMMON_CONTRACT_NAMES,
-  DEFAULT_AVERAGE_BLOCK_TIME_IN_SECS,
-} from '../../constants/governance'
-import { ZERO_ADDRESS } from '../../constants/misc'
-import { UNI } from '../../constants/tokens'
-import {
-  useModalIsOpen,
-  useToggleDelegateModal,
-  useToggleExecuteModal,
-  useToggleQueueModal,
-  useToggleVoteModal,
-} from '../../state/application/hooks'
-import { ApplicationModal } from '../../state/application/reducer'
-import { useTokenBalance } from '../../state/connection/hooks'
-import {
-  ProposalData,
-  ProposalState,
-  useProposalData,
-  useQuorum,
-  useUserDelegatee,
-  useUserVotesAsOfBlock,
-} from '../../state/governance/hooks'
-import { VoteOption } from '../../state/governance/types'
-import { ExternalLink, StyledInternalLink, ThemedText } from '../../theme'
-import { isAddress } from '../../utils'
-import { ExplorerDataType, getExplorerLink } from '../../utils/getExplorerLink'
+import { ArrowLeft } from 'react-feather'
+import { ButtonPrimary } from '../../components/Button'
 import { ProposalStatus } from './styled'
+import { useProposalData, useUserVotesAsOfBlock, ProposalData, useUserDelegatee } from '../../state/governance/hooks'
+import { DateTime } from 'luxon'
+import ReactMarkdown from 'react-markdown'
+import VoteModal from '../../components/vote/VoteModal'
+import { TokenAmount, JSBI } from '@uniswap/sdk'
+import { useActiveWeb3React } from '../../hooks'
+import { AVERAGE_BLOCK_TIME_IN_SECS, COMMON_CONTRACT_NAMES, UNI, ZERO_ADDRESS } from '../../constants'
+import { isAddress, getEtherscanLink } from '../../utils'
+import { ApplicationModal } from '../../state/application/actions'
+import { useModalOpen, useToggleDelegateModal, useToggleVoteModal, useBlockNumber } from '../../state/application/hooks'
+import DelegateModal from '../../components/vote/DelegateModal'
+import { GreyCard } from '../../components/Card'
+import { useTokenBalance } from '../../state/wallet/hooks'
+import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
+import { BigNumber } from 'ethers'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
 `
 
 const ProposalInfo = styled(AutoColumn)`
-  background: ${({ theme }) => theme.bg0};
+  border: 1px solid ${({ theme }) => theme.bg4};
   border-radius: 12px;
   padding: 1.5rem;
   position: relative;
   max-width: 640px;
   width: 100%;
 `
-
 const ArrowWrapper = styled(StyledInternalLink)`
   display: flex;
   align-items: center;
@@ -109,7 +80,7 @@ const Progress = styled.div<{ status: 'for' | 'against'; percentageString?: stri
   height: 4px;
   border-radius: 4px;
   background-color: ${({ theme, status }) => (status === 'for' ? theme.green1 : theme.red1)};
-  width: ${({ percentageString }) => percentageString ?? '0%'};
+  width: ${({ percentageString }) => percentageString};
 `
 
 const MarkDownWrapper = styled.div`
@@ -132,352 +103,204 @@ const ProposerAddressLink = styled(ExternalLink)`
   word-break: break-all;
 `
 
-function getDateFromBlock(
-  targetBlock: number | undefined,
-  currentBlock: number | undefined,
-  averageBlockTimeInSeconds: number | undefined,
-  currentTimestamp: BigNumber | undefined
-): Date | undefined {
-  if (targetBlock && currentBlock && averageBlockTimeInSeconds && currentTimestamp) {
-    const date = new Date()
-    date.setTime(
-      currentTimestamp
-        .add(BigNumber.from(averageBlockTimeInSeconds).mul(BigNumber.from(targetBlock - currentBlock)))
-        .toNumber() * ms`1 second`
-    )
-    return date
-  }
-  return undefined
-}
-
 export default function VotePage({
   match: {
-    params: { governorIndex, id },
-  },
-}: RouteComponentProps<{ governorIndex: string; id: string }>) {
-  const parsedGovernorIndex = Number.parseInt(governorIndex)
-
-  const { chainId, account } = useWeb3React()
-
-  const quorumAmount = useQuorum(parsedGovernorIndex)
+    params: { id }
+  }
+}: RouteComponentProps<{ id: string }>) {
+  const { chainId, account } = useActiveWeb3React()
 
   // get data for this specific proposal
-  const proposalData: ProposalData | undefined = useProposalData(parsedGovernorIndex, id)
+  const proposalData: ProposalData | undefined = useProposalData(id)
 
-  // update vote option based on button interactions
-  const [voteOption, setVoteOption] = useState<VoteOption | undefined>(undefined)
+  // update support based on button interactions
+  const [support, setSupport] = useState<boolean>(true)
 
   // modal for casting votes
-  const showVoteModal = useModalIsOpen(ApplicationModal.VOTE)
+  const showVoteModal = useModalOpen(ApplicationModal.VOTE)
   const toggleVoteModal = useToggleVoteModal()
 
   // toggle for showing delegation modal
-  const showDelegateModal = useModalIsOpen(ApplicationModal.DELEGATE)
+  const showDelegateModal = useModalOpen(ApplicationModal.DELEGATE)
   const toggleDelegateModal = useToggleDelegateModal()
-
-  // toggle for showing queue modal
-  const showQueueModal = useModalIsOpen(ApplicationModal.QUEUE)
-  const toggleQueueModal = useToggleQueueModal()
-
-  // toggle for showing execute modal
-  const showExecuteModal = useModalIsOpen(ApplicationModal.EXECUTE)
-  const toggleExecuteModal = useToggleExecuteModal()
 
   // get and format date from data
   const currentTimestamp = useCurrentBlockTimestamp()
   const currentBlock = useBlockNumber()
-  const startDate = getDateFromBlock(
-    proposalData?.startBlock,
-    currentBlock,
-    (chainId && AVERAGE_BLOCK_TIME_IN_SECS[chainId]) ?? DEFAULT_AVERAGE_BLOCK_TIME_IN_SECS,
-    currentTimestamp
-  )
-  const endDate = getDateFromBlock(
-    proposalData?.endBlock,
-    currentBlock,
-    (chainId && AVERAGE_BLOCK_TIME_IN_SECS[chainId]) ?? DEFAULT_AVERAGE_BLOCK_TIME_IN_SECS,
-    currentTimestamp
-  )
-  const now = new Date()
-  const locale = useActiveLocale()
-  const dateFormat: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    timeZoneName: 'short',
-  }
-  // convert the eta to milliseconds before it's a date
-  const eta = proposalData?.eta ? new Date(proposalData.eta.mul(ms`1 second`).toNumber()) : undefined
+  const endDate: DateTime | undefined =
+    proposalData && currentTimestamp && currentBlock
+      ? DateTime.fromSeconds(
+          currentTimestamp
+            .add(BigNumber.from(AVERAGE_BLOCK_TIME_IN_SECS).mul(BigNumber.from(proposalData.endBlock - currentBlock)))
+            .toNumber()
+        )
+      : undefined
+  const now: DateTime = DateTime.local()
 
   // get total votes and format percentages for UI
-  const totalVotes = proposalData?.forCount?.add(proposalData.againstCount)
-  const forPercentage = totalVotes
-    ? proposalData?.forCount?.asFraction?.divide(totalVotes.asFraction)?.multiply(100)
-    : undefined
-  const againstPercentage = forPercentage ? new Fraction(100).subtract(forPercentage) : undefined
+  const totalVotes: number | undefined = proposalData ? proposalData.forCount + proposalData.againstCount : undefined
+  const forPercentage: string =
+    proposalData && totalVotes ? ((proposalData.forCount * 100) / totalVotes).toFixed(0) + '%' : '0%'
+  const againstPercentage: string =
+    proposalData && totalVotes ? ((proposalData.againstCount * 100) / totalVotes).toFixed(0) + '%' : '0%'
 
   // only count available votes as of the proposal start block
-  const availableVotes: CurrencyAmount<Token> | undefined = useUserVotesAsOfBlock(proposalData?.startBlock ?? undefined)
+  const availableVotes: TokenAmount | undefined = useUserVotesAsOfBlock(proposalData?.startBlock ?? undefined)
 
   // only show voting if user has > 0 votes at proposal start block and proposal is active,
   const showVotingButtons =
     availableVotes &&
-    JSBI.greaterThan(availableVotes.quotient, JSBI.BigInt(0)) &&
+    JSBI.greaterThan(availableVotes.raw, JSBI.BigInt(0)) &&
     proposalData &&
-    proposalData.status === ProposalState.ACTIVE
+    proposalData.status === 'active'
 
-  // we only show the button if there's an account connected and the proposal state is correct
-  const showQueueButton = account && proposalData?.status === ProposalState.SUCCEEDED
-
-  // we only show the button if there's an account connected and the proposal state is correct
-  const showExecuteButton = account && proposalData?.status === ProposalState.QUEUED
-
-  const uniBalance: CurrencyAmount<Token> | undefined = useTokenBalance(
-    account ?? undefined,
-    chainId ? UNI[chainId] : undefined
-  )
+  const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, chainId ? UNI[chainId] : undefined)
   const userDelegatee: string | undefined = useUserDelegatee()
 
   // in blurb link to home page if they are able to unlock
   const showLinkForUnlock = Boolean(
-    uniBalance && JSBI.notEqual(uniBalance.quotient, JSBI.BigInt(0)) && userDelegatee === ZERO_ADDRESS
+    uniBalance && JSBI.notEqual(uniBalance.raw, JSBI.BigInt(0)) && userDelegatee === ZERO_ADDRESS
   )
 
   // show links in propsoal details if content is an address
   // if content is contract with common name, replace address with common name
   const linkIfAddress = (content: string) => {
     if (isAddress(content) && chainId) {
-      const commonName = COMMON_CONTRACT_NAMES[chainId]?.[content] ?? content
-      return (
-        <ExternalLink href={getExplorerLink(chainId, content, ExplorerDataType.ADDRESS)}>{commonName}</ExternalLink>
-      )
+      const commonName = COMMON_CONTRACT_NAMES[content] ?? content
+      return <ExternalLink href={getEtherscanLink(chainId, content, 'address')}>{commonName}</ExternalLink>
     }
     return <span>{content}</span>
   }
 
   return (
-    <>
-      <PageWrapper gap="lg" justify="center">
-        <VoteModal
-          isOpen={showVoteModal}
-          onDismiss={toggleVoteModal}
-          proposalId={proposalData?.id}
-          voteOption={voteOption}
-        />
-        <DelegateModal isOpen={showDelegateModal} onDismiss={toggleDelegateModal} title={<Trans>Unlock Votes</Trans>} />
-        <QueueModal isOpen={showQueueModal} onDismiss={toggleQueueModal} proposalId={proposalData?.id} />
-        <ExecuteModal isOpen={showExecuteModal} onDismiss={toggleExecuteModal} proposalId={proposalData?.id} />
-        <ProposalInfo gap="lg" justify="start">
-          <RowBetween style={{ width: '100%' }}>
-            <ArrowWrapper to="/vote">
-              <Trans>
-                <ArrowLeft size={20} /> All Proposals
-              </Trans>
-            </ArrowWrapper>
-            {proposalData && <ProposalStatus status={proposalData.status} />}
+    <PageWrapper gap="lg" justify="center">
+      <VoteModal isOpen={showVoteModal} onDismiss={toggleVoteModal} proposalId={proposalData?.id} support={support} />
+      <DelegateModal isOpen={showDelegateModal} onDismiss={toggleDelegateModal} title="Unlock Votes" />
+      <ProposalInfo gap="lg" justify="start">
+        <RowBetween style={{ width: '100%' }}>
+          <ArrowWrapper to="/vote">
+            <ArrowLeft size={20} /> All Proposals
+          </ArrowWrapper>
+          {proposalData && <ProposalStatus status={proposalData?.status ?? ''}>{proposalData?.status}</ProposalStatus>}
+        </RowBetween>
+        <AutoColumn gap="10px" style={{ width: '100%' }}>
+          <TYPE.largeHeader style={{ marginBottom: '.5rem' }}>{proposalData?.title}</TYPE.largeHeader>
+          <RowBetween>
+            <TYPE.main>
+              {endDate && endDate < now
+                ? 'Voting ended ' + (endDate && endDate.toLocaleString(DateTime.DATETIME_FULL))
+                : proposalData
+                ? 'Voting ends approximately ' + (endDate && endDate.toLocaleString(DateTime.DATETIME_FULL))
+                : ''}
+            </TYPE.main>
           </RowBetween>
-          <AutoColumn gap="10px" style={{ width: '100%' }}>
-            <ThemedText.LargeHeader style={{ marginBottom: '.5rem' }}>{proposalData?.title}</ThemedText.LargeHeader>
-            <RowBetween>
-              <ThemedText.Main>
-                {startDate && startDate > now ? (
-                  <Trans>Voting starts approximately {startDate.toLocaleString(locale, dateFormat)}</Trans>
-                ) : null}
-              </ThemedText.Main>
-            </RowBetween>
-            <RowBetween>
-              <ThemedText.Main>
-                {endDate &&
-                  (endDate < now ? (
-                    <Trans>Voting ended {endDate.toLocaleString(locale, dateFormat)}</Trans>
-                  ) : (
-                    <Trans>Voting ends approximately {endDate.toLocaleString(locale, dateFormat)}</Trans>
-                  ))}
-              </ThemedText.Main>
-            </RowBetween>
-            {proposalData && proposalData.status === ProposalState.ACTIVE && !showVotingButtons && (
-              <GreyCard>
-                <ThemedText.Black>
-                  <Trans>
-                    Only UNI votes that were self delegated or delegated to another address before block{' '}
-                    {proposalData.startBlock} are eligible for voting.
-                  </Trans>{' '}
-                  {showLinkForUnlock && (
-                    <span>
-                      <Trans>
-                        <StyledInternalLink to="/vote">Unlock voting</StyledInternalLink> to prepare for the next
-                        proposal.
-                      </Trans>
-                    </span>
-                  )}
-                </ThemedText.Black>
-              </GreyCard>
-            )}
-          </AutoColumn>
-          {showVotingButtons && (
-            <RowFixed style={{ width: '100%', gap: '12px' }}>
-              <ButtonPrimary
-                padding="8px"
-                $borderRadius="8px"
-                onClick={() => {
-                  setVoteOption(VoteOption.For)
-                  toggleVoteModal()
-                }}
-              >
-                <Trans>Vote For</Trans>
-              </ButtonPrimary>
-              <ButtonPrimary
-                padding="8px"
-                $borderRadius="8px"
-                onClick={() => {
-                  setVoteOption(VoteOption.Against)
-                  toggleVoteModal()
-                }}
-              >
-                <Trans>Vote Against</Trans>
-              </ButtonPrimary>
-            </RowFixed>
+          {proposalData && proposalData.status === 'active' && !showVotingButtons && (
+            <GreyCard>
+              <TYPE.black>
+                Only UNI votes that were self delegated or delegated to another address before block{' '}
+                {proposalData.startBlock} are eligible for voting.{' '}
+                {showLinkForUnlock && (
+                  <span>
+                    <StyledInternalLink to="/vote">Unlock voting</StyledInternalLink> to prepare for the next proposal.
+                  </span>
+                )}
+              </TYPE.black>
+            </GreyCard>
           )}
-          {showQueueButton && (
-            <RowFixed style={{ width: '100%', gap: '12px' }}>
-              <ButtonPrimary
-                padding="8px"
-                $borderRadius="8px"
-                onClick={() => {
-                  toggleQueueModal()
-                }}
-              >
-                <Trans>Queue</Trans>
-              </ButtonPrimary>
-            </RowFixed>
-          )}
-          {showExecuteButton && (
-            <>
-              {eta && (
-                <RowBetween>
-                  <ThemedText.Black>
-                    <Trans>This proposal may be executed after {eta.toLocaleString(locale, dateFormat)}.</Trans>
-                  </ThemedText.Black>
-                </RowBetween>
-              )}
-              <RowFixed style={{ width: '100%', gap: '12px' }}>
-                <ButtonPrimary
-                  padding="8px"
-                  $borderRadius="8px"
-                  onClick={() => {
-                    toggleExecuteModal()
-                  }}
-                  // can't execute until the eta has arrived
-                  disabled={!currentTimestamp || !proposalData?.eta || currentTimestamp.lt(proposalData.eta)}
-                >
-                  <Trans>Execute</Trans>
-                </ButtonPrimary>
-              </RowFixed>
-            </>
-          )}
-          <CardWrapper>
-            <StyledDataCard>
-              <CardSection>
-                <AutoColumn gap="md">
-                  <WrapSmall>
-                    <ThemedText.Black fontWeight={600}>
-                      <Trans>For</Trans>
-                    </ThemedText.Black>
-                    {proposalData && (
-                      <ThemedText.Black fontWeight={600}>
-                        {proposalData.forCount.toFixed(0, { groupSeparator: ',' })}
-                        {quorumAmount && (
-                          <span style={{ fontWeight: 400 }}>{` / ${quorumAmount.toExact({
-                            groupSeparator: ',',
-                          })}`}</span>
-                        )}
-                      </ThemedText.Black>
-                    )}
-                  </WrapSmall>
-                </AutoColumn>
-                <ProgressWrapper>
-                  <Progress
-                    status={'for'}
-                    percentageString={
-                      proposalData?.forCount.greaterThan(0) ? `${forPercentage?.toFixed(0) ?? 0}%` : '0%'
-                    }
-                  />
-                </ProgressWrapper>
-              </CardSection>
-            </StyledDataCard>
-            <StyledDataCard>
-              <CardSection>
-                <AutoColumn gap="md">
-                  <WrapSmall>
-                    <ThemedText.Black fontWeight={600}>
-                      <Trans>Against</Trans>
-                    </ThemedText.Black>
-                    {proposalData && (
-                      <ThemedText.Black fontWeight={600}>
-                        {proposalData.againstCount.toFixed(0, { groupSeparator: ',' })}
-                      </ThemedText.Black>
-                    )}
-                  </WrapSmall>
-                </AutoColumn>
-                <ProgressWrapper>
-                  <Progress
-                    status={'against'}
-                    percentageString={
-                      proposalData?.againstCount?.greaterThan(0) ? `${againstPercentage?.toFixed(0) ?? 0}%` : '0%'
-                    }
-                  />
-                </ProgressWrapper>
-              </CardSection>
-            </StyledDataCard>
-          </CardWrapper>
-          <AutoColumn gap="md">
-            <ThemedText.MediumHeader fontWeight={600}>
-              <Trans>Details</Trans>
-            </ThemedText.MediumHeader>
-            {proposalData?.details?.map((d, i) => {
-              return (
-                <DetailText key={i}>
-                  {i + 1}: {linkIfAddress(d.target)}.{d.functionSig}(
-                  {d.callData.split(',').map((content, i) => {
-                    return (
-                      <span key={i}>
-                        {linkIfAddress(content)}
-                        {d.callData.split(',').length - 1 === i ? '' : ','}
-                      </span>
-                    )
-                  })}
-                  )
-                </DetailText>
-              )
-            })}
-          </AutoColumn>
-          <AutoColumn gap="md">
-            <ThemedText.MediumHeader fontWeight={600}>
-              <Trans>Description</Trans>
-            </ThemedText.MediumHeader>
-            <MarkDownWrapper>
-              <ReactMarkdown source={proposalData?.description} />
-            </MarkDownWrapper>
-          </AutoColumn>
-          <AutoColumn gap="md">
-            <ThemedText.MediumHeader fontWeight={600}>
-              <Trans>Proposer</Trans>
-            </ThemedText.MediumHeader>
-            <ProposerAddressLink
-              href={
-                proposalData?.proposer && chainId
-                  ? getExplorerLink(chainId, proposalData?.proposer, ExplorerDataType.ADDRESS)
-                  : ''
-              }
+        </AutoColumn>
+        {showVotingButtons ? (
+          <RowFixed style={{ width: '100%', gap: '12px' }}>
+            <ButtonPrimary
+              padding="8px"
+              borderRadius="8px"
+              onClick={() => {
+                setSupport(true)
+                toggleVoteModal()
+              }}
             >
-              <ReactMarkdown source={proposalData?.proposer} />
-            </ProposerAddressLink>
-          </AutoColumn>
-        </ProposalInfo>
-      </PageWrapper>
-      <SwitchLocaleLink />
-    </>
+              Vote For
+            </ButtonPrimary>
+            <ButtonPrimary
+              padding="8px"
+              borderRadius="8px"
+              onClick={() => {
+                setSupport(false)
+                toggleVoteModal()
+              }}
+            >
+              Vote Against
+            </ButtonPrimary>
+          </RowFixed>
+        ) : (
+          ''
+        )}
+        <CardWrapper>
+          <StyledDataCard>
+            <CardSection>
+              <AutoColumn gap="md">
+                <WrapSmall>
+                  <TYPE.black fontWeight={600}>For</TYPE.black>
+                  <TYPE.black fontWeight={600}>
+                    {' '}
+                    {proposalData?.forCount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  </TYPE.black>
+                </WrapSmall>
+              </AutoColumn>
+              <ProgressWrapper>
+                <Progress status={'for'} percentageString={forPercentage} />
+              </ProgressWrapper>
+            </CardSection>
+          </StyledDataCard>
+          <StyledDataCard>
+            <CardSection>
+              <AutoColumn gap="md">
+                <WrapSmall>
+                  <TYPE.black fontWeight={600}>Against</TYPE.black>
+                  <TYPE.black fontWeight={600}>
+                    {proposalData?.againstCount.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  </TYPE.black>
+                </WrapSmall>
+              </AutoColumn>
+              <ProgressWrapper>
+                <Progress status={'against'} percentageString={againstPercentage} />
+              </ProgressWrapper>
+            </CardSection>
+          </StyledDataCard>
+        </CardWrapper>
+        <AutoColumn gap="md">
+          <TYPE.mediumHeader fontWeight={600}>Details</TYPE.mediumHeader>
+          {proposalData?.details?.map((d, i) => {
+            return (
+              <DetailText key={i}>
+                {i + 1}: {linkIfAddress(d.target)}.{d.functionSig}(
+                {d.callData.split(',').map((content, i) => {
+                  return (
+                    <span key={i}>
+                      {linkIfAddress(content)}
+                      {d.callData.split(',').length - 1 === i ? '' : ','}
+                    </span>
+                  )
+                })}
+                )
+              </DetailText>
+            )
+          })}
+        </AutoColumn>
+        <AutoColumn gap="md">
+          <TYPE.mediumHeader fontWeight={600}>Description</TYPE.mediumHeader>
+          <MarkDownWrapper>
+            <ReactMarkdown source={proposalData?.description} />
+          </MarkDownWrapper>
+        </AutoColumn>
+        <AutoColumn gap="md">
+          <TYPE.mediumHeader fontWeight={600}>Proposer</TYPE.mediumHeader>
+          <ProposerAddressLink
+            href={proposalData?.proposer && chainId ? getEtherscanLink(chainId, proposalData?.proposer, 'address') : ''}
+          >
+            <ReactMarkdown source={proposalData?.proposer} />
+          </ProposerAddressLink>
+        </AutoColumn>
+      </ProposalInfo>
+    </PageWrapper>
   )
 }

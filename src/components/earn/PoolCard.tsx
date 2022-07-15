@@ -1,22 +1,20 @@
-import { Trans } from '@lingui/macro'
-import { CurrencyAmount, Token } from '@uniswap/sdk-core'
-import JSBI from 'jsbi'
-import styled from 'styled-components/macro'
-
-import { BIG_INT_SECONDS_IN_WEEK } from '../../constants/misc'
-import { useColor } from '../../hooks/useColor'
-import useStablecoinPrice from '../../hooks/useStablecoinPrice'
-import { useTotalSupply } from '../../hooks/useTotalSupply'
-import { useV2Pair } from '../../hooks/useV2Pairs'
-import { StakingInfo } from '../../state/stake/hooks'
-import { StyledInternalLink, ThemedText } from '../../theme'
-import { currencyId } from '../../utils/currencyId'
-import { unwrappedToken } from '../../utils/unwrappedToken'
-import { ButtonPrimary } from '../Button'
+import React from 'react'
 import { AutoColumn } from '../Column'
-import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween } from '../Row'
-import { Break, CardBGImage, CardNoise } from './styled'
+import styled from 'styled-components'
+import { TYPE, StyledInternalLink } from '../../theme'
+import DoubleCurrencyLogo from '../DoubleLogo'
+import { ETHER, JSBI, TokenAmount } from '@uniswap/sdk'
+import { ButtonPrimary } from '../Button'
+import { StakingInfo } from '../../state/stake/hooks'
+import { useColor } from '../../hooks/useColor'
+import { currencyId } from '../../utils/currencyId'
+import { Break, CardNoise, CardBGImage } from './styled'
+import { unwrappedToken } from '../../utils/wrappedCurrency'
+import { useTotalSupply } from '../../data/TotalSupply'
+import { usePair } from '../../data/Reserves'
+import useUSDCPrice from '../../utils/useUSDCPrice'
+import { BIG_INT_SECONDS_IN_WEEK } from '../../constants'
 
 const StatContainer = styled.div`
   display: flex;
@@ -80,31 +78,31 @@ export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) 
   const isStaking = Boolean(stakingInfo.stakedAmount.greaterThan('0'))
 
   // get the color of the token
-  const token = currency0.isNative ? token1 : token0
-  const WETH = currency0.isNative ? token0 : token1
+  const token = currency0 === ETHER ? token1 : token0
+  const WETH = currency0 === ETHER ? token0 : token1
   const backgroundColor = useColor(token)
 
-  const totalSupplyOfStakingToken = useTotalSupply(stakingInfo.stakedAmount.currency)
-  const [, stakingTokenPair] = useV2Pair(...stakingInfo.tokens)
+  const totalSupplyOfStakingToken = useTotalSupply(stakingInfo.stakedAmount.token)
+  const [, stakingTokenPair] = usePair(...stakingInfo.tokens)
 
   // let returnOverMonth: Percent = new Percent('0')
-  let valueOfTotalStakedAmountInWETH: CurrencyAmount<Token> | undefined
+  let valueOfTotalStakedAmountInWETH: TokenAmount | undefined
   if (totalSupplyOfStakingToken && stakingTokenPair) {
     // take the total amount of LP tokens staked, multiply by ETH value of all LP tokens, divide by all LP tokens
-    valueOfTotalStakedAmountInWETH = CurrencyAmount.fromRawAmount(
+    valueOfTotalStakedAmountInWETH = new TokenAmount(
       WETH,
       JSBI.divide(
         JSBI.multiply(
-          JSBI.multiply(stakingInfo.totalStakedAmount.quotient, stakingTokenPair.reserveOf(WETH).quotient),
+          JSBI.multiply(stakingInfo.totalStakedAmount.raw, stakingTokenPair.reserveOf(WETH).raw),
           JSBI.BigInt(2) // this is b/c the value of LP shares are ~double the value of the WETH they entitle owner to
         ),
-        totalSupplyOfStakingToken.quotient
+        totalSupplyOfStakingToken.raw
       )
     )
   }
 
   // get the USD value of staked WETH
-  const USDPrice = useStablecoinPrice(WETH)
+  const USDPrice = useUSDCPrice(WETH)
   const valueOfTotalStakedAmountInUSDC =
     valueOfTotalStakedAmountInWETH && USDPrice?.quote(valueOfTotalStakedAmountInWETH)
 
@@ -115,48 +113,37 @@ export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) 
 
       <TopSection>
         <DoubleCurrencyLogo currency0={currency0} currency1={currency1} size={24} />
-        <ThemedText.White fontWeight={600} fontSize={24} style={{ marginLeft: '8px' }}>
+        <TYPE.white fontWeight={600} fontSize={24} style={{ marginLeft: '8px' }}>
           {currency0.symbol}-{currency1.symbol}
-        </ThemedText.White>
+        </TYPE.white>
 
         <StyledInternalLink to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`} style={{ width: '100%' }}>
-          <ButtonPrimary padding="8px" $borderRadius="8px">
-            {isStaking ? <Trans>Manage</Trans> : <Trans>Deposit</Trans>}
+          <ButtonPrimary padding="8px" borderRadius="8px">
+            {isStaking ? 'Manage' : 'Deposit'}
           </ButtonPrimary>
         </StyledInternalLink>
       </TopSection>
 
       <StatContainer>
         <RowBetween>
-          <ThemedText.White>
-            <Trans>Total deposited</Trans>
-          </ThemedText.White>
-          <ThemedText.White>
-            {valueOfTotalStakedAmountInUSDC ? (
-              <Trans>${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}</Trans>
-            ) : (
-              <Trans>{valueOfTotalStakedAmountInWETH?.toSignificant(4, { groupSeparator: ',' }) ?? '-'} ETH</Trans>
-            )}
-          </ThemedText.White>
+          <TYPE.white> Total deposited</TYPE.white>
+          <TYPE.white>
+            {valueOfTotalStakedAmountInUSDC
+              ? `$${valueOfTotalStakedAmountInUSDC.toFixed(0, { groupSeparator: ',' })}`
+              : `${valueOfTotalStakedAmountInWETH?.toSignificant(4, { groupSeparator: ',' }) ?? '-'} ETH`}
+          </TYPE.white>
         </RowBetween>
         <RowBetween>
-          <ThemedText.White>
-            <Trans>Pool rate</Trans>
-          </ThemedText.White>
-          <ThemedText.White>
-            {stakingInfo ? (
-              stakingInfo.active ? (
-                <Trans>
-                  {stakingInfo.totalRewardRate?.multiply(BIG_INT_SECONDS_IN_WEEK)?.toFixed(0, { groupSeparator: ',' })}{' '}
-                  UNI / week
-                </Trans>
-              ) : (
-                <Trans>0 UNI / week</Trans>
-              )
-            ) : (
-              '-'
-            )}
-          </ThemedText.White>
+          <TYPE.white> Pool rate </TYPE.white>
+          <TYPE.white>
+            {stakingInfo
+              ? stakingInfo.active
+                ? `${stakingInfo.totalRewardRate
+                    ?.multiply(BIG_INT_SECONDS_IN_WEEK)
+                    ?.toFixed(0, { groupSeparator: ',' })} UNI / week`
+                : '0 UNI / week'
+              : '-'}
+          </TYPE.white>
         </RowBetween>
       </StatContainer>
 
@@ -164,31 +151,22 @@ export default function PoolCard({ stakingInfo }: { stakingInfo: StakingInfo }) 
         <>
           <Break />
           <BottomSection showBackground={true}>
-            <ThemedText.Black color={'white'} fontWeight={500}>
-              <span>
-                <Trans>Your rate</Trans>
-              </span>
-            </ThemedText.Black>
+            <TYPE.black color={'white'} fontWeight={500}>
+              <span>Your rate</span>
+            </TYPE.black>
 
-            <ThemedText.Black style={{ textAlign: 'right' }} color={'white'} fontWeight={500}>
+            <TYPE.black style={{ textAlign: 'right' }} color={'white'} fontWeight={500}>
               <span role="img" aria-label="wizard-icon" style={{ marginRight: '0.5rem' }}>
                 ⚡
               </span>
-              {stakingInfo ? (
-                stakingInfo.active ? (
-                  <Trans>
-                    {stakingInfo.rewardRate
+              {stakingInfo
+                ? stakingInfo.active
+                  ? `${stakingInfo.rewardRate
                       ?.multiply(BIG_INT_SECONDS_IN_WEEK)
-                      ?.toSignificant(4, { groupSeparator: ',' })}{' '}
-                    UNI / week
-                  </Trans>
-                ) : (
-                  <Trans>0 UNI / week</Trans>
-                )
-              ) : (
-                '-'
-              )}
-            </ThemedText.Black>
+                      ?.toSignificant(4, { groupSeparator: ',' })} UNI / week`
+                  : '0 UNI / week'
+                : '-'}
+            </TYPE.black>
           </BottomSection>
         </>
       )}

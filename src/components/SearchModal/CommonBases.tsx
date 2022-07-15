@@ -1,18 +1,13 @@
-import { Currency } from '@uniswap/sdk-core'
-import { AutoColumn } from 'components/Column'
-import CurrencyLogo from 'components/CurrencyLogo'
-import { AutoRow } from 'components/Row'
-import { COMMON_BASES } from 'constants/routing'
-import { useTokenInfoFromActiveList } from 'hooks/useTokenInfoFromActiveList'
+import React from 'react'
 import { Text } from 'rebass'
-import styled from 'styled-components/macro'
-import { currencyId } from 'utils/currencyId'
+import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk'
+import styled from 'styled-components'
 
-const MobileWrapper = styled(AutoColumn)`
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: none;
-  `};
-`
+import { SUGGESTED_BASES } from '../../constants'
+import { AutoColumn } from '../Column'
+import QuestionHelper from '../QuestionHelper'
+import { AutoRow } from '../Row'
+import CurrencyLogo from '../CurrencyLogo'
 
 const BaseWrapper = styled.div<{ disable?: boolean }>`
   border: 1px solid ${({ theme, disable }) => (disable ? 'transparent' : theme.bg3)};
@@ -26,50 +21,53 @@ const BaseWrapper = styled.div<{ disable?: boolean }>`
     background-color: ${({ theme, disable }) => !disable && theme.bg2};
   }
 
-  color: ${({ theme, disable }) => disable && theme.text3};
   background-color: ${({ theme, disable }) => disable && theme.bg3};
-  filter: ${({ disable }) => disable && 'grayscale(1)'};
+  opacity: ${({ disable }) => disable && '0.4'};
 `
 
 export default function CommonBases({
   chainId,
   onSelect,
-  selectedCurrency,
+  selectedCurrency
 }: {
-  chainId?: number
+  chainId?: ChainId
   selectedCurrency?: Currency | null
   onSelect: (currency: Currency) => void
 }) {
-  const bases = typeof chainId !== 'undefined' ? COMMON_BASES[chainId] ?? [] : []
-
-  return bases.length > 0 ? (
-    <MobileWrapper gap="md">
+  return (
+    <AutoColumn gap="md">
+      <AutoRow>
+        <Text fontWeight={500} fontSize={14}>
+          Common bases
+        </Text>
+        <QuestionHelper text="These tokens are commonly paired with other tokens." />
+      </AutoRow>
       <AutoRow gap="4px">
-        {bases.map((currency: Currency) => {
-          const isSelected = selectedCurrency?.equals(currency)
+        <BaseWrapper
+          onClick={() => {
+            if (!selectedCurrency || !currencyEquals(selectedCurrency, ETHER)) {
+              onSelect(ETHER)
+            }
+          }}
+          disable={selectedCurrency === ETHER}
+        >
+          <CurrencyLogo currency={ETHER} style={{ marginRight: 8 }} />
+          <Text fontWeight={500} fontSize={16}>
+            ETH
+          </Text>
+        </BaseWrapper>
+        {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
+          const selected = selectedCurrency instanceof Token && selectedCurrency.address === token.address
           return (
-            <BaseWrapper
-              tabIndex={0}
-              onKeyPress={(e) => !isSelected && e.key === 'Enter' && onSelect(currency)}
-              onClick={() => !isSelected && onSelect(currency)}
-              disable={isSelected}
-              key={currencyId(currency)}
-            >
-              <CurrencyLogoFromList currency={currency} />
+            <BaseWrapper onClick={() => !selected && onSelect(token)} disable={selected} key={token.address}>
+              <CurrencyLogo currency={token} style={{ marginRight: 8 }} />
               <Text fontWeight={500} fontSize={16}>
-                {currency.symbol}
+                {token.symbol}
               </Text>
             </BaseWrapper>
           )
         })}
       </AutoRow>
-    </MobileWrapper>
-  ) : null
-}
-
-/** helper component to retrieve a base currency from the active token lists */
-function CurrencyLogoFromList({ currency }: { currency: Currency }) {
-  const token = useTokenInfoFromActiveList(currency)
-
-  return <CurrencyLogo currency={token} style={{ marginRight: 8 }} />
+    </AutoColumn>
+  )
 }

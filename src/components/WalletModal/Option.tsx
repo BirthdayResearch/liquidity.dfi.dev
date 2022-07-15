@@ -1,10 +1,9 @@
 import React from 'react'
-import styled from 'styled-components/macro'
-
+import styled from 'styled-components'
 import { ExternalLink } from '../../theme'
 
-const InfoCard = styled.button<{ isActive?: boolean }>`
-  background-color: ${({ theme, isActive }) => (isActive ? theme.bg3 : theme.bg2)};
+const InfoCard = styled.button<{ active?: boolean }>`
+  background-color: ${({ theme, active }) => (active ? theme.bg3 : theme.bg2)};
   padding: 1rem;
   outline: none;
   border: 1px solid;
@@ -13,7 +12,7 @@ const InfoCard = styled.button<{ isActive?: boolean }>`
   &:focus {
     box-shadow: 0 0 0 1px ${({ theme }) => theme.primary1};
   }
-  border-color: ${({ theme, isActive }) => (isActive ? 'transparent' : theme.bg3)};
+  border-color: ${({ theme, active }) => (active ? 'transparent' : theme.bg3)};
 `
 
 const OptionCard = styled(InfoCard as any)`
@@ -63,7 +62,7 @@ const CircleWrapper = styled.div`
 
 const HeaderText = styled.div`
   ${({ theme }) => theme.flexRowNoWrap};
-  color: ${(props) => (props.color === 'blue' ? ({ theme }) => theme.primary1 : ({ theme }) => theme.text1)};
+  color: ${props => (props.color === 'blue' ? ({ theme }) => theme.primary1 : ({ theme }) => theme.text1)};
   font-size: 1rem;
   font-weight: 500;
 `
@@ -95,10 +94,10 @@ export default function Option({
   onClick = null,
   color,
   header,
-  subheader,
+  subheader = null,
   icon,
-  isActive = false,
-  id,
+  active = false,
+  id
 }: {
   link?: string | null
   clickable?: boolean
@@ -106,22 +105,16 @@ export default function Option({
   onClick?: null | (() => void)
   color: string
   header: React.ReactNode
-  subheader?: React.ReactNode
+  subheader: React.ReactNode | null
   icon: string
-  isActive?: boolean
+  active?: boolean
   id: string
 }) {
   const content = (
-    <OptionCardClickable
-      id={id}
-      onClick={onClick}
-      clickable={clickable && !isActive}
-      active={isActive}
-      data-testid="wallet-modal-option"
-    >
+    <OptionCardClickable id={id} onClick={onClick} clickable={clickable && !active} active={active}>
       <OptionCardLeft>
         <HeaderText color={color}>
-          {isActive ? (
+          {active ? (
             <CircleWrapper>
               <GreenCircle>
                 <div />

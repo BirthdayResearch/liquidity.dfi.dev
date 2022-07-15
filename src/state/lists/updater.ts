@@ -1,71 +1,63 @@
-import { getVersionUpgrade, minVersionBump, VersionUpgrade } from '@uniswap/token-lists'
-import { useWeb3React } from '@web3-react/core'
-import { SupportedChainId } from 'constants/chains'
-import { ARBITRUM_LIST, CELO_LIST, OPTIMISM_LIST, UNSUPPORTED_LIST_URLS } from 'constants/lists'
-import useInterval from 'lib/hooks/useInterval'
-import { useCallback, useEffect } from 'react'
-import { useAppDispatch } from 'state/hooks'
 import { useAllLists } from 'state/lists/hooks'
-
+import { getVersionUpgrade, minVersionBump, VersionUpgrade } from '@uniswap/token-lists'
+import { useCallback, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { useActiveWeb3React } from '../../hooks'
 import { useFetchListCallback } from '../../hooks/useFetchListCallback'
+import useInterval from '../../hooks/useInterval'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
-import { acceptListUpdate, enableList } from './actions'
+import { AppDispatch } from '../index'
+import { acceptListUpdate } from './actions'
 import { useActiveListUrls } from './hooks'
+import { useAllInactiveTokens } from 'hooks/Tokens'
+import { UNSUPPORTED_LIST_URLS } from 'constants/lists'
 
 export default function Updater(): null {
-  const { chainId, provider } = useWeb3React()
-  const dispatch = useAppDispatch()
+  const { library } = useActiveWeb3React()
+  const dispatch = useDispatch<AppDispatch>()
   const isWindowVisible = useIsWindowVisible()
 
   // get all loaded lists, and the active urls
   const lists = useAllLists()
   const activeListUrls = useActiveListUrls()
 
+  // initiate loading
+  useAllInactiveTokens()
+
   const fetchList = useFetchListCallback()
   const fetchAllListsCallback = useCallback(() => {
     if (!isWindowVisible) return
-    Object.keys(lists).forEach((url) =>
-      fetchList(url).catch((error) => console.debug('interval list fetching error', error))
+    Object.keys(lists).forEach(url =>
+      fetchList(url).catch(error => console.debug('interval list fetching error', error))
     )
   }, [fetchList, isWindowVisible, lists])
 
-  useEffect(() => {
-    if (chainId && [SupportedChainId.OPTIMISM, SupportedChainId.OPTIMISTIC_KOVAN].includes(chainId)) {
-      dispatch(enableList(OPTIMISM_LIST))
-    }
-    if (chainId && [SupportedChainId.ARBITRUM_ONE, SupportedChainId.ARBITRUM_RINKEBY].includes(chainId)) {
-      dispatch(enableList(ARBITRUM_LIST))
-    }
-    if (chainId && [SupportedChainId.CELO, SupportedChainId.CELO_ALFAJORES].includes(chainId)) {
-      dispatch(enableList(CELO_LIST))
-    }
-  }, [chainId, dispatch])
-  // fetch all lists every 10 minutes, but only after we initialize provider
-  useInterval(fetchAllListsCallback, provider ? 1000 * 60 * 10 : null)
+  // fetch all lists every 10 minutes, but only after we initialize library
+  useInterval(fetchAllListsCallback, library ? 1000 * 60 * 10 : null)
 
   // whenever a list is not loaded and not loading, try again to load it
   useEffect(() => {
-    Object.keys(lists).forEach((listUrl) => {
+    Object.keys(lists).forEach(listUrl => {
       const list = lists[listUrl]
       if (!list.current && !list.loadingRequestId && !list.error) {
-        fetchList(listUrl).catch((error) => console.debug('list added fetching error', error))
+        fetchList(listUrl).catch(error => console.debug('list added fetching error', error))
       }
     })
-  }, [dispatch, fetchList, lists])
+  }, [dispatch, fetchList, library, lists])
 
   // if any lists from unsupported lists are loaded, check them too (in case new updates since last visit)
   useEffect(() => {
-    UNSUPPORTED_LIST_URLS.forEach((listUrl) => {
+    Object.keys(UNSUPPORTED_LIST_URLS).forEach(listUrl => {
       const list = lists[listUrl]
       if (!list || (!list.current && !list.loadingRequestId && !list.error)) {
-        fetchList(listUrl).catch((error) => console.debug('list added fetching error', error))
+        fetchList(listUrl).catch(error => console.debug('list added fetching error', error))
       }
     })
-  }, [dispatch, fetchList, lists])
+  }, [dispatch, fetchList, library, lists])
 
   // automatically update lists if versions are minor/patch
   useEffect(() => {
-    Object.keys(lists).forEach((listUrl) => {
+    Object.keys(lists).forEach(listUrl => {
       const list = lists[listUrl]
       if (list.current && list.pendingUpdate) {
         const bump = getVersionUpgrade(list.current.version, list.pendingUpdate.version)

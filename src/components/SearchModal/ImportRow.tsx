@@ -1,18 +1,17 @@
-import { Trans } from '@lingui/macro'
-import { Token } from '@uniswap/sdk-core'
-import { ButtonPrimary } from 'components/Button'
+import React, { CSSProperties } from 'react'
+import { Token } from '@uniswap/sdk'
+import { AutoRow, RowFixed } from 'components/Row'
 import { AutoColumn } from 'components/Column'
 import CurrencyLogo from 'components/CurrencyLogo'
+import { TYPE } from 'theme'
 import ListLogo from 'components/ListLogo'
-import { AutoRow, RowFixed } from 'components/Row'
-import { useIsTokenActive, useIsUserAddedToken } from 'hooks/Tokens'
+import { useActiveWeb3React } from 'hooks'
+import { useCombinedInactiveList } from 'state/lists/hooks'
 import useTheme from 'hooks/useTheme'
-import { CSSProperties } from 'react'
+import { ButtonPrimary } from 'components/Button'
+import styled from 'styled-components'
+import { useIsUserAddedToken, useIsTokenActive } from 'hooks/Tokens'
 import { CheckCircle } from 'react-feather'
-import styled from 'styled-components/macro'
-import { ThemedText } from 'theme'
-
-import { WrappedTokenInfo } from '../../state/lists/wrappedTokenInfo'
 
 const TokenSection = styled.div<{ dim?: boolean }>`
   padding: 4px 20px;
@@ -46,7 +45,7 @@ export default function ImportRow({
   style,
   dim,
   showImportView,
-  setImportToken,
+  setImportToken
 }: {
   token: Token
   style?: CSSProperties
@@ -54,29 +53,33 @@ export default function ImportRow({
   showImportView: () => void
   setImportToken: (token: Token) => void
 }) {
+  // gloabls
+  const { chainId } = useActiveWeb3React()
   const theme = useTheme()
+
+  // check if token comes from list
+  const inactiveTokenList = useCombinedInactiveList()
+  const list = chainId && inactiveTokenList?.[chainId]?.[token.address]?.list
 
   // check if already active on list or local storage tokens
   const isAdded = useIsUserAddedToken(token)
   const isActive = useIsTokenActive(token)
 
-  const list = token instanceof WrappedTokenInfo ? token.list : undefined
-
   return (
-    <TokenSection tabIndex={0} style={style}>
+    <TokenSection style={style}>
       <CurrencyLogo currency={token} size={'24px'} style={{ opacity: dim ? '0.6' : '1' }} />
       <AutoColumn gap="4px" style={{ opacity: dim ? '0.6' : '1' }}>
         <AutoRow>
-          <ThemedText.Body fontWeight={500}>{token.symbol}</ThemedText.Body>
-          <ThemedText.DarkGray ml="8px" fontWeight={300}>
+          <TYPE.body fontWeight={500}>{token.symbol}</TYPE.body>
+          <TYPE.darkGray ml="8px" fontWeight={300}>
             <NameOverflow title={token.name}>{token.name}</NameOverflow>
-          </ThemedText.DarkGray>
+          </TYPE.darkGray>
         </AutoRow>
         {list && list.logoURI && (
           <RowFixed>
-            <ThemedText.Small mr="4px" color={theme.text3}>
-              <Trans>via {list.name} </Trans>
-            </ThemedText.Small>
+            <TYPE.small mr="4px" color={theme.text3}>
+              via {list.name}
+            </TYPE.small>
             <ListLogo logoURI={list.logoURI} size="12px" />
           </RowFixed>
         )}
@@ -92,14 +95,12 @@ export default function ImportRow({
             showImportView()
           }}
         >
-          <Trans>Import</Trans>
+          Import
         </ButtonPrimary>
       ) : (
         <RowFixed style={{ minWidth: 'fit-content' }}>
           <CheckIcon />
-          <ThemedText.Main color={theme.green1}>
-            <Trans>Active</Trans>
-          </ThemedText.Main>
+          <TYPE.main color={theme.green1}>Active</TYPE.main>
         </RowFixed>
       )}
     </TokenSection>

@@ -1,29 +1,23 @@
-import { Trans } from '@lingui/macro'
-import { Percent } from '@uniswap/sdk-core'
-import styled from 'styled-components/macro'
-
-import { ThemedText } from '../../theme'
-import { RowBetween, RowFixed } from '../Row'
-import SettingsTab from '../Settings'
+import React from 'react'
+import styled from 'styled-components'
+import Settings from '../Settings'
+import { RowBetween } from '../Row'
+import { TYPE } from '../../theme'
 
 const StyledSwapHeader = styled.div`
-  padding: 1rem 1.25rem 0.5rem 1.25rem;
+  padding: 12px 1rem 0px 1.5rem;
+  margin-bottom: -4px;
   width: 100%;
+  max-width: 420px;
   color: ${({ theme }) => theme.text2};
 `
 
-export default function SwapHeader({ allowedSlippage }: { allowedSlippage: Percent }) {
+export default function SwapHeader() {
   return (
     <StyledSwapHeader>
       <RowBetween>
-        <RowFixed>
-          <ThemedText.Black fontWeight={500} fontSize={16} style={{ marginRight: '8px' }}>
-            <Trans>Swap</Trans>
-          </ThemedText.Black>
-        </RowFixed>
-        <RowFixed>
-          <SettingsTab placeholderSlippage={allowedSlippage} />
-        </RowFixed>
+        <TYPE.black fontWeight={500}>Swap</TYPE.black>
+        <Settings />
       </RowBetween>
     </StyledSwapHeader>
   )

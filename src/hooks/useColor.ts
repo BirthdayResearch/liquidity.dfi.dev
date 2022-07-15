@@ -1,74 +1,56 @@
-import { Token } from '@uniswap/sdk-core'
-import { SupportedChainId } from 'constants/chains'
-import uriToHttp from 'lib/utils/uriToHttp'
-import Vibrant from 'node-vibrant/lib/bundle.js'
+import { useState, useLayoutEffect } from 'react'
 import { shade } from 'polished'
-import { useEffect, useState } from 'react'
-import { WrappedTokenInfo } from 'state/lists/wrappedTokenInfo'
+import Vibrant from 'node-vibrant'
 import { hex } from 'wcag-contrast'
-
-function URIForEthToken(address: string) {
-  return `https://raw.githubusercontent.com/uniswap/assets/master/blockchains/ethereum/assets/${address}/logo.png`
-}
+import { Token, ChainId } from '@uniswap/sdk'
+import uriToHttp from 'utils/uriToHttp'
 
 async function getColorFromToken(token: Token): Promise<string | null> {
-  if (!(token instanceof WrappedTokenInfo)) {
-    return null
+  if (token.chainId === ChainId.RINKEBY && token.address === '0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735') {
+    return Promise.resolve('#FAAB14')
   }
 
-  const wrappedToken = token as WrappedTokenInfo
-  const { address } = wrappedToken
-  let { logoURI } = wrappedToken
-  if (!logoURI) {
-    if (token.chainId !== SupportedChainId.MAINNET) {
+  const path = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${token.address}/logo.png`
+
+  return Vibrant.from(path)
+    .getPalette()
+    .then(palette => {
+      if (palette?.Vibrant) {
+        let detectedHex = palette.Vibrant.hex
+        let AAscore = hex(detectedHex, '#FFF')
+        while (AAscore < 3) {
+          detectedHex = shade(0.005, detectedHex)
+          AAscore = hex(detectedHex, '#FFF')
+        }
+        return detectedHex
+      }
       return null
-    } else {
-      logoURI = URIForEthToken(address)
-    }
-  }
-
-  try {
-    return await getColorFromUriPath(logoURI)
-  } catch (e) {
-    if (logoURI === URIForEthToken(address)) {
-      return null
-    }
-
-    try {
-      logoURI = URIForEthToken(address)
-      return await getColorFromUriPath(logoURI)
-    } catch (e) {}
-  }
-
-  return null
+    })
+    .catch(() => null)
 }
 
 async function getColorFromUriPath(uri: string): Promise<string | null> {
   const formattedPath = uriToHttp(uri)[0]
 
-  const palette = await Vibrant.from(formattedPath).getPalette()
-  if (!palette?.Vibrant) {
-    return null
-  }
-
-  let detectedHex = palette.Vibrant.hex
-  let AAscore = hex(detectedHex, '#FFF')
-  while (AAscore < 3) {
-    detectedHex = shade(0.005, detectedHex)
-    AAscore = hex(detectedHex, '#FFF')
-  }
-
-  return detectedHex
+  return Vibrant.from(formattedPath)
+    .getPalette()
+    .then(palette => {
+      if (palette?.Vibrant) {
+        return palette.Vibrant.hex
+      }
+      return null
+    })
+    .catch(() => null)
 }
 
 export function useColor(token?: Token) {
   const [color, setColor] = useState('#2172E5')
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let stale = false
 
     if (token) {
-      getColorFromToken(token).then((tokenColor) => {
+      getColorFromToken(token).then(tokenColor => {
         if (!stale && tokenColor !== null) {
           setColor(tokenColor)
         }
@@ -87,11 +69,11 @@ export function useColor(token?: Token) {
 export function useListColor(listImageUri?: string) {
   const [color, setColor] = useState('#2172E5')
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let stale = false
 
     if (listImageUri) {
-      getColorFromUriPath(listImageUri).then((color) => {
+      getColorFromUriPath(listImageUri).then(color => {
         if (!stale && color !== null) {
           setColor(color)
         }
