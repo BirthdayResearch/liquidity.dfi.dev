@@ -329,9 +329,6 @@ export default function Header() {
           </UniIcon>
         </Title>
         <HeaderLinks>
-          <StyledNavLink id={`swap-nav-link`} to={'/swap'}>
-            {t('swap')}
-          </StyledNavLink>
           <StyledNavLink
             id={`pool-nav-link`}
             to={'/pool'}
@@ -345,13 +342,10 @@ export default function Header() {
           >
             {t('pool')}
           </StyledNavLink>
-          <StyledNavLink id={`stake-nav-link`} to={'/uni'}>
-            UNI
-          </StyledNavLink>
-          <StyledNavLink id={`stake-nav-link`} to={'/vote'}>
-            Vote
-          </StyledNavLink>
-          <StyledExternalLink id={`stake-nav-link`} href={'https://uniswap.info'}>
+          <StyledExternalLink
+            id={`stake-nav-link`}
+            href={'https://v2.info.uniswap.org/token/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'}
+          >
             Charts <span style={{ fontSize: '11px' }}>↗</span>
           </StyledExternalLink>
         </HeaderLinks>
@@ -394,7 +388,7 @@ export default function Header() {
                     </TYPE.white>
                   </HideSmall>
                 )}
-                UNI
+                DFI
               </UNIAmount>
               <CardNoise />
             </UNIWrapper>
