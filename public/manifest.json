@@ -17,8 +17,8 @@
     }
   ],
   "orientation": "portrait",
-  "name": "Uniswap",
-  "short_name": "Uniswap",
+  "name": "DFI Pool",
+  "short_name": "DFI Pool",
   "start_url": ".",
   "theme_color": "#ff007a"
 }
