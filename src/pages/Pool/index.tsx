@@ -158,7 +158,7 @@ export default function Pool() {
                   as={Link}
                   padding="5px 8px"
                   borderRadius="12px"
-                  to="/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+                  to="/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7"
                 >
                   <Text fontWeight={500} fontSize={16}>
                     Add Liquidity
@@ -169,7 +169,7 @@ export default function Pool() {
                   as={Link}
                   padding="5px 8px"
                   borderRadius="12px"
-                  to="/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+                  to="/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7"
                 >
                   <Text fontWeight={500} fontSize={16}>
                     Remove Liquidity

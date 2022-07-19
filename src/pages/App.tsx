@@ -15,7 +15,7 @@ import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 //import AddLiquidity from './AddLiquidity'
 import {
   RedirectDuplicateTokenIds,
-  //RedirectOldAddLiquidityPathStructure,
+  RedirectOldAddLiquidityPathStructure,
   //RedirectToAddLiquidity
 } from './AddLiquidity/redirects'
 //import Earn from './Earn'
@@ -93,6 +93,7 @@ export default function App() {
             <Switch>
               <Route exact strict path="/" component={Pool} />
               <Route exact strict path="/pool" component={Pool} />
+              <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
               <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
               <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
               <Route exact strict path="/uni/:currencyIdA/:currencyIdB" component={Manage} />
