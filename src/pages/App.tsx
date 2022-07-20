@@ -15,11 +15,11 @@ import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 //import AddLiquidity from './AddLiquidity'
 import {
   RedirectDuplicateTokenIds,
-  RedirectOldAddLiquidityPathStructure,
+  //RedirectOldAddLiquidityPathStructure,
   //RedirectToAddLiquidity
 } from './AddLiquidity/redirects'
 //import Earn from './Earn'
-import Manage from './Earn/Manage'
+//import Manage from './Earn/Manage'
 //import MigrateV1 from './MigrateV1'
 //import MigrateV1Exchange from './MigrateV1/MigrateV1Exchange'
 //import RemoveV1Exchange from './MigrateV1/RemoveV1Exchange'
@@ -93,10 +93,8 @@ export default function App() {
             <Switch>
               <Route exact strict path="/" component={Pool} />
               <Route exact strict path="/pool" component={Pool} />
-              <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
               <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
               <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
-              <Route exact strict path="/uni/:currencyIdA/:currencyIdB" component={Manage} />
               <Route component={RedirectPathToSwapOnly} />
             </Switch>
           </Web3ReactManager>

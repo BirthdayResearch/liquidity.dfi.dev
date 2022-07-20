@@ -106,7 +106,7 @@ export default function AddressClaimModal({ isOpen, onDismiss }: { isOpen: boole
                 <CloseIcon onClick={wrappedOnDismiss} style={{ zIndex: 99 }} stroke="white" />
               </RowBetween>
               <TYPE.white fontWeight={700} fontSize={36}>
-                {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} UNI
+                {unclaimedAmount?.toFixed(0, { groupSeparator: ',' } ?? '-')} DFI
               </TYPE.white>
             </CardSection>
             <Break />

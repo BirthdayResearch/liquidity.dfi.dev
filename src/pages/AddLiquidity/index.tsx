@@ -45,6 +45,31 @@ import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 
+
+const LpFrame = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  align-items: center;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  top: 0;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  z-index: 2;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+    width: calc(100%);
+    position: relative;
+  `};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+        padding: 0.5rem 1rem;
+  `}
+`
 const activeClassName = 'ACTIVE'
 
 const StyledNavLink = styled(NavLink).attrs({
@@ -118,7 +143,6 @@ export default function AddLiquidity({
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const [isCurrent, setCurrent] = useState<boolean>(true)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
 
   // txn values
@@ -383,24 +407,20 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
-                <>{isCurrent && <StyledNavLink
-                  onClick={() => {
-                    setCurrent(false)
-                  }}
-                  id={`pool-nav-link`}
-                  to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
-                >
-                  {'Add DFI/ETH Liquidity'}
-                </StyledNavLink>}
-                {!isCurrent && <StyledNavLink
-                  onClick={() => {
-                    setCurrent(true)
-                  }}
-                  id={`pool-nav-link`}
-                  to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
-                >
-                  {'Add DFI/USDT Liquidity'}
-                </StyledNavLink>}
+                 <><LpFrame>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
+                  >
+                  {'DFI/ETH'}
+                  </StyledNavLink>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
+                  > 
+                  {'DFI/USDT'}
+                  </StyledNavLink>
+                </LpFrame>
                 <ColumnCenter>
                     <BlueCard>
                       <AutoColumn gap="10px">

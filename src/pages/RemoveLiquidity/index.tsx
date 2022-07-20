@@ -47,6 +47,30 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 
+const LpFrame = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  align-items: center;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  top: 0;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  z-index: 2;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+    width: calc(100%);
+    position: relative;
+  `};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+        padding: 0.5rem 1rem;
+  `}
+`
 
 const activeClassName = 'ACTIVE'
 
@@ -62,7 +86,7 @@ const StyledNavLink = styled(NavLink).attrs({
   color: ${({ theme }) => theme.text2};
   font-size: 1rem;
   width: fit-content;
-  margin: 10px 12px;
+  margin: 0 12px;
   font-weight: 500;
 
   &.${activeClassName} {
@@ -106,7 +130,6 @@ export default function RemoveLiquidity({
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showDetailed, setShowDetailed] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
-  const [isCurrent, setCurrent] = useState<boolean>(true)
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
@@ -525,24 +548,20 @@ export default function RemoveLiquidity({
             )}
             pendingText={pendingText}
           />
-          {isCurrent && <StyledNavLink
-            onClick={() => {
-              setCurrent(false)
-            }}
-            id={`pool-nav-link`}
-            to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
-          >
-            {'Remove DFI/ETH Liquidity'}
-          </StyledNavLink>}
-          {!isCurrent && <StyledNavLink
-            onClick={() => {
-              setCurrent(true)
-            }}
-            id={`pool-nav-link`}
-            to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
-          >
-            {'Remove DFI/USDT Liquidity'}
-          </StyledNavLink>}
+          <LpFrame>
+            <StyledNavLink
+              id={`pool-nav-link`}
+              to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
+            >
+              {'DFI/ETH'}
+            </StyledNavLink>
+            <StyledNavLink
+              id={`pool-nav-link`}
+              to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
+            >
+              {'DFI/USDT'}
+            </StyledNavLink>
+          </LpFrame>
           <AutoColumn gap="md">
             <BlueCard>
               <AutoColumn gap="10px">
