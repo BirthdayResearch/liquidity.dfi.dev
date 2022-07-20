@@ -7,6 +7,9 @@ import { ArrowDown, Plus } from 'react-feather'
 import ReactGA from 'react-ga'
 import { RouteComponentProps } from 'react-router'
 import { Text } from 'rebass'
+import { NavLink } from 'react-router-dom'
+import styled from 'styled-components'
+import { darken } from 'polished'  
 import { ThemeContext } from 'styled-components'
 import { ButtonPrimary, ButtonLight, ButtonError, ButtonConfirmed } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
@@ -44,6 +47,36 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 
+
+const activeClassName = 'ACTIVE'
+
+const StyledNavLink = styled(NavLink).attrs({
+  activeClassName
+})`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items: left;
+  border-radius: 3rem;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: ${({ theme }) => theme.text2};
+  font-size: 1rem;
+  width: fit-content;
+  margin: 10px 12px;
+  font-weight: 500;
+
+  &.${activeClassName} {
+    border-radius: 15px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text1};
+  }
+
+  :hover,
+  :focus {
+    color: ${({ theme }) => darken(0.1, theme.text1)};
+  }
+`
+
 export default function RemoveLiquidity({
   history,
   match: {
@@ -73,6 +106,7 @@ export default function RemoveLiquidity({
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showDetailed, setShowDetailed] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
+  const [isCurrent, setCurrent] = useState<boolean>(true)
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
@@ -491,6 +525,24 @@ export default function RemoveLiquidity({
             )}
             pendingText={pendingText}
           />
+          {isCurrent && <StyledNavLink
+            onClick={() => {
+              setCurrent(false)
+            }}
+            id={`pool-nav-link`}
+            to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
+          >
+            {'Remove DFI/ETH Liquidity'}
+          </StyledNavLink>}
+          {!isCurrent && <StyledNavLink
+            onClick={() => {
+              setCurrent(true)
+            }}
+            id={`pool-nav-link`}
+            to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
+          >
+            {'Remove DFI/USDT Liquidity'}
+          </StyledNavLink>}
           <AutoColumn gap="md">
             <BlueCard>
               <AutoColumn gap="10px">

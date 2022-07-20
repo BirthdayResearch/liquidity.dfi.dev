@@ -51,8 +51,8 @@ const StyledNavLink = styled(NavLink).attrs({
   activeClassName
 })`
   ${({ theme }) => theme.flexRowNoWrap}
-  align-items: right;
-  border-radius: 5rem;
+  align-items: left;
+  border-radius: 3rem;
   outline: none;
   cursor: pointer;
   text-decoration: none;
@@ -63,7 +63,7 @@ const StyledNavLink = styled(NavLink).attrs({
   font-weight: 500;
 
   &.${activeClassName} {
-    border-radius: 12px;
+    border-radius: 15px;
     font-weight: 600;
     color: ${({ theme }) => theme.text1};
   }
@@ -118,7 +118,7 @@ export default function AddLiquidity({
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const [ isCurrent, setCurrent] = useState<boolean>(false)
+  const [isCurrent, setCurrent] = useState<boolean>(true)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
 
   // txn values
@@ -390,7 +390,7 @@ export default function AddLiquidity({
                   id={`pool-nav-link`}
                   to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
                 >
-                  {'Add DFI/ETH Instead'}
+                  {'Add DFI/ETH Liquidity'}
                 </StyledNavLink>}
                 {!isCurrent && <StyledNavLink
                   onClick={() => {
@@ -399,7 +399,7 @@ export default function AddLiquidity({
                   id={`pool-nav-link`}
                   to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
                 >
-                  {'Add DFI/USDT Instead'}
+                  {'Add DFI/USDT Liquidity'}
                 </StyledNavLink>}
                 <ColumnCenter>
                     <BlueCard>
