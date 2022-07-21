@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react'
-//import {DFI, USDC} from '../constants'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
@@ -15,23 +14,16 @@ import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 //import AddLiquidity from './AddLiquidity'
 import {
   RedirectDuplicateTokenIds,
-  //RedirectOldAddLiquidityPathStructure,
+  RedirectOldAddLiquidityPathStructure,
   //RedirectToAddLiquidity
 } from './AddLiquidity/redirects'
 //import Earn from './Earn'
 //import Manage from './Earn/Manage'
-//import MigrateV1 from './MigrateV1'
-//import MigrateV1Exchange from './MigrateV1/MigrateV1Exchange'
-//import RemoveV1Exchange from './MigrateV1/RemoveV1Exchange'
 import Pool from './Pool'
 //import PoolFinder from './PoolFinder'
 import RemoveLiquidity from './RemoveLiquidity'
 //import { RedirectOldRemoveLiquidityPathStructure } from './RemoveLiquidity/redirects'
-//import Swap from './Swap'
 import { RedirectPathToSwapOnly } from './Swap/redirects'
-//import { OpenClaimAddressModalAndRedirectToSwap, RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
-//import Vote from './Vote'
-//import VotePage from './Vote/VotePage'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -93,6 +85,7 @@ export default function App() {
             <Switch>
               <Route exact strict path="/" component={Pool} />
               <Route exact strict path="/pool" component={Pool} />
+              <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
               <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
               <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
               <Route component={RedirectPathToSwapOnly} />

@@ -48,12 +48,12 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 
 const LpFrame = styled.div`
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: auto auto auto;
   align-items: center;
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
-  width: 100%;
+  width: 10%;
   top: 0;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -413,6 +413,12 @@ export default function AddLiquidity({
                     to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
                   >
                   {'DFI/ETH'}
+                  </StyledNavLink>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
+                  > 
+                  {'DFI/WETH'}
                   </StyledNavLink>
                   <StyledNavLink
                     id={`pool-nav-link`}
