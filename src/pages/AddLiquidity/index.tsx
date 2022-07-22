@@ -21,7 +21,7 @@ import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
 
 
-import { ROUTER_ADDRESS } from '../../constants'
+import { /*ROUTER_ADDRESS,, ETH_PROXY_ADDRESS, MUSDT, DFI_TEST_ADDRES*/ USDT_PROXY_ADDRESS} from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -34,7 +34,7 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount, /*getRouterContract,*/ getUSDTProxyContract } from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import AppBody from '../AppBody'
@@ -76,7 +76,7 @@ const StyledNavLink = styled(NavLink).attrs({
   activeClassName
 })`
   ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
+  align-items: right;
   border-radius: 3rem;
   outline: none;
   cursor: pointer;
@@ -144,6 +144,9 @@ export default function AddLiquidity({
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+  // To check the if approving the right contract
+  // const [checkTokenA, setCheckTokenA] = useState<boolean>(false)
+  // const [checkTokenB, setCheckTokenB] = useState<boolean>(false)
 
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
@@ -178,14 +181,18 @@ export default function AddLiquidity({
   )
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
+  //if(Field.CURRENCY_A == )
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
+  // const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
+  // const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
+
 
   const addTransaction = useTransactionAdder()
 
   async function onAdd() {
     if (!chainId || !library || !account) return
-    const router = getRouterContract(chainId, library, account)
+    const router = getUSDTProxyContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
@@ -410,19 +417,19 @@ export default function AddLiquidity({
                  <><LpFrame>
                   <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
+                    to={'/add/0x1c0b966109152065b234692e2c18ff75ecf89c45/ETH'}
                   >
                   {'DFI/ETH'}
                   </StyledNavLink>
                   <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
+                    to={'/add/0x1c0b966109152065b234692e2c18ff75ecf89c45/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
                   > 
                   {'DFI/WETH'}
                   </StyledNavLink>
                   <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
+                    to={'/add/0x1c0b966109152065b234692e2c18ff75ecf89c45/0xc8042c992c9627df9e84ddf57bc6adc1ab9c3acd'}
                   > 
                   {'DFI/USDT'}
                   </StyledNavLink>
@@ -502,7 +509,8 @@ export default function AddLiquidity({
                     <RowBetween>
                       {approvalA !== ApprovalState.APPROVED && (
                         <ButtonPrimary
-                          onClick={approveACallback}
+                        onClick = {approveACallback}
+                          //onClick={approveACallback}
                           disabled={approvalA === ApprovalState.PENDING}
                           width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
