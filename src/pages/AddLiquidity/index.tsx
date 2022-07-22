@@ -21,7 +21,7 @@ import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
 
 
-import { /*ROUTER_ADDRESS,, ETH_PROXY_ADDRESS, MUSDT, DFI_TEST_ADDRES*/ USDT_PROXY_ADDRESS} from '../../constants'
+import { USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -34,9 +34,9 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount, /*getRouterContract,*/ getUSDTProxyContract } from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract } from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
-import { wrappedCurrency } from '../../utils/wrappedCurrency'
+//import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import AppBody from '../AppBody'
 import { Dots, Wrapper } from '../Pool/styleds'
 import { ConfirmAddModalBottom } from './ConfirmAddModalBottom'
@@ -181,11 +181,10 @@ export default function AddLiquidity({
   )
 
   // check whether the user has approved the router on the tokens
-  //if(Field.CURRENCY_A == )
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
-  // const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
-  // const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS)
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS)
+  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
+  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
 
 
   const addTransaction = useTransactionAdder()
@@ -193,6 +192,7 @@ export default function AddLiquidity({
   async function onAdd() {
     if (!chainId || !library || !account) return
     const router = getUSDTProxyContract(chainId, library, account)
+    const ethLpProxy = getETHProxyContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
@@ -210,14 +210,14 @@ export default function AddLiquidity({
       value: BigNumber | null
     if (currencyA === ETHER || currencyB === ETHER) {
       const tokenBIsETH = currencyB === ETHER
-      estimate = router.estimateGas.addLiquidityETH
-      method = router.addLiquidityETH
+      estimate = ethLpProxy.estimateGas.addLiquidity
+      method = ethLpProxy.addLiquidity
       args = [
-        wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
+        //wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
         (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
         amountsMin[tokenBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(), // token min
         amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
-        account,
+        //account,
         deadline.toHexString()
       ]
       value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
@@ -225,13 +225,10 @@ export default function AddLiquidity({
       estimate = router.estimateGas.addLiquidity
       method = router.addLiquidity
       args = [
-        wrappedCurrency(currencyA, chainId)?.address ?? '',
-        wrappedCurrency(currencyB, chainId)?.address ?? '',
         parsedAmountA.raw.toString(),
         parsedAmountB.raw.toString(),
         amountsMin[Field.CURRENCY_A].toString(),
         amountsMin[Field.CURRENCY_B].toString(),
-        account,
         deadline.toHexString()
       ]
       value = null
@@ -504,13 +501,16 @@ export default function AddLiquidity({
                 {(approvalA === ApprovalState.NOT_APPROVED ||
                   approvalA === ApprovalState.PENDING ||
                   approvalB === ApprovalState.NOT_APPROVED ||
-                  approvalB === ApprovalState.PENDING) &&
+                  approvalB === ApprovalState.PENDING ||
+                  approvalC === ApprovalState.NOT_APPROVED ||
+                  approvalC === ApprovalState.PENDING ||
+                  approvalD === ApprovalState.NOT_APPROVED ||
+                  approvalD === ApprovalState.PENDING) &&
                   isValid && (
                     <RowBetween>
                       {approvalA !== ApprovalState.APPROVED && (
                         <ButtonPrimary
-                        onClick = {approveACallback}
-                          //onClick={approveACallback}
+                        onClick = {oneCurrencyIsWETH ? approveACallback : approveCCallback}
                           disabled={approvalA === ApprovalState.PENDING}
                           width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
@@ -521,9 +521,9 @@ export default function AddLiquidity({
                           )}
                         </ButtonPrimary>
                       )}
-                      {approvalB !== ApprovalState.APPROVED && (
+                      {approvalB !== ApprovalState.APPROVED && approvalC !== ApprovalState.APPROVED && (
                         <ButtonPrimary
-                          onClick={approveBCallback}
+                          onClick={oneCurrencyIsWETH ? approveBCallback : approveDCallback}
                           disabled={approvalB === ApprovalState.PENDING}
                           width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
