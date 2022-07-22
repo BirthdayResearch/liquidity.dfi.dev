@@ -6,6 +6,9 @@ import { Plus } from 'react-feather'
 import ReactGA from 'react-ga'
 import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
+import { NavLink } from 'react-router-dom'
+import styled from 'styled-components'
+import { darken } from 'polished'   
 import { ThemeContext } from 'styled-components'
 import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
@@ -16,6 +19,7 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
+
 
 import { ROUTER_ADDRESS } from '../../constants'
 import { PairState } from '../../data/Reserves'
@@ -40,6 +44,60 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
+
+
+const LpFrame = styled.div`
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  width: 10%;
+  top: 0;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  z-index: 2;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+    width: calc(100%);
+    position: relative;
+  `};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+        padding: 0.5rem 1rem;
+  `}
+`
+const activeClassName = 'ACTIVE'
+
+const StyledNavLink = styled(NavLink).attrs({
+  activeClassName
+})`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items: left;
+  border-radius: 3rem;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: ${({ theme }) => theme.text2};
+  font-size: 1rem;
+  width: fit-content;
+  margin: 0 12px;
+  font-weight: 500;
+
+  &.${activeClassName} {
+    border-radius: 15px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text1};
+  }
+
+  :hover,
+  :focus {
+    color: ${({ theme }) => darken(0.1, theme.text1)};
+  }
+`
 
 export default function AddLiquidity({
   match: {
@@ -349,17 +407,37 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
+                 <><LpFrame>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
+                  >
+                  {'DFI/ETH'}
+                  </StyledNavLink>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
+                  > 
+                  {'DFI/WETH'}
+                  </StyledNavLink>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
+                  > 
+                  {'DFI/USDT'}
+                  </StyledNavLink>
+                </LpFrame>
                 <ColumnCenter>
-                  <BlueCard>
-                    <AutoColumn gap="10px">
-                      <TYPE.link fontWeight={400} color={'primaryText1'}>
-                        <b>Tip:</b> When you add liquidity, you will receive pool tokens representing your position.
-                        These tokens automatically earn fees proportional to your share of the pool, and can be redeemed
-                        at any time.
-                      </TYPE.link>
-                    </AutoColumn>
-                  </BlueCard>
-                </ColumnCenter>
+                    <BlueCard>
+                      <AutoColumn gap="10px">
+                        <TYPE.link fontWeight={400} color={'primaryText1'}>
+                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing your position.
+                          These tokens automatically earn fees proportional to your share of the pool, and can be redeemed
+                          at any time.
+                        </TYPE.link>
+                      </AutoColumn>
+                    </BlueCard>
+                  </ColumnCenter></>
               ))}
             <CurrencyInputPanel
               value={formattedAmounts[Field.CURRENCY_A]}
