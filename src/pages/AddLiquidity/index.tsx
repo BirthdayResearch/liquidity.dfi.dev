@@ -144,9 +144,6 @@ export default function AddLiquidity({
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
-  // To check the if approving the right contract
-  // const [checkTokenA, setCheckTokenA] = useState<boolean>(false)
-  // const [checkTokenB, setCheckTokenB] = useState<boolean>(false)
 
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
@@ -188,6 +185,7 @@ export default function AddLiquidity({
 
 
   const addTransaction = useTransactionAdder()
+  const tokenBIsETH = currencyB === ETHER
 
   async function onAdd() {
     if (!chainId || !library || !account) return
@@ -209,7 +207,7 @@ export default function AddLiquidity({
       args: Array<string | string[] | number>,
       value: BigNumber | null
     if (currencyA === ETHER || currencyB === ETHER) {
-      const tokenBIsETH = currencyB === ETHER
+      //const tokenBIsETH = currencyB === ETHER
       estimate = ethLpProxy.estimateGas.addLiquidity
       method = ethLpProxy.addLiquidity
       args = [
@@ -498,10 +496,10 @@ export default function AddLiquidity({
               <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
             ) : (
               <AutoColumn gap={'md'}>
-                {(approvalA === ApprovalState.NOT_APPROVED ||
+                {oneCurrencyIsWETH ? (approvalA === ApprovalState.NOT_APPROVED ||
                   approvalA === ApprovalState.PENDING ||
                   approvalB === ApprovalState.NOT_APPROVED ||
-                  approvalB === ApprovalState.PENDING ||
+                  approvalB === ApprovalState.PENDING) : (
                   approvalC === ApprovalState.NOT_APPROVED ||
                   approvalC === ApprovalState.PENDING ||
                   approvalD === ApprovalState.NOT_APPROVED ||
@@ -510,7 +508,7 @@ export default function AddLiquidity({
                     <RowBetween>
                       {approvalA !== ApprovalState.APPROVED && (
                         <ButtonPrimary
-                        onClick = {oneCurrencyIsWETH ? approveACallback : approveCCallback}
+                        onClick ={oneCurrencyIsWETH || tokenBIsETH ? approveACallback : approveCCallback}
                           disabled={approvalA === ApprovalState.PENDING}
                           width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
@@ -567,3 +565,12 @@ export default function AddLiquidity({
     </>
   )
 }
+//{oneCurrencyIsWETH ? approveACallback : approveCCallback}
+// (approvalA === ApprovalState.NOT_APPROVED ||
+//   approvalA === ApprovalState.PENDING ||
+//   approvalB === ApprovalState.NOT_APPROVED ||
+//   approvalB === ApprovalState.PENDING ||
+//   approvalC === ApprovalState.NOT_APPROVED ||
+//   approvalC === ApprovalState.PENDING ||
+//   approvalD === ApprovalState.NOT_APPROVED ||
+//   approvalD === ApprovalState.PENDING) &&
