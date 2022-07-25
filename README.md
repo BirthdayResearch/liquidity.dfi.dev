@@ -47,14 +47,20 @@ linked from the [v1.0.0 release](https://github.com/Uniswap/uniswap-interface/re
 
 Following are the addresses on Goerli network:
 
-dfiAddress: [0x1C0b966109152065b234692E2c18Ff75ecf89C45](https://goerli.etherscan.io/address/0x1C0b966109152065b234692E2c18Ff75ecf89C45)
+dfiAddress: [0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673](https://goerli.etherscan.io/address/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673)
 
-musdtAddress: [0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd](https://goerli.etherscan.io/address/0xc8042c992c9627df9e84ddf57bc6adc1ab9c3acd)
+musdtAddress: [0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72](https://goerli.etherscan.io/address/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72)
 
-DFI/USDT contract address:  [0x24186D91EA5fE6EB2dCCCC3249762d5B833939C7](https://goerli.etherscan.io/address/0x24186D91EA5fE6EB2dCCCC3249762d5B833939C7)
+musdcAddress: [0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565](https://goerli.etherscan.io/address/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565)
 
-DFI/ETH contract address:  [0x005C7a559FAe06bE5E2f28680f986eeeb003fa52](https://goerli.etherscan.io/address/0x005C7a559FAe06bE5E2f28680f986eeeb003fa52)
+DFI/USDT contract address: [0xdb01EE311F15E870eE44d882b6256944f3f3129f](https://goerli.etherscan.io/address/0xdb01EE311F15E870eE44d882b6256944f3f3129f)
 
-USDT Mining contract address:  [0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A](https://goerli.etherscan.io/address/0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A)
+DFI/USDC contract address: [0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a](https://goerli.etherscan.io/address/0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a)
 
-ETH Mining contract address:  [0x964B2feE939aa623869c7380f4e83789f98b2e88](https://goerli.etherscan.io/address/0x964b2fee939aa623869c7380f4e83789f98b2e88)
+DFI/ETH contract address:  [0xAD1C0376A026c148438EE89E1AA8a55d83AD0250](https://goerli.etherscan.io/address/0xAD1C0376A026c148438EE89E1AA8a55d83AD0250)
+
+USDT Mining contract address:  [0x5fd39Bf6aE258351f453e55256B03085B34712f0](https://goerli.etherscan.io/address/0x5fd39Bf6aE258351f453e55256B03085B34712f0)
+
+USDS Mining contract address:  [0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2](https://goerli.etherscan.io/address/0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2)
+
+ETH Mining contract address:  [0x69736086d7FF64e67ba0090229c9cdc1056fE039](https://goerli.etherscan.io/address/0x69736086d7FF64e67ba0090229c9cdc1056fE039)
