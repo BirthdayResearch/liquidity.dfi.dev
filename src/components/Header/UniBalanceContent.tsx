@@ -41,8 +41,8 @@ const StyledClose = styled(X)`
  * Content for balance stats modal
  */
 export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowUniBalanceModal: any }) {
-  const { account } = useActiveWeb3React()
-  const uni = DFI//chainId ? UNI[chainId] : undefined
+  const { account, chainId } = useActiveWeb3React()
+  const uni = chainId ? DFI[chainId] : undefined
 
   const total = useAggregateUniBalance()
   const uniBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, uni)
@@ -113,7 +113,9 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
               <TYPE.white color="white">{totalSupply?.toFixed(0, { groupSeparator: ',' })}</TYPE.white>
             </RowBetween>
             {uni && uni.chainId === ChainId.MAINNET ? (
-              <ExternalLink href={`https://v2.info.uniswap.org/token/${DFI.address}`}>View DFI Analytics</ExternalLink>
+              <ExternalLink href={`https://v2.info.uniswap.org/token/${DFI[ChainId.MAINNET]?.address}`}>
+                View DFI Analytics
+              </ExternalLink>
             ) : null}
           </AutoColumn>
         </CardSection>

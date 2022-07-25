@@ -229,12 +229,12 @@ export default function CurrencyInputPanel({
                     : currency?.symbol) || t('selectToken')}
                 </StyledTokenName>
               )}
-              {disableCurrencySelect && <StyledDropDown selected={!!currency} />}
+              {onCurrencySelect && <StyledDropDown selected={!!currency} />}
             </Aligner>
           </CurrencySelect>
         </InputRow>
       </Container>
-      {!disableCurrencySelect && onCurrencySelect && (
+      {onCurrencySelect && (
         <CurrencySearchModal
           isOpen={modalOpen}
           onDismiss={handleDismissSearch}

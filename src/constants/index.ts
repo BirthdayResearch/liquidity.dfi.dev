@@ -24,8 +24,29 @@ export const TRIBE = new Token(ChainId.MAINNET, '0xc7283b66Eb1EB5FB86327f08e1B58
 export const FRAX = new Token(ChainId.MAINNET, '0x853d955aCEf822Db058eb8505911ED77F175b99e', 18, 'FRAX', 'Frax')
 export const FXS = new Token(ChainId.MAINNET, '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0', 18, 'FXS', 'Frax Share')
 export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D', 8, 'renBTC', 'renBTC')
-export const DFI = new Token(ChainId.MAINNET, '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a', 8, 'DFI', 'DeFiChain')
+export const DFI: { [chainId in ChainId]?: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a', 8, 'DFI', 'DeFiChain'),
+  [ChainId.GÖRLI]: new Token(ChainId.MAINNET, '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673', 8, 'DFI', 'DeFiChain')
+}
 
+export const USDC_RESOLVER: { [chainId in ChainId]?: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'USDC', 'USD//C')
+}
+export const USDT_RESOLVER: { [chainId in ChainId]?: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'USDT', 'Tether USD')
+}
+
+export const tokenAddressResolver = (chainId: ChainId | undefined, token: string) => {
+  if (chainId) {
+    if (token === 'DFI') return DFI[chainId]?.address
+    if (token === 'WETH') return WETH[chainId]?.address
+    if (token === 'USDC') return USDC_RESOLVER[chainId]?.address
+    if (token === 'USDT') return USDT_RESOLVER[chainId]?.address
+  }
+  return null
+}
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 13

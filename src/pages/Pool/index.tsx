@@ -19,7 +19,7 @@ import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks
 import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 import { useStakingInfo } from '../../state/stake/hooks'
-import { BIG_INT_ZERO } from '../../constants'
+import { BIG_INT_ZERO, tokenAddressResolver } from '../../constants'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -75,7 +75,7 @@ const EmptyProposals = styled.div`
 
 export default function Pool() {
   const theme = useContext(ThemeContext)
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   // fetch the user's balances of all tracked V2 LP tokens
   const trackedTokenPairs = useTrackedTokenPairs()
@@ -158,7 +158,7 @@ export default function Pool() {
                   as={Link}
                   padding="5px 8px"
                   borderRadius="12px"
-                  to="/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7"
+                  to={`/add/${tokenAddressResolver(chainId, 'DFI')}/ETH`}
                 >
                   <Text fontWeight={500} fontSize={16}>
                     Add Liquidity
@@ -169,7 +169,7 @@ export default function Pool() {
                   as={Link}
                   padding="5px 8px"
                   borderRadius="12px"
-                  to="/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7"
+                  to={`/remove/${tokenAddressResolver(chainId, 'DFI')}/ETH`}
                 >
                   <Text fontWeight={500} fontSize={16}>
                     Remove Liquidity

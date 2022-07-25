@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
-import { darken } from 'polished'   
+import { darken } from 'polished'
 import { ThemeContext } from 'styled-components'
 import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
@@ -20,8 +20,7 @@ import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
 
-
-import { ROUTER_ADDRESS } from '../../constants'
+import { ROUTER_ADDRESS, tokenAddressResolver } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -44,7 +43,6 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
-
 
 const LpFrame = styled.div`
   display: grid;
@@ -407,37 +405,36 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
-                 <><LpFrame>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
-                  >
-                  {'DFI/ETH'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
-                  > 
-                  {'DFI/WETH'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
-                  > 
-                  {'DFI/USDT'}
-                  </StyledNavLink>
-                </LpFrame>
-                <ColumnCenter>
+                <>
+                  <LpFrame>
+                    <StyledNavLink id={`pool-nav-link`} to={`/add/${tokenAddressResolver(chainId, 'DFI')}/ETH`}>
+                      {'DFI/ETH'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      id={`pool-nav-link`}
+                      to={`/add/${tokenAddressResolver(chainId, 'DFI')}/${tokenAddressResolver(chainId, 'WETH')}`}
+                    >
+                      {'DFI/WETH'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      id={`pool-nav-link`}
+                      to={`/add/${tokenAddressResolver(chainId, 'DFI')}/${tokenAddressResolver(chainId, 'USDT')}`}
+                    >
+                      {'DFI/USDT'}
+                    </StyledNavLink>
+                  </LpFrame>
+                  <ColumnCenter>
                     <BlueCard>
                       <AutoColumn gap="10px">
                         <TYPE.link fontWeight={400} color={'primaryText1'}>
-                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing your position.
-                          These tokens automatically earn fees proportional to your share of the pool, and can be redeemed
-                          at any time.
+                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing
+                          your position. These tokens automatically earn fees proportional to your share of the pool,
+                          and can be redeemed at any time.
                         </TYPE.link>
                       </AutoColumn>
                     </BlueCard>
-                  </ColumnCenter></>
+                  </ColumnCenter>
+                </>
               ))}
             <CurrencyInputPanel
               value={formattedAmounts[Field.CURRENCY_A]}
