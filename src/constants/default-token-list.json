@@ -1,6 +1,6 @@
 {
-  "name": "Uniswap Default List",
-  "timestamp": "2021-01-21T23:57:10.982Z",
+  "name": "DeFiChain Default List",
+  "timestamp": "2022-07-22T00:00:00.000Z",
   "version": {
     "major": 2,
     "minor": 0,
@@ -444,6 +444,14 @@
       "decimals": 18,
       "chainId": 42,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png"
+    },
+    {
+      "name": "DeFiChain Token",
+      "address": "0x8fc8f8269ebca376d046ce292dc7eac40c8d358a",
+      "symbol": "DFI",
+      "decimals": 8,
+      "chainId": 1,
+      "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/5804.png"
     }
   ]
 }
