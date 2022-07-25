@@ -206,7 +206,7 @@ export default function CurrencyInputPanel({
             className="open-currency-select-button"
             onClick={() => {
               if (!disableCurrencySelect) {
-                setModalOpen(false)
+                setModalOpen(true)
               }
             }}
           >
@@ -241,7 +241,6 @@ export default function CurrencyInputPanel({
           onCurrencySelect={onCurrencySelect}
           selectedCurrency={currency}
           otherSelectedCurrency={otherCurrency}
-          showCommonBases={showCommonBases}
         />
       )}
     </InputPanel>
