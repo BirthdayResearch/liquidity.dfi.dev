@@ -13,6 +13,7 @@ const StyledPolling = styled.div`
   bottom: 0;
   padding: 1rem;
   color: white;
+  width: 100%;
   transition: opacity 0.25s ease;
   color: ${({ theme }) => theme.green1};
   :hover {

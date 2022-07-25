@@ -19,9 +19,10 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
+import {MUSDT/*, MUSDC*/} from '../../constants/index'
 
 
-import { USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS } from '../../constants'
+import {  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS,/* ROUTER_ADDRESS ,*/ ETH_PROXY_ADDRESS} from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -34,7 +35,7 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract } from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract/*, getRouterContract*/ } from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 //import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import AppBody from '../AppBody'
@@ -44,16 +45,17 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
+//import { Address } from 'cluster'
 
 
 const LpFrame = styled.div`
-  display: grid;
-  grid-template-columns: auto auto auto;
+  display: flex;
+  grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
-  width: 10%;
+  width: auto;
   top: 0;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -84,12 +86,12 @@ const StyledNavLink = styled(NavLink).attrs({
   color: ${({ theme }) => theme.text2};
   font-size: 1rem;
   width: fit-content;
-  margin: 0 12px;
-  font-weight: 500;
+  margin: 0 10px;
+  font-weight: 200;
 
   &.${activeClassName} {
-    border-radius: 15px;
-    font-weight: 600;
+    border-radius: 10px;
+    font-weight: 300;
     color: ${({ theme }) => theme.text1};
   }
 
@@ -116,6 +118,16 @@ export default function AddLiquidity({
       ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
         (currencyB && currencyEquals(currencyB, WETH[chainId])))
   )
+  const oneCurrencyIsUSDT = Boolean(
+    chainId &&
+    ((currencyA && currencyEquals(currencyA, MUSDT)) ||
+      (currencyB && currencyEquals(currencyB, MUSDT)))
+  )
+  // const oneCurrencyIsUSDC = Boolean(
+  //   chainId &&
+  //   ((currencyA && currencyEquals(currencyA, MUSDC)) ||
+  //     (currencyB && currencyEquals(currencyB, MUSDC)))
+  // )
 
   const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
 
@@ -144,6 +156,9 @@ export default function AddLiquidity({
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+  // const [showWeth, setShowWeth] = useState<boolean>(false)
+  // const [showUsdt, setShowUsdt] = useState<boolean>(true)
+  // const [showUsdc, setShowUsdc] = useState<boolean>(true)
 
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
@@ -177,20 +192,21 @@ export default function AddLiquidity({
     {}
   )
 
-  // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS)
-  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
-  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS);
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS);
+  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS);
+  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS);
+  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS);
+  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS);
 
 
   const addTransaction = useTransactionAdder()
-  const tokenBIsETH = currencyB === ETHER
 
   async function onAdd() {
     if (!chainId || !library || !account) return
-    const router = getUSDTProxyContract(chainId, library, account)
-    const ethLpProxy = getETHProxyContract(chainId, library, account)
+    const router = getETHProxyContract(chainId, library, account)
+    const usdtProxy = getUSDTProxyContract(chainId, library, account)
+    const usdcProxy = getUSDCProxyContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB || !deadline) {
@@ -207,11 +223,11 @@ export default function AddLiquidity({
       args: Array<string | string[] | number>,
       value: BigNumber | null
     if (currencyA === ETHER || currencyB === ETHER) {
-      //const tokenBIsETH = currencyB === ETHER
-      estimate = ethLpProxy.estimateGas.addLiquidity
-      method = ethLpProxy.addLiquidity
+      const tokenBIsETH = currencyB === ETHER
+      estimate = router.estimateGas.addLiquidityETH
+      method = router.addLiquidityETH
       args = [
-        //wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
+       // wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
         (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
         amountsMin[tokenBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(), // token min
         amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
@@ -220,13 +236,25 @@ export default function AddLiquidity({
       ]
       value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
     } else {
-      estimate = router.estimateGas.addLiquidity
-      method = router.addLiquidity
+      if(oneCurrencyIsWETH) {
+        estimate = router.estimateGas.addLiquidity
+        method = router.addLiquidity}
+      else if(oneCurrencyIsUSDT) {
+        estimate = usdtProxy.estimateGas.addLiquidity
+        method = usdtProxy.addLiquidity
+      } else{
+        estimate = usdcProxy.estimateGas.addLiquidity
+        method = usdcProxy.addLiquidity
+      }
+    
       args = [
+        //wrappedCurrency(currencyA, chainId)?.address ?? '',
+        //wrappedCurrency(currencyB, chainId)?.address ?? '',
         parsedAmountA.raw.toString(),
         parsedAmountB.raw.toString(),
         amountsMin[Field.CURRENCY_A].toString(),
         amountsMin[Field.CURRENCY_B].toString(),
+        //account,
         deadline.toHexString()
       ]
       value = null
@@ -273,7 +301,7 @@ export default function AddLiquidity({
 
   const modalHeader = () => {
     return noLiquidity ? (
-      <AutoColumn gap="20px">
+      <AutoColumn gap="25px">
         <LightCard mt="20px" borderRadius="20px">
           <RowFlat>
             <Text fontSize="48px" fontWeight={500} lineHeight="42px" marginRight={10}>
@@ -288,7 +316,7 @@ export default function AddLiquidity({
         </LightCard>
       </AutoColumn>
     ) : (
-      <AutoColumn gap="20px">
+      <AutoColumn gap="25px">
         <RowFlat style={{ marginTop: '20px' }}>
           <Text fontSize="48px" fontWeight={500} lineHeight="42px" marginRight={10}>
             {liquidityMinted?.toSignificant(6)}
@@ -409,29 +437,38 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
-                 <><LpFrame>
-                  <StyledNavLink
+                <><LpFrame>
+                 <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0x1c0b966109152065b234692e2c18ff75ecf89c45/ETH'}
+                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH'}
                   >
                   {'DFI/ETH'}
                   </StyledNavLink>
-                  <StyledNavLink
+                  <StyledNavLink 
+                    onClick={()=>{
+                      
+                    }}
                     id={`pool-nav-link`}
-                    to={'/add/0x1c0b966109152065b234692e2c18ff75ecf89c45/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
+                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
                   > 
                   {'DFI/WETH'}
                   </StyledNavLink>
                   <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0x1c0b966109152065b234692e2c18ff75ecf89c45/0xc8042c992c9627df9e84ddf57bc6adc1ab9c3acd'}
+                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'}
                   > 
                   {'DFI/USDT'}
+                  </StyledNavLink>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565'}
+                  > 
+                  {'DFI/USDC'}
                   </StyledNavLink>
                 </LpFrame>
                 <ColumnCenter>
                     <BlueCard>
-                      <AutoColumn gap="10px">
+                      <AutoColumn gap="30px">
                         <TYPE.link fontWeight={400} color={'primaryText1'}>
                           <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing your position.
                           These tokens automatically earn fees proportional to your share of the pool, and can be redeemed
@@ -496,36 +533,43 @@ export default function AddLiquidity({
               <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
             ) : (
               <AutoColumn gap={'md'}>
-                {oneCurrencyIsWETH ? (approvalA === ApprovalState.NOT_APPROVED ||
+                {(approvalA === ApprovalState.NOT_APPROVED ||
                   approvalA === ApprovalState.PENDING ||
                   approvalB === ApprovalState.NOT_APPROVED ||
-                  approvalB === ApprovalState.PENDING) : (
+                  approvalB === ApprovalState.PENDING ||
                   approvalC === ApprovalState.NOT_APPROVED ||
                   approvalC === ApprovalState.PENDING ||
                   approvalD === ApprovalState.NOT_APPROVED ||
-                  approvalD === ApprovalState.PENDING) &&
-                  isValid && (
+                  approvalD === ApprovalState.PENDING ||
+                  approvalE === ApprovalState.NOT_APPROVED ||
+                  approvalE === ApprovalState.PENDING ||
+                  approvalF === ApprovalState.NOT_APPROVED ||
+                  approvalF === ApprovalState.PENDING) && isValid && (
                     <RowBetween>
                       {approvalA !== ApprovalState.APPROVED && (
-                        <ButtonPrimary
-                        onClick ={oneCurrencyIsWETH || tokenBIsETH ? approveACallback : approveCCallback}
-                          disabled={approvalA === ApprovalState.PENDING}
-                          width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
+                        <ButtonPrimary 
+                        onClick = {
+                          oneCurrencyIsWETH ? approveACallback : oneCurrencyIsUSDT ? approveCCallback : approveECallback
+                        }
+                          disabled={ approvalA === ApprovalState.PENDING || approvalC === ApprovalState.PENDING || approvalE === ApprovalState.PENDING}
+                          width={ approvalB !== ApprovalState.APPROVED || approvalD !== ApprovalState.APPROVED || approvalF !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
-                          {approvalA === ApprovalState.PENDING ? (
+                          { approvalC === ApprovalState.PENDING ? (
                             <Dots>Approving {currencies[Field.CURRENCY_A]?.symbol}</Dots>
                           ) : (
                             'Approve ' + currencies[Field.CURRENCY_A]?.symbol
                           )}
                         </ButtonPrimary>
                       )}
-                      {approvalB !== ApprovalState.APPROVED && approvalC !== ApprovalState.APPROVED && (
+                      {approvalB !== ApprovalState.APPROVED && (
                         <ButtonPrimary
-                          onClick={oneCurrencyIsWETH ? approveBCallback : approveDCallback}
-                          disabled={approvalB === ApprovalState.PENDING}
-                          width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
+                          onClick={
+                            oneCurrencyIsWETH ? approveBCallback : oneCurrencyIsUSDT ? approveDCallback : approveFCallback
+                          }
+                          disabled={approvalB === ApprovalState.PENDING || approvalD === ApprovalState.PENDING || approvalF === ApprovalState.PENDING}
+                          width={approvalA !== ApprovalState.APPROVED || approvalC !== ApprovalState.APPROVED || approvalE !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
-                          {approvalB === ApprovalState.PENDING ? (
+                          {approvalD === ApprovalState.PENDING ? (
                             <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
                           ) : (
                             'Approve ' + currencies[Field.CURRENCY_B]?.symbol
