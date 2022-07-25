@@ -24,7 +24,7 @@ yarn-error.log*
 
 notes.txt
 .idea/
-.env
+.env*
 .vscode/
 
 package-lock.json
