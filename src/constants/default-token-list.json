@@ -447,10 +447,10 @@
     },
     {
       "name": "DeFiChain Token",
-      "address": "0x1C0b966109152065b234692E2c18Ff75ecf89C45",
+      "address": "0x8fc8f8269ebca376d046ce292dc7eac40c8d358a",
       "symbol": "DFI",
       "decimals": 8,
-      "chainId": 5,
+      "chainId": 1,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/5804.png"
     }
   ]
