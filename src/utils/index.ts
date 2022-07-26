@@ -7,7 +7,7 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import USDT_LP_ABI from '../constants/abis/usdt-lp-proxy.json'
 import ETH_LP_ABI from '../constants/abis/eth-lp-proxy.json'
 import USDC_LP_ABI from '../constants/abis/usdc-lp-proxy.json'
-import { ROUTER_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS} from '../constants'
+import { ROUTER_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS, USDC_PROXY_ADDRESS} from '../constants'
 import { ChainId, JSBI, Percent, Token, CurrencyAmount, Currency, ETHER } from '@uniswap/sdk'
 import { TokenAddressMap } from '../state/lists/hooks'
 
@@ -112,7 +112,7 @@ export function getUSDTProxyContract(_: number, library: Web3Provider, account?:
 
 // DFI-USDC lp proxy contract
 export function getUSDCProxyContract(_: number, library: Web3Provider, account?: string): Contract {
-  return getContract(USDT_PROXY_ADDRESS, USDC_LP_ABI, library, account)
+  return getContract(USDC_PROXY_ADDRESS, USDC_LP_ABI, library, account)
 }
 
 // DFI-WETH/ETH lp proxy contract
