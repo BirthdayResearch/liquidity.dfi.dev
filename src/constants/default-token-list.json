@@ -22,12 +22,28 @@
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
     },
     {
+      "name": "USDCoin",
+      "address": "0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565",
+      "symbol": "USDC",
+      "decimals": 6,
+      "chainId": 5,
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+    },
+    {
       "name": "Tether USD",
       "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
       "symbol": "USDT",
       "decimals": 6,
       "chainId": 1,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
+    },
+    {
+      "name": "Tether USD",
+      "address": "0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72",
+      "symbol": "USDT",
+      "decimals": 6,
+      "chainId": 5,
+      "logoURI":  "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
     },
     {
       "name": "Wrapped Ether",
@@ -39,43 +55,11 @@
     },
     {
       "name": "Wrapped Ether",
-      "address": "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-      "symbol": "WETH",
-      "decimals": 18,
-      "chainId": 3,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc778417E063141139Fce010982780140Aa0cD5Ab/logo.png"
-    },
-    {
-      "name": "Uniswap",
-      "address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
-      "symbol": "UNI",
-      "decimals": 18,
-      "chainId": 4,
-      "logoURI": "ipfs://QmXttGpZrECX5qCyXbBQiqgQNytVGeZW5Anewvh2jc4psg"
-    },
-    {
-      "name": "Wrapped Ether",
-      "address": "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-      "symbol": "WETH",
-      "decimals": 18,
-      "chainId": 4,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xc778417E063141139Fce010982780140Aa0cD5Ab/logo.png"
-    },
-    {
-      "name": "Wrapped Ether",
       "address": "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
       "symbol": "WETH",
       "decimals": 18,
       "chainId": 5,
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6/logo.png"
-    },
-    {
-      "name": "Wrapped Ether",
-      "address": "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-      "symbol": "WETH",
-      "decimals": 18,
-      "chainId": 42,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png"
     },
     {
       "name": "DeFiChain Token",
@@ -92,22 +76,6 @@
       "decimals": 8,
       "chainId": 5,
       "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/5804.png"
-    },
-    {
-      "name": "Tether USD",
-      "address": "0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72",
-      "symbol": "USDT",
-      "decimals": 6,
-      "chainId": 5,
-      "logoURI":  "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
-    },
-    {
-      "name": "USDCoin",
-      "address": "0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565",
-      "symbol": "USDC",
-      "decimals": 6,
-      "chainId": 5,
-      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
     }
   ]
 }
