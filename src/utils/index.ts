@@ -4,7 +4,10 @@ import { AddressZero } from '@ethersproject/constants'
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers'
 import { BigNumber } from '@ethersproject/bignumber'
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
-import { ROUTER_ADDRESS } from '../constants'
+import USDT_LP_ABI from '../constants/abis/usdt-lp-proxy.json'
+import ETH_LP_ABI from '../constants/abis/eth-lp-proxy.json'
+import USDC_LP_ABI from '../constants/abis/usdc-lp-proxy.json'
+import { ROUTER_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS} from '../constants'
 import { ChainId, JSBI, Percent, Token, CurrencyAmount, Currency, ETHER } from '@uniswap/sdk'
 import { TokenAddressMap } from '../state/lists/hooks'
 
@@ -100,6 +103,21 @@ export function getContract(address: string, ABI: any, library: Web3Provider, ac
 // account is optional
 export function getRouterContract(_: number, library: Web3Provider, account?: string): Contract {
   return getContract(ROUTER_ADDRESS, IUniswapV2Router02ABI, library, account)
+}
+
+//DFI-USDT lp proxy contract
+export function getUSDTProxyContract(_: number, library: Web3Provider, account?: string): Contract {
+  return getContract(USDT_PROXY_ADDRESS, USDT_LP_ABI, library, account)
+}
+
+// DFI-USDC lp proxy contract
+export function getUSDCProxyContract(_: number, library: Web3Provider, account?: string): Contract {
+  return getContract(USDT_PROXY_ADDRESS, USDC_LP_ABI, library, account)
+}
+
+// DFI-WETH/ETH lp proxy contract
+export function getETHProxyContract(_: number, library: Web3Provider, account?: string): Contract {
+  return getContract(ETH_PROXY_ADDRESS, ETH_LP_ABI, library, account)
 }
 
 export function escapeRegExp(string: string): string {
