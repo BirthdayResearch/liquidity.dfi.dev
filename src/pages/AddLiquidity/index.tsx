@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
-import { darken } from 'polished'   
+import { darken } from 'polished'
 import { ThemeContext } from 'styled-components'
 import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
@@ -19,10 +19,9 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import {MUSDT/*, MUSDC*/} from '../../constants/index'
+import { MUSDT /*, MUSDC*/ } from '../../constants/index'
 
-
-import {  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS,/* ROUTER_ADDRESS ,*/ ETH_PROXY_ADDRESS} from '../../constants'
+import { USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS, /* ROUTER_ADDRESS ,*/ ETH_PROXY_ADDRESS } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -35,7 +34,13 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract/*, getRouterContract*/ } from '../../utils'
+import {
+  calculateGasMargin,
+  calculateSlippageAmount,
+  getETHProxyContract,
+  getUSDTProxyContract,
+  getUSDCProxyContract /*, getRouterContract*/
+} from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 //import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import AppBody from '../AppBody'
@@ -47,9 +52,9 @@ import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 //import { Address } from 'cluster'
 
-
 const LpFrame = styled.div`
   display: flex;
+  overflow: auto;
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
@@ -125,14 +130,10 @@ export default function AddLiquidity({
         (currencyB && currencyEquals(currencyB, WETH[chainId])))
   )
   const oneCurrencyIsUSDT = Boolean(
-    chainId &&
-    ((currencyA && currencyEquals(currencyA, MUSDT)) ||
-      (currencyB && currencyEquals(currencyB, MUSDT)))
+    chainId && ((currencyA && currencyEquals(currencyA, MUSDT)) || (currencyB && currencyEquals(currencyB, MUSDT)))
   )
   const oneCurrencyIsETH = Boolean(
-    chainId &&
-    ((currencyA && currencyEquals(currencyA, ETHER)) ||
-      (currencyB && currencyEquals(currencyB, ETHER)))
+    chainId && ((currencyA && currencyEquals(currencyA, ETHER)) || (currencyB && currencyEquals(currencyB, ETHER)))
   )
   // const oneCurrencyIsUSDC = Boolean(
   //   chainId &&
@@ -171,7 +172,6 @@ export default function AddLiquidity({
   // const [showUsdt, setShowUsdt] = useState<boolean>(true)
   // const [showUsdc, setShowUsdc] = useState<boolean>(true)
 
-
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
   const [allowedSlippage] = useUserSlippageTolerance() // custom from users
@@ -204,26 +204,26 @@ export default function AddLiquidity({
     {}
   )
 
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS);
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS);
-  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS);
-  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS);
-  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS);
-  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS);
-  
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS)
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS)
+  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
+  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
+  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS)
+  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS)
+
   function checkAPendingApprove() {
-    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+    if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalA === ApprovalState.PENDING
-    } else if (oneCurrencyIsUSDT){
+    } else if (oneCurrencyIsUSDT) {
       return approvalC === ApprovalState.PENDING
     } else {
       return approvalE === ApprovalState.PENDING
     }
   }
   function checkBPendingApprove() {
-    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+    if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalB === ApprovalState.PENDING
-    } else if (oneCurrencyIsUSDT){
+    } else if (oneCurrencyIsUSDT) {
       return approvalD === ApprovalState.PENDING
     } else {
       return approvalF === ApprovalState.PENDING
@@ -231,18 +231,18 @@ export default function AddLiquidity({
   }
 
   function checkANotApprove() {
-    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+    if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalA === ApprovalState.NOT_APPROVED
-    } else if (oneCurrencyIsUSDT){
+    } else if (oneCurrencyIsUSDT) {
       return approvalC === ApprovalState.NOT_APPROVED
     } else {
       return approvalE === ApprovalState.NOT_APPROVED
     }
   }
   function checkBNotApprove() {
-    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+    if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalB === ApprovalState.NOT_APPROVED
-    } else if (oneCurrencyIsUSDT){
+    } else if (oneCurrencyIsUSDT) {
       return approvalD === ApprovalState.NOT_APPROVED
     } else {
       return approvalF === ApprovalState.NOT_APPROVED
@@ -250,9 +250,9 @@ export default function AddLiquidity({
   }
 
   function checkAApprove() {
-    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+    if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalA !== ApprovalState.APPROVED
-    } else if (oneCurrencyIsUSDT){
+    } else if (oneCurrencyIsUSDT) {
       return approvalC !== ApprovalState.APPROVED
     } else {
       return approvalE !== ApprovalState.APPROVED
@@ -260,9 +260,9 @@ export default function AddLiquidity({
   }
 
   function checkBApprove() {
-    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+    if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalB !== ApprovalState.APPROVED
-    } else if (oneCurrencyIsUSDT){
+    } else if (oneCurrencyIsUSDT) {
       return approvalD !== ApprovalState.APPROVED
     } else {
       return approvalF !== ApprovalState.APPROVED
@@ -298,7 +298,7 @@ export default function AddLiquidity({
       estimate = router.estimateGas.addLiquidityETH
       method = router.addLiquidityETH
       args = [
-       // wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
+        // wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
         (tokenBIsETH ? parsedAmountA : parsedAmountB).raw.toString(), // token desired
         amountsMin[tokenBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(), // token min
         amountsMin[tokenBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(), // eth min
@@ -307,17 +307,17 @@ export default function AddLiquidity({
       ]
       value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
     } else {
-      if(oneCurrencyIsWETH) {
+      if (oneCurrencyIsWETH) {
         estimate = router.estimateGas.addLiquidity
-        method = router.addLiquidity}
-      else if(oneCurrencyIsUSDT) {
+        method = router.addLiquidity
+      } else if (oneCurrencyIsUSDT) {
         estimate = usdtProxy.estimateGas.addLiquidity
         method = usdtProxy.addLiquidity
-      } else{
+      } else {
         estimate = usdcProxy.estimateGas.addLiquidity
         method = usdcProxy.addLiquidity
       }
-    
+
       args = [
         //wrappedCurrency(currencyA, chainId)?.address ?? '',
         //wrappedCurrency(currencyB, chainId)?.address ?? '',
@@ -508,46 +508,43 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
-                <><LpFrame>
-                 <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH'}
-                  >
-                  {'DFI/ETH'}
-                  </StyledNavLink>
-                  <StyledNavLink 
-                    onClick={()=>{
-                      
-                    }}
-                    id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
-                  > 
-                  {'DFI/WETH'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'}
-                  > 
-                  {'DFI/USDT'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565'}
-                  > 
-                  {'DFI/USDC'}
-                  </StyledNavLink>
-                </LpFrame>
-                <ColumnCenter>
+                <>
+                  <LpFrame>
+                    <StyledNavLink id={`pool-nav-link`} to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH'}>
+                      {'DFI/ETH'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      onClick={() => {}}
+                      id={`pool-nav-link`}
+                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
+                    >
+                      {'DFI/WETH'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      id={`pool-nav-link`}
+                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'}
+                    >
+                      {'DFI/USDT'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      id={`pool-nav-link`}
+                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565'}
+                    >
+                      {'DFI/USDC'}
+                    </StyledNavLink>
+                  </LpFrame>
+                  <ColumnCenter>
                     <BlueCard>
                       <AutoColumn gap="30px">
                         <TYPE.link fontWeight={400} color={'primaryText1'}>
-                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing your position.
-                          These tokens automatically earn fees proportional to your share of the pool, and can be redeemed
-                          at any time.
+                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing
+                          your position. These tokens automatically earn fees proportional to your share of the pool,
+                          and can be redeemed at any time.
                         </TYPE.link>
                       </AutoColumn>
                     </BlueCard>
-                  </ColumnCenter></>
+                  </ColumnCenter>
+                </>
               ))}
             <CurrencyInputPanel
               value={formattedAmounts[Field.CURRENCY_A]}
@@ -604,20 +601,22 @@ export default function AddLiquidity({
               <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
             ) : (
               <AutoColumn gap={'md'}>
-                { (checkANotApprove() ||
-                  checkAPendingApprove() ||
-                  checkBNotApprove() ||
-                  checkBPendingApprove)&& isValid && (
+                {(checkANotApprove() || checkAPendingApprove() || checkBNotApprove() || checkBPendingApprove) &&
+                  isValid && (
                     <RowBetween>
                       {checkAApprove() && (
-                        <ButtonPrimary 
-                        onClick = {
-                          oneCurrencyIsWETH || oneCurrencyIsETH ? approveACallback : oneCurrencyIsUSDT ? approveCCallback : approveECallback
-                        }
+                        <ButtonPrimary
+                          onClick={
+                            oneCurrencyIsWETH || oneCurrencyIsETH
+                              ? approveACallback
+                              : oneCurrencyIsUSDT
+                              ? approveCCallback
+                              : approveECallback
+                          }
                           disabled={checkAPendingApprove()}
-                          width={ checkBApprove() ? '48%' : '100%'}
+                          width={checkBApprove() ? '48%' : '100%'}
                         >
-                          { checkAPendingApprove() ? (
+                          {checkAPendingApprove() ? (
                             <Dots>Approving {currencies[Field.CURRENCY_A]?.symbol}</Dots>
                           ) : (
                             'Approve ' + currencies[Field.CURRENCY_A]?.symbol
@@ -627,7 +626,11 @@ export default function AddLiquidity({
                       {checkBApprove() && (
                         <ButtonPrimary
                           onClick={
-                            oneCurrencyIsWETH || oneCurrencyIsETH ? approveBCallback : oneCurrencyIsUSDT ? approveDCallback : approveFCallback
+                            oneCurrencyIsWETH || oneCurrencyIsETH
+                              ? approveBCallback
+                              : oneCurrencyIsUSDT
+                              ? approveDCallback
+                              : approveFCallback
                           }
                           disabled={checkBPendingApprove()}
                           width={checkAApprove() ? '48%' : '100%'}
