@@ -54,6 +54,7 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 
 const LpFrame = styled.div`
   display: flex;
+  overflow: auto;
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
