@@ -24,7 +24,7 @@ export const TRIBE = new Token(ChainId.MAINNET, '0xc7283b66Eb1EB5FB86327f08e1B58
 export const FRAX = new Token(ChainId.MAINNET, '0x853d955aCEf822Db058eb8505911ED77F175b99e', 18, 'FRAX', 'Frax')
 export const FXS = new Token(ChainId.MAINNET, '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0', 18, 'FXS', 'Frax Share')
 export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D', 8, 'renBTC', 'renBTC')
-export const DFI = new Token(ChainId.MAINNET, '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a', 8, 'DFI', 'DeFiChain')
+//export const DFI = new Token(ChainId.MAINNET, '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a', 8, 'DFI', 'DeFiChain')
 
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
@@ -35,6 +35,32 @@ export const PROPOSAL_LENGTH_IN_SECS = AVERAGE_BLOCK_TIME_IN_SECS * PROPOSAL_LEN
 export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'
 
 export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
+
+// DFI/USDT LP proxy contract on Goreli testnet
+export const USDT_PROXY_ADDRESS = '0x5fd39Bf6aE258351f453e55256B03085B34712f0'
+// DFI/USDC LP proxy contract on Goreli testnet
+export const USDC_PROXY_ADDRESS = '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'
+// DFI/ETH LP proxy contract on Goreli testnet
+export const ETH_PROXY_ADDRESS = '0x69736086d7FF64e67ba0090229c9cdc1056fE039'
+// DFI GOERLI ADDRESS 
+export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
+// MockUSDT GOERLI USDT
+export const MUSDT = new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 8, 'MUSDT', 'Mock USDT')
+// MockUSDT GOERLI USDT
+export const MUSDC = new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 8, 'MUSDC', 'Mock USDC')
+// MockUSDT GOERLI USDT
+
+//MAINNET ADDRESS
+const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
+
+// DFI is not deployed at RINKEBY | ROPSTEN | KOVAN: Arbitrage address
+export const DFI: { [chainId in ChainId]: Token} = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, DFI_ADDRESS, 8, 'DFI', 'DeFiChain'),
+  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
+  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
+  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain')
+}
 
 const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 export const UNI: { [chainId in ChainId]: Token } = {
