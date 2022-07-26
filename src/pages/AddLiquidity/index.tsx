@@ -50,6 +50,7 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 
 const LpFrame = styled.div`
   display: flex;
+  overflow: auto;
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
@@ -71,6 +72,12 @@ const LpFrame = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
         padding: 0.5rem 1rem;
   `}
+
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
 `
 const activeClassName = 'ACTIVE'
 
