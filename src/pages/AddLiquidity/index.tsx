@@ -265,7 +265,9 @@ export default function AddLiquidity({
   async function onAdd() {
     if (!chainId || !library || !account) return
     const router = getETHProxyContract(chainId, library, account)
+    if (!chainId || !library || !account) return
     const usdtProxy = getUSDTProxyContract(chainId, library, account)
+    if (!chainId || !library || !account) return
     const usdcProxy = getUSDCProxyContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
@@ -601,7 +603,7 @@ export default function AddLiquidity({
                       {checkAApprove() && (
                         <ButtonPrimary 
                         onClick = {
-                          oneCurrencyIsWETH ? approveACallback : oneCurrencyIsUSDT ? approveCCallback : approveECallback
+                          oneCurrencyIsWETH || oneCurrencyIsETH ? approveACallback : oneCurrencyIsUSDT ? approveCCallback : approveECallback
                         }
                           disabled={checkAPendingApprove()}
                           width={ checkBApprove() ? '48%' : '100%'}
@@ -616,7 +618,7 @@ export default function AddLiquidity({
                       {checkBApprove() && (
                         <ButtonPrimary
                           onClick={
-                            oneCurrencyIsWETH ? approveBCallback : oneCurrencyIsUSDT ? approveDCallback : approveFCallback
+                            oneCurrencyIsWETH || oneCurrencyIsETH ? approveBCallback : oneCurrencyIsUSDT ? approveDCallback : approveFCallback
                           }
                           disabled={checkBPendingApprove()}
                           width={checkAApprove() ? '48%' : '100%'}
