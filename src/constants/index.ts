@@ -1,7 +1,7 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
-import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
+import { injected, walletconnect } from '../connectors'
 
 export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -26,7 +26,6 @@ export const FXS = new Token(ChainId.MAINNET, '0x3432B6A60D23Ca0dFCa7761B7ab5645
 export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D', 8, 'renBTC', 'renBTC')
 //export const DFI = new Token(ChainId.MAINNET, '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a', 8, 'DFI', 'DeFiChain')
 
-
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 13
 export const PROPOSAL_LENGTH_IN_BLOCKS = 40_320
@@ -42,7 +41,7 @@ export const USDT_PROXY_ADDRESS = '0x5fd39Bf6aE258351f453e55256B03085B34712f0'
 export const USDC_PROXY_ADDRESS = '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'
 // DFI/ETH LP proxy contract on Goreli testnet
 export const ETH_PROXY_ADDRESS = '0x69736086d7FF64e67ba0090229c9cdc1056fE039'
-// DFI GOERLI ADDRESS 
+// DFI GOERLI ADDRESS
 export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
 // MockUSDT GOERLI USDT
 export const MUSDT = new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 8, 'MUSDT', 'Mock USDT')
@@ -54,7 +53,7 @@ export const MUSDC = new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7D
 const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
 
 // DFI is not deployed at RINKEBY | ROPSTEN | KOVAN: Arbitrage address
-export const DFI: { [chainId in ChainId]: Token} = {
+export const DFI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, DFI_ADDRESS, 8, 'DFI', 'DeFiChain'),
   [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
   [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
@@ -179,41 +178,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
     href: null,
     color: '#4196FC',
-    mobile: true
-  },
-  WALLET_LINK: {
-    connector: walletlink,
-    name: 'Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
-    description: 'Use Coinbase Wallet app on mobile device',
-    href: null,
-    color: '#315CF5'
-  },
-  COINBASE_LINK: {
-    name: 'Open in Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
-    description: 'Open in Coinbase Wallet app.',
-    href: 'https://go.cb-w.com/mtUDhEZPy1',
-    color: '#315CF5',
-    mobile: true,
-    mobileOnly: true
-  },
-  FORTMATIC: {
-    connector: fortmatic,
-    name: 'Fortmatic',
-    iconName: 'fortmaticIcon.png',
-    description: 'Login using Fortmatic hosted wallet',
-    href: null,
-    color: '#6748FF',
-    mobile: true
-  },
-  Portis: {
-    connector: portis,
-    name: 'Portis',
-    iconName: 'portisIcon.png',
-    description: 'Login using Portis hosted wallet',
-    href: null,
-    color: '#4A6C9B',
     mobile: true
   }
 }
