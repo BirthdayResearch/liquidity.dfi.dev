@@ -69,7 +69,6 @@
     "react-device-detect": "^1.6.2",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
-    "react-ga": "^2.5.7",
     "react-i18next": "^10.7.0",
     "react-markdown": "^4.3.1",
     "react-popper": "^2.2.3",
@@ -122,6 +121,7 @@
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@uniswap/default-token-list": "^2.0.0"
+    "@uniswap/default-token-list": "^2.0.0",
+    "react-ga4": "^1.4.1"
   }
 }
