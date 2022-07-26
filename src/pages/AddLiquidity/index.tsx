@@ -50,10 +50,6 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 
 const LpFrame = styled.div`
   display: flex;
-<<<<<<< HEAD
-=======
-  overflow: auto;
->>>>>>> master
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
@@ -649,7 +645,7 @@ export default function AddLiquidity({
                   onClick={() => {
                     expertMode ? onAdd() : setShowConfirm(true)
                   }}
-                  disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
+                  disabled={!isValid || checkAApprove() || checkBApprove()}
                   error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
                 >
                   <Text fontSize={20} fontWeight={500}>
