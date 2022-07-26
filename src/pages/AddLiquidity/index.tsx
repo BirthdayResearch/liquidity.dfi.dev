@@ -389,7 +389,8 @@ export default function AddLiquidity({
             currencyToAdd={pair?.liquidityToken}
           />
           <AutoColumn gap="20px">
-            {noLiquidity ||
+            {
+            //noLiquidity ||
               (isCreate ? (
                 <ColumnCenter>
                   <BlueCard>
@@ -407,27 +408,31 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
-                 <><LpFrame>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
-                  >
-                  {'DFI/ETH'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}
-                  > 
-                  {'DFI/WETH'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={'/add/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
-                  > 
-                  {'DFI/USDT'}
-                  </StyledNavLink>
-                </LpFrame>
-                <ColumnCenter>
+                <>
+                  <LpFrame>
+                    <StyledNavLink id={`pool-nav-link`} to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH'}>
+                      {'DFI/ETH'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      id={`pool-nav-link`}
+                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6'}
+                    >
+                      {'DFI/WETH'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      id={`pool-nav-link`}
+                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'}
+                    >
+                      {'DFI/USDT'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      id={`pool-nav-link`}
+                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565'}
+                    >
+                      {'DFI/USDC'}
+                    </StyledNavLink>
+                  </LpFrame>
+                  <ColumnCenter>
                     <BlueCard>
                       <AutoColumn gap="10px">
                         <TYPE.link fontWeight={400} color={'primaryText1'}>
@@ -437,7 +442,8 @@ export default function AddLiquidity({
                         </TYPE.link>
                       </AutoColumn>
                     </BlueCard>
-                  </ColumnCenter></>
+                  </ColumnCenter>
+                </>
               ))}
             <CurrencyInputPanel
               value={formattedAmounts[Field.CURRENCY_A]}
