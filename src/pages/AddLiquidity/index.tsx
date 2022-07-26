@@ -50,6 +50,10 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 
 const LpFrame = styled.div`
   display: flex;
+<<<<<<< HEAD
+=======
+  overflow: auto;
+>>>>>>> master
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
@@ -71,6 +75,12 @@ const LpFrame = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
         padding: 0.5rem 1rem;
   `}
+
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
 `
 const activeClassName = 'ACTIVE'
 
@@ -161,6 +171,9 @@ export default function AddLiquidity({
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+  // const [showWeth, setShowWeth] = useState<boolean>(false)
+  // const [showUsdt, setShowUsdt] = useState<boolean>(true)
+  // const [showUsdc, setShowUsdc] = useState<boolean>(true)
 
 
   // txn values
