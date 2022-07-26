@@ -50,7 +50,10 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 
 const LpFrame = styled.div`
   display: flex;
+<<<<<<< HEAD
+=======
   overflow: auto;
+>>>>>>> master
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
@@ -130,6 +133,11 @@ export default function AddLiquidity({
     ((currencyA && currencyEquals(currencyA, MUSDT)) ||
       (currencyB && currencyEquals(currencyB, MUSDT)))
   )
+  const oneCurrencyIsETH = Boolean(
+    chainId &&
+    ((currencyA && currencyEquals(currencyA, ETHER)) ||
+      (currencyB && currencyEquals(currencyB, ETHER)))
+  )
   // const oneCurrencyIsUSDC = Boolean(
   //   chainId &&
   //   ((currencyA && currencyEquals(currencyA, MUSDC)) ||
@@ -166,6 +174,7 @@ export default function AddLiquidity({
   // const [showWeth, setShowWeth] = useState<boolean>(false)
   // const [showUsdt, setShowUsdt] = useState<boolean>(true)
   // const [showUsdc, setShowUsdc] = useState<boolean>(true)
+
 
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
@@ -205,14 +214,73 @@ export default function AddLiquidity({
   const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS);
   const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS);
   const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS);
+  
+  function checkAPendingApprove() {
+    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+      return approvalA === ApprovalState.PENDING
+    } else if (oneCurrencyIsUSDT){
+      return approvalC === ApprovalState.PENDING
+    } else {
+      return approvalE === ApprovalState.PENDING
+    }
+  }
+  function checkBPendingApprove() {
+    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+      return approvalB === ApprovalState.PENDING
+    } else if (oneCurrencyIsUSDT){
+      return approvalD === ApprovalState.PENDING
+    } else {
+      return approvalF === ApprovalState.PENDING
+    }
+  }
 
+  function checkANotApprove() {
+    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+      return approvalA === ApprovalState.NOT_APPROVED
+    } else if (oneCurrencyIsUSDT){
+      return approvalC === ApprovalState.NOT_APPROVED
+    } else {
+      return approvalE === ApprovalState.NOT_APPROVED
+    }
+  }
+  function checkBNotApprove() {
+    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+      return approvalB === ApprovalState.NOT_APPROVED
+    } else if (oneCurrencyIsUSDT){
+      return approvalD === ApprovalState.NOT_APPROVED
+    } else {
+      return approvalF === ApprovalState.NOT_APPROVED
+    }
+  }
+
+  function checkAApprove() {
+    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+      return approvalA !== ApprovalState.APPROVED
+    } else if (oneCurrencyIsUSDT){
+      return approvalC !== ApprovalState.APPROVED
+    } else {
+      return approvalE !== ApprovalState.APPROVED
+    }
+  }
+
+  function checkBApprove() {
+    if (oneCurrencyIsWETH || oneCurrencyIsETH){
+      return approvalB !== ApprovalState.APPROVED
+    } else if (oneCurrencyIsUSDT){
+      return approvalD !== ApprovalState.APPROVED
+    } else {
+      return approvalF !== ApprovalState.APPROVED
+    }
+  }
 
   const addTransaction = useTransactionAdder()
 
   async function onAdd() {
     if (!chainId || !library || !account) return
     const router = getETHProxyContract(chainId, library, account)
+    if (!chainId || !library || !account) return
     const usdtProxy = getUSDTProxyContract(chainId, library, account)
+    if (!chainId || !library || !account) return
     const usdcProxy = getUSDCProxyContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
@@ -540,43 +608,35 @@ export default function AddLiquidity({
               <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
             ) : (
               <AutoColumn gap={'md'}>
-                {(approvalA === ApprovalState.NOT_APPROVED ||
-                  approvalA === ApprovalState.PENDING ||
-                  approvalB === ApprovalState.NOT_APPROVED ||
-                  approvalB === ApprovalState.PENDING ||
-                  approvalC === ApprovalState.NOT_APPROVED ||
-                  approvalC === ApprovalState.PENDING ||
-                  approvalD === ApprovalState.NOT_APPROVED ||
-                  approvalD === ApprovalState.PENDING ||
-                  approvalE === ApprovalState.NOT_APPROVED ||
-                  approvalE === ApprovalState.PENDING ||
-                  approvalF === ApprovalState.NOT_APPROVED ||
-                  approvalF === ApprovalState.PENDING) && isValid && (
+                { (checkANotApprove() ||
+                  checkAPendingApprove() ||
+                  checkBNotApprove() ||
+                  checkBPendingApprove)&& isValid && (
                     <RowBetween>
-                      {approvalA !== ApprovalState.APPROVED && (
+                      {checkAApprove() && (
                         <ButtonPrimary 
                         onClick = {
-                          oneCurrencyIsWETH ? approveACallback : oneCurrencyIsUSDT ? approveCCallback : approveECallback
+                          oneCurrencyIsWETH || oneCurrencyIsETH ? approveACallback : oneCurrencyIsUSDT ? approveCCallback : approveECallback
                         }
-                          disabled={ approvalA === ApprovalState.PENDING || approvalC === ApprovalState.PENDING || approvalE === ApprovalState.PENDING}
-                          width={ approvalB !== ApprovalState.APPROVED || approvalD !== ApprovalState.APPROVED || approvalF !== ApprovalState.APPROVED ? '48%' : '100%'}
+                          disabled={checkAPendingApprove()}
+                          width={ checkBApprove() ? '48%' : '100%'}
                         >
-                          { approvalC === ApprovalState.PENDING ? (
+                          { checkAPendingApprove() ? (
                             <Dots>Approving {currencies[Field.CURRENCY_A]?.symbol}</Dots>
                           ) : (
                             'Approve ' + currencies[Field.CURRENCY_A]?.symbol
                           )}
                         </ButtonPrimary>
                       )}
-                      {approvalB !== ApprovalState.APPROVED && (
+                      {checkBApprove() && (
                         <ButtonPrimary
                           onClick={
-                            oneCurrencyIsWETH ? approveBCallback : oneCurrencyIsUSDT ? approveDCallback : approveFCallback
+                            oneCurrencyIsWETH || oneCurrencyIsETH ? approveBCallback : oneCurrencyIsUSDT ? approveDCallback : approveFCallback
                           }
-                          disabled={approvalB === ApprovalState.PENDING || approvalD === ApprovalState.PENDING || approvalF === ApprovalState.PENDING}
-                          width={approvalA !== ApprovalState.APPROVED || approvalC !== ApprovalState.APPROVED || approvalE !== ApprovalState.APPROVED ? '48%' : '100%'}
+                          disabled={checkBPendingApprove()}
+                          width={checkAApprove() ? '48%' : '100%'}
                         >
-                          {approvalD === ApprovalState.PENDING ? (
+                          {checkBPendingApprove() ? (
                             <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
                           ) : (
                             'Approve ' + currencies[Field.CURRENCY_B]?.symbol
