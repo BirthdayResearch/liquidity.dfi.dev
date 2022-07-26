@@ -41,7 +41,7 @@ export const USDT_PROXY_ADDRESS = '0x5fd39Bf6aE258351f453e55256B03085B34712f0'
 export const USDC_PROXY_ADDRESS = '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'
 // DFI/ETH LP proxy contract on Goreli testnet
 export const ETH_PROXY_ADDRESS = '0x69736086d7FF64e67ba0090229c9cdc1056fE039'
-// DFI GOERLI ADDRESS
+// DFI GOERLI ADDRESS 
 export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
 // MockUSDT GOERLI USDT
 export const MUSDT = new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 8, 'MUSDT', 'Mock USDT')
@@ -53,7 +53,7 @@ export const MUSDC = new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7D
 const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
 
 // DFI is not deployed at RINKEBY | ROPSTEN | KOVAN: Arbitrage address
-export const DFI: { [chainId in ChainId]: Token } = {
+export const DFI: { [chainId in ChainId]: Token} = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, DFI_ADDRESS, 8, 'DFI', 'DeFiChain'),
   [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
   [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
