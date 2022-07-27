@@ -64,7 +64,8 @@ const LpFrame = styled.div`
   top: 0;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   z-index: 2;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     grid-template-columns: 1fr;
