@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, DFI, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS } from '../constants'
+import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, DFI, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS, USDC_PROXY_ADDRESS } from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -15,6 +15,7 @@ import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver.json'
 import ENS_ABI from '../constants/abis/ens-registrar.json'
 import { ERC20_BYTES32_ABI } from '../constants/abis/erc20'
 import ERC20_ABI from '../constants/abis/erc20.json'
+import USDC_LP_ABI from '../constants/abis/usdc-lp-proxy.json'
 import USDT_LP_ABI from '../constants/abis/usdt-lp-proxy.json'
 import ETH_LP_ABI from '../constants/abis/eth-lp-proxy.json'
 import { MIGRATOR_ABI, MIGRATOR_ADDRESS } from '../constants/abis/migrator'
@@ -61,6 +62,9 @@ export function useUsdtLpContract(withSignerIfPossible?:boolean): Contract | nul
   return useContract(USDT_PROXY_ADDRESS, USDT_LP_ABI, withSignerIfPossible)
 }
 
+export function useUsdcLpContract(withSignerIfPossible?:boolean): Contract | null {
+  return useContract(USDC_PROXY_ADDRESS, USDC_LP_ABI, withSignerIfPossible)
+}
 
 export function useEthLpContract(withSignerIfPossible?:boolean): Contract | null {
   return useContract(ETH_PROXY_ADDRESS, ETH_LP_ABI, withSignerIfPossible)

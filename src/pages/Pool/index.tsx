@@ -153,7 +153,7 @@ export default function Pool() {
                 </TYPE.mediumHeader>
               </HideSmall>
               <ButtonRow>
-                <ResponsiveButtonPrimary
+              <ResponsiveButtonPrimary
                   id="join-pool-button"
                   as={Link}
                   padding="5px 8px"

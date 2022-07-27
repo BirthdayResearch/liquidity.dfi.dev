@@ -167,10 +167,6 @@ export default function AddLiquidity({
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
-  // const [showWeth, setShowWeth] = useState<boolean>(false)
-  // const [showUsdt, setShowUsdt] = useState<boolean>(true)
-  // const [showUsdc, setShowUsdc] = useState<boolean>(true)
-
 
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings

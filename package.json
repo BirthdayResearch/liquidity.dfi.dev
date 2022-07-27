@@ -122,6 +122,7 @@
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@uniswap/default-token-list": "^2.0.0"
+    "@uniswap/default-token-list": "^2.0.0",
+    "react-async": "^10.0.1"
   }
 }

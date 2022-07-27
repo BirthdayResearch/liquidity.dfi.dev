@@ -2,7 +2,7 @@ import { Currency, Pair } from '@uniswap/sdk'
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
+/*import { useCurrencyBalance, useTokenBalancesEthProxy } from '../../state/wallet/hooks'*/
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
@@ -10,11 +10,16 @@ import { RowBetween } from '../Row'
 import { TYPE } from '../../theme'
 import { Input as NumericalInput } from '../NumericalInput'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
+import { useAsync } from "react-async"
 //import { Contract } from '@ethersproject/contracts'
+// import { useUsdcLpContract } from 'hooks/useContract'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
+//import { useUsdcLpContract } from 'hooks/useContract'
+import { getUSDCProxyContract } from 'utils'
+//import { BigNumber } from 'ethers'
 
 const InputRow = styled.div<{ selected: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -134,7 +139,7 @@ interface CurrencyInputPanelProps {
   customBalanceText?: string
 }
 
-export default function CurrencyInputPanel({
+export default function CurrencyInputPanelRemoveLp({
   value,
   onUserInput,
   onMax,
@@ -152,10 +157,17 @@ export default function CurrencyInputPanel({
   customBalanceText
 }: CurrencyInputPanelProps) {
   const { t } = useTranslation()
-
   const [modalOpen, setModalOpen] = useState(false)
-  const { account } = useActiveWeb3React()
-  const selectedCurrencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
+  const { account, chainId, library } = useActiveWeb3React()
+  
+  const usdcProxy = getUSDCProxyContract(chainId!, library!, account!)
+
+  async function test() {
+    const balance = await usdcProxy.stakingMap(account)
+    return balance.toString()
+  }
+  //const bool : boolean = false
+  const selectedCurrencyBalance =  useAsync(test())//useCurrencyBalance(account ?? undefined, currency ?? undefined)
   const theme = useTheme()
 
   const handleDismissSearch = useCallback(() => {
@@ -174,13 +186,14 @@ export default function CurrencyInputPanel({
               {account && (
                 <TYPE.body
                   onClick={onMax}
+                 
                   color={theme.text2}
                   fontWeight={500}
                   fontSize={14}
                   style={{ display: 'inline', cursor: 'pointer' }}
                 >
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? (customBalanceText ?? 'Balance: ') + selectedCurrencyBalance?.toSignificant(6)
+                    ? (customBalanceText ?? 'Balace: ') + selectedCurrencyBalance//?.toSignificant(6)
                     : ' -'}
                 </TYPE.body>
               )}
