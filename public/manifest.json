@@ -1,7 +1,7 @@
 {
   "background_color": "#fff",
   "display": "standalone",
-  "homepage_url": "https://app.uniswap.org",
+  "homepage_url": "https://liquidity.dfi.dev",
   "icons": [
     {
       "src": "./images/192x192_App_Icon.png",
@@ -17,8 +17,8 @@
     }
   ],
   "orientation": "portrait",
-  "name": "DFI Pool",
-  "short_name": "DFI Pool",
+  "name": "DFI Liquidity Mining",
+  "short_name": "DFI LM",
   "start_url": ".",
   "theme_color": "#ff007a"
 }
