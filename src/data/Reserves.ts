@@ -1,4 +1,4 @@
-import { TokenAmount, Pair, Currency } from '@uniswap/sdk'
+import { TokenAmount, Pair, Currency, Token } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { Interface } from '@ethersproject/abi'
@@ -14,6 +14,66 @@ export enum PairState {
   NOT_EXISTS,
   EXISTS,
   INVALID
+}
+
+export class ProxyPair extends Pair {
+  readonly proxyAddress: string
+
+  constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, proxyAddress: string) {
+    super(tokenAmountA, tokenAmountB)
+    this.proxyAddress = proxyAddress
+  }
+}
+
+export function usePairs2(
+  currencies: [Currency | undefined, Currency | undefined, string][]
+): [PairState, ProxyPair | null][] {
+  const { chainId } = useActiveWeb3React()
+
+  const tokens = useMemo(
+    () =>
+      currencies.map(([currencyA, currencyB, proxyAddr]) => [
+        wrappedCurrency(currencyA, chainId),
+        wrappedCurrency(currencyB, chainId),
+        proxyAddr
+      ]),
+    [chainId, currencies]
+  )
+
+  const pairAddresses = useMemo(
+    () =>
+      tokens.map(([tokenA, tokenB]) => {
+        return tokenA && tokenB && !(tokenA as Token).equals(tokenB as Token)
+          ? ProxyPair.getAddress(tokenA as Token, tokenB as Token)
+          : undefined
+      }),
+    [tokens]
+  )
+
+  const results = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, 'getReserves')
+
+  return useMemo(() => {
+    return results.map((result, i) => {
+      const { result: reserves, loading } = result
+      const tokenA = tokens[i][0]
+      const tokenB = tokens[i][1]
+      const proxyAddress = tokens[i][2]
+
+      if (loading) return [PairState.LOADING, null]
+      if (!tokenA || !tokenB || (tokenA as Token).equals(tokenB as Token)) return [PairState.INVALID, null]
+      if (!reserves) return [PairState.NOT_EXISTS, null]
+      const { reserve0, reserve1 } = reserves
+      const [token0, token1] = (tokenA as Token).sortsBefore(tokenB as Token) ? [tokenA, tokenB] : [tokenB, tokenA]
+      return [
+        PairState.EXISTS,
+        new ProxyPair(
+          new TokenAmount(token0 as Token, reserve0.toString()),
+          new TokenAmount(token1 as Token, reserve1.toString()),
+          proxyAddress as string
+        )
+      ]
+    })
+  }, [results, tokens])
 }
 
 export function usePairs(currencies: [Currency | undefined, Currency | undefined][]): [PairState, Pair | null][] {
