@@ -13,7 +13,7 @@ import { ButtonPrimary } from '../../components/Button'
 import { AutoColumn } from '../../components/Column'
 
 import { useActiveWeb3React } from '../../hooks'
-import { usePairs } from '../../data/Reserves'
+import { ProxyPair, usePairs, usePairs2 } from '../../data/Reserves'
 import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 
@@ -122,13 +122,20 @@ export default function Pool() {
     proxies,
     userProxyLiquidity
   ])
+
+  const proxyV2Pairs2 = usePairs2(proxyWithBalance.map(p => [p.tokenA, p.tokenB, p.address]))
+  const proxyV2PairsWithLiquidity2 = proxyV2Pairs2
+    .map(([, pair]) => pair)
+    .filter((v2Pair): v2Pair is ProxyPair => Boolean(v2Pair))
+
   const proxyV2Pairs = usePairs(proxyWithBalance.map(p => [p.tokenA, p.tokenB]))
   const proxyV2PairsWithLiquidity = proxyV2Pairs
     .map(([, pair]) => pair)
     .filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
+  console.log(proxyV2PairsWithLiquidity)
 
   const userProxyLiquidityIsLoading =
-    fetchingProxyLiquidity || proxyV2Pairs?.length < proxyWithBalance.length || proxyV2Pairs?.some(V2Pair => !V2Pair)
+    fetchingProxyLiquidity || proxyV2Pairs2?.length < proxyWithBalance.length || proxyV2Pairs2?.some(V2Pair => !V2Pair)
 
   return (
     <>
@@ -201,8 +208,12 @@ export default function Pool() {
               </EmptyProposals>
             ) : proxyWithBalance?.length > 0 ? (
               <>
-                {proxyV2PairsWithLiquidity.map(v2Pair => (
-                  <FullPositionCard key={v2Pair.liquidityToken.address} pair={v2Pair} />
+                {proxyV2PairsWithLiquidity2.map(v2Pair => (
+                  <FullPositionCard
+                    key={v2Pair.liquidityToken.address}
+                    pair={v2Pair}
+                    stakedBalance={userProxyLiquidity[v2Pair.proxyAddress]}
+                  />
                 ))}
               </>
             ) : (
