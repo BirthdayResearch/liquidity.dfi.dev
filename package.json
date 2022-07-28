@@ -95,6 +95,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "debug": "BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' react-scripts start",
     "start:service-worker": "yarn build && yarn serve -s build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
