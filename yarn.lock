@@ -5348,11 +5348,6 @@ clone-deep@^4.0.1:
     kind-of "^6.0.2"
     shallow-clone "^3.0.0"
 
-clone-function@>=1.0.1:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/clone-function/-/clone-function-1.0.6.tgz#428471937750bca9c48ecbfbc16f6e232f74a03d"
-  integrity sha1-QoRxk3dQvKnEjsv7wW9uIy90oD0=
-
 clone@^1.0.2:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
@@ -10731,6 +10726,11 @@ merge2@^1.2.3:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
+merge@2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/merge/-/merge-2.1.1.tgz#59ef4bf7e0b3e879186436e8481c06a6c162ca98"
+  integrity sha512-jz+Cfrg9GWOZbQAnDQ4hlVnQky+341Yk5ru8bZSe6sIDTCIg8n9i/u7hSQGSVOF3C7lH6mGtqjkiT9G4wFLL0w==
+
 merkle-patricia-tree@^2.1.2, merkle-patricia-tree@^2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/merkle-patricia-tree/-/merkle-patricia-tree-2.3.2.tgz#982ca1b5a0fde00eed2f6aeed1f9152860b8208a"
@@ -11300,11 +11300,6 @@ object-copy@^0.1.0:
     define-property "^0.2.5"
     kind-of "^3.0.3"
 
-object-foreach@>=0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/object-foreach/-/object-foreach-0.1.2.tgz#d7421c5b40e3b6a3ef57ac624368d21d8f8d2dec"
-  integrity sha1-10IcW0DjtqPvV6xiQ2jSHY+NLew=
-
 object-hash@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-2.0.3.tgz#d12db044e03cd2ca3d77c0570d87225b02e1e6ea"
@@ -11337,14 +11332,6 @@ object-keys@~0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-0.4.0.tgz#28a6aae7428dd2c3a92f3d95f21335dd204e0336"
   integrity sha1-KKaq50KN0sOpLz2V8hM13SBOAzY=
-
-object-merge@2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/object-merge/-/object-merge-2.5.1.tgz#077e8915ce38ea7294788448c5dd339e34df4227"
-  integrity sha1-B36JFc446nKUeIRIxd0znjTfQic=
-  dependencies:
-    clone-function ">=1.0.1"
-    object-foreach ">=0.1.2"
 
 object-path@0.11.4:
   version "0.11.4"
@@ -13456,12 +13443,12 @@ recursive-readdir@2.2.2:
   dependencies:
     minimatch "3.0.4"
 
-redux-localstorage-simple@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/redux-localstorage-simple/-/redux-localstorage-simple-2.3.1.tgz#108a75939eacb2d910103b84a8a4a9f6aef28433"
-  integrity sha512-lxzFtkjJMn5Oyi46OpcjtVjwsBJL6/5TWE9YJwSpt+bhJSQ6dlGedydFk2us84h3W9sWrhQ0RO9G3yJlJ2waaw==
+redux-localstorage-simple@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/redux-localstorage-simple/-/redux-localstorage-simple-2.5.1.tgz#d01b1a03786d010ccce0ae6808c64a62dc041ef8"
+  integrity sha512-8HbqBzHoZ4nfL8qyELt4hLd9hNmESCvmXTEBk2mGT23lX8/miJbXz4ZGIF7Eoa1UHikjv+bne3pjC95ub737vA==
   dependencies:
-    object-merge "2.5.1"
+    merge "2.1.1"
 
 redux-thunk@^2.3.0:
   version "2.3.0"
