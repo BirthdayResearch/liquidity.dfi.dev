@@ -52,13 +52,6 @@ const ResponsiveButtonPrimary = styled(ButtonPrimary)`
   `};
 `
 
-// const ResponsiveButtonSecondary = styled(ButtonSecondary)`
-//   width: fit-content;
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-//     width: 48%;
-//   `};
-// `
-
 const EmptyProposals = styled.div`
   border: 1px solid ${({ theme }) => theme.text4};
   padding: 16px 12px;
@@ -72,49 +65,6 @@ const EmptyProposals = styled.div`
 export default function Pool() {
   const theme = useContext(ThemeContext)
   const { account } = useActiveWeb3React()
-
-  // fetch the user's balances of all tracked V2 LP tokens
-  // const trackedTokenPairs = useTrackedTokenPairs()
-  // const tokenPairsWithLiquidityTokens = useMemo(
-  //   () => trackedTokenPairs.map(tokens => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
-  //   [trackedTokenPairs]
-  // )
-  // const liquidityTokens = useMemo(() => tokenPairsWithLiquidityTokens.map(tpwlt => tpwlt.liquidityToken), [
-  //   tokenPairsWithLiquidityTokens
-  // ])
-  // const [v2PairsBalances, fetchingV2PairBalances] = useTokenBalancesWithLoadingIndicator(
-  //   account ?? undefined,
-  //   liquidityTokens
-  // )
-
-  // fetch the reserves for all V2 pools in which the user has a balance
-  // const liquidityTokensWithBalances = useMemo(
-  //   () =>
-  //     tokenPairsWithLiquidityTokens.filter(({ liquidityToken }) =>
-  //       v2PairsBalances[liquidityToken.address]?.greaterThan('0')
-  //     ),
-  //   [tokenPairsWithLiquidityTokens, v2PairsBalances]
-  // )
-
-  // const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
-  // const v2IsLoading =
-  //   fetchingV2PairBalances || v2Pairs?.length < liquidityTokensWithBalances.length || v2Pairs?.some(V2Pair => !V2Pair)
-
-  // const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
-
-  // // show liquidity even if its deposited in rewards contract
-  // const stakingInfo = useStakingInfo()
-  // const stakingInfosWithBalance = stakingInfo?.filter(pool => JSBI.greaterThan(pool.stakedAmount.raw, BIG_INT_ZERO))
-  // const stakingPairs = usePairs(stakingInfosWithBalance?.map(stakingInfo => stakingInfo.tokens))
-
-  // // remove any pairs that also are included in pairs with stake in mining pool
-  // const v2PairsWithoutStakedAmount = allV2PairsWithLiquidity.filter(v2Pair => {
-  //   return (
-  //     stakingPairs
-  //       ?.map(stakingPair => stakingPair[1])
-  //       .filter(stakingPair => stakingPair?.liquidityToken.address === v2Pair.liquidityToken.address).length === 0
-  //   )
-  // })
 
   const proxies = useProxies()
   const [userProxyLiquidity, fetchingProxyLiquidity] = useGetProxyLiquidityOfUser(account ?? undefined, proxies)
@@ -223,42 +173,6 @@ export default function Pool() {
                 </TYPE.body>
               </EmptyProposals>
             )}
-
-            {/* {!account ? (
-              <Card padding="40px">
-                <TYPE.body color={theme.text3} textAlign="center">
-                  Connect to a wallet to view your liquidity.
-                </TYPE.body>
-              </Card>
-            ) : v2IsLoading ? (
-              <EmptyProposals>
-                <TYPE.body color={theme.text3} textAlign="center">
-                  <Dots>Loading</Dots>
-                </TYPE.body>
-              </EmptyProposals>
-            ) : allV2PairsWithLiquidity?.length > 0 || stakingPairs?.length > 0 ? (
-              <>
-                {v2PairsWithoutStakedAmount.map(v2Pair => (
-                  <FullPositionCard key={v2Pair.liquidityToken.address} pair={v2Pair} />
-                ))}
-                {stakingPairs.map(
-                  (stakingPair, i) =>
-                    stakingPair[1] && ( // skip pairs that arent loaded
-                      <FullPositionCard
-                        key={stakingInfosWithBalance[i].stakingRewardAddress}
-                        pair={stakingPair[1]}
-                        stakedBalance={stakingInfosWithBalance[i].stakedAmount}
-                      />
-                    )
-                )}
-              </>
-            ) : (
-              <EmptyProposals>
-                <TYPE.body color={theme.text3} textAlign="center">
-                  No liquidity found.
-                </TYPE.body>
-              </EmptyProposals>
-            )} */}
           </AutoColumn>
         </AutoColumn>
       </PageWrapper>
