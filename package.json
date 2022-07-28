@@ -3,6 +3,7 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "build": "react-scripts build",
+    "debug": "BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' react-scripts start",
     "eject": "react-scripts eject",
     "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
     "start": "react-scripts start",
