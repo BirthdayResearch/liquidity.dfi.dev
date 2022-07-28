@@ -22,7 +22,7 @@ import Row, { RowBetween, RowFixed } from '../../components/Row'
 
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { ETH_PROXY_ADDRESS, MUSDT, ROUTER_ADDRESS, USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS } from '../../constants'
+import { ETH_PROXY_ADDRESS, MUSDT, /*ROUTER_ADDRESS,*/ USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { usePairContract } from '../../hooks/useContract'
@@ -45,6 +45,7 @@ import { Field } from '../../state/burn/actions'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
 import CurrencyInputPanelRemoveLp from '../../components/CurrencyInputPanelRemoveLp'
+import { BigNumber } from '@ethersproject/bignumber'
 
 
 const LpFrame = styled.div`
@@ -190,6 +191,15 @@ export default function RemoveLiquidity({
   const isArgentWallet = useIsArgentWallet()
 
   async function onAttemptToApprove() {
+    function checkAddress(){
+      if(oneCurrencyIsWETH || oneCurrencyIsETH){
+        return ETH_PROXY_ADDRESS
+      } else if (oneCurrencyIsUSDT){
+        return USDT_PROXY_ADDRESS
+      } else {
+        return USDC_PROXY_ADDRESS
+      }
+    }
     if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
     if (!liquidityAmount) throw new Error('missing liquidity amount')
@@ -208,10 +218,10 @@ export default function RemoveLiquidity({
       { name: 'verifyingContract', type: 'address' }
     ]
     const domain = {
-      name: 'Uniswap V2',
+      name: 'DFI Chain',
       version: '1',
       chainId: chainId,
-      verifyingContract: pair.liquidityToken.address
+      verifyingContract: checkingApprove()
     }
     const Permit = [
       { name: 'owner', type: 'address' },
@@ -222,7 +232,7 @@ export default function RemoveLiquidity({
     ]
     const message = {
       owner: account,
-      spender: ROUTER_ADDRESS,
+      spender: checkAddress(),
       value: liquidityAmount.raw.toString(),
       nonce: nonce.toHexString(),
       deadline: deadline.toNumber()
@@ -259,7 +269,7 @@ export default function RemoveLiquidity({
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
-      setSignatureData(null)
+      //setSignatureData(null)
       return _onUserInput(field, typedValue)
     },
     [_onUserInput]
@@ -284,10 +294,22 @@ export default function RemoveLiquidity({
       throw new Error('missing currency amounts')
     }
     //const router = getRouterContract(chainId, library, account)
+    //if (!chainId || !library || !account) return
     const ethProxy = getETHProxyContract(chainId, library, account)
+    // //if (!chainId || !library || !account) return
     const usdtProxy = getUSDTProxyContract(chainId, library, account)
+    // //if (!chainId || !library || !account) return
     const usdcProxy = getUSDCProxyContract(chainId, library, account)
 
+    function checkContract(){
+      if(oneCurrencyIsWETH || oneCurrencyIsETH){
+       return ethProxy 
+      } else if (oneCurrencyIsUSDT){
+        return usdtProxy
+      } else {
+        return usdcProxy
+      }
+}
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -299,20 +321,19 @@ export default function RemoveLiquidity({
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
     const currencyBIsETH = currencyB === ETHER
-    const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
+    //const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
 
     if (!tokenA || !tokenB) throw new Error('could not wrap')
-
-    let estimate, 
-    method: (...args: any) => Promise<TransactionResponse>, 
-    args: Array<string | string[] | number | boolean>
+    let methodNames: string[], args: Array<string | string[] | number | boolean>
+    // let estimate, 
+    // method: (...args: any) => Promise<TransactionResponse>, 
+    // args: Array<string | string[] | number | boolean>
     //value: BigNumber | null
     // we have approval, use normal remove liquidity
-    if (approval !== ApprovalState.APPROVED) {
+    if (approval === ApprovalState.APPROVED) {
       // removeLiquidityETH
       if (oneCurrencyIsETH) {
-        estimate = ethProxy.estimateGas.removeLiquidityETH
-        method = ethProxy.removeLiquidityETH//['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
+        methodNames = ['removeLiquidityETH']
         args = [
           //currencyBIsETH ? tokenA.address : tokenB.address,
           liquidityAmount.raw.toString(),
@@ -325,16 +346,17 @@ export default function RemoveLiquidity({
       }
       // removeLiquidity
       else {
-        if(oneCurrencyIsWETH){
-          estimate = ethProxy.estimateGas.removeLiquidity
-          method = ethProxy.removeLiquidity
-        } else if (oneCurrencyIsUSDT){
-          estimate = usdtProxy.estimateGas.removeLiquidity
-          method = usdtProxy.removeLiquidity
-        } else {
-          estimate = usdcProxy.estimateGas.removeLiquidity
-          method = usdcProxy.removeLiquidity
-        }
+        methodNames = ['removeLiquidity']
+        // if(oneCurrencyIsWETH){
+        //   estimate = ethProxy.estimateGas.removeLiquidity
+        //   method = ethProxy.removeLiquidity
+        // } else if (oneCurrencyIsUSDT){
+        //   estimate = usdtProxy.estimateGas.removeLiquidity
+        //   method = usdtProxy.removeLiquidity
+        // } else {
+        //   estimate = usdcProxy.estimateGas.removeLiquidity
+        //   method = usdcProxy.removeLiquidity
+        // }
         args = [
           //tokenA.address,
           //tokenB.address,
@@ -346,94 +368,59 @@ export default function RemoveLiquidity({
         ]
         
       }
-    // }
-    // // we have a signataure, use permit versions of remove liquidity
-    // else if (signatureData !== null) {
-    //   // removeLiquidityETHWithPermit
-    //   if (oneCurrencyIsETH) {
-    //     method = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
-    //     args = [
-    //       currencyBIsETH ? tokenA.address : tokenB.address,
-    //       liquidityAmount.raw.toString(),
-    //       amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-    //       amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-    //       account,
-    //       signatureData.deadline,
-    //       false,
-    //       signatureData.v,
-    //       signatureData.r,
-    //       signatureData.s
-    //     ]
-    //   }
-    //   // removeLiquidityETHWithPermit
-    //   else {
-    //     method = ['removeLiquidityWithPermit']
-    //     args = [
-    //       tokenA.address,
-    //       tokenB.address,
-    //       liquidityAmount.raw.toString(),
-    //       amountsMin[Field.CURRENCY_A].toString(),
-    //       amountsMin[Field.CURRENCY_B].toString(),
-    //       account,
-    //       signatureData.deadline,
-    //       false,
-    //       signatureData.v,
-    //       signatureData.r,
-    //       signatureData.s
-    //     ]
-    //   }
-    // } else {
-    //   throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
-    // }
+    }
+   else {
+      throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
+    }
 
-    // const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
-    //   methodNames.map(methodName =>
-    //     router.estimateGas[methodName](...args)
-    //       .then(calculateGasMargin)
-    //       .catch(error => {
-    //         console.error(`estimateGas failed`, methodName, args, error)
-    //         return undefined
-    //       })
-    //   )
-    // )
-
-    // const indexOfSuccessfulEstimation = safeGasEstimates.findIndex(safeGasEstimate =>
-    //   BigNumber.isBigNumber(safeGasEstimate)
-    // )
-
-    // all estimations failed...
-    // if (indexOfSuccessfulEstimation === -1) {
-    //   console.error('This transaction would fail. Please contact support.')
-    // } else {
-    //   const methodName = methodNames[indexOfSuccessfulEstimation]
-    //   const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
-
-      setAttemptingTxn(true)
-      await estimate(...args)
-        .then(estimatedGasLimit => 
-          method(...args, {
-            gasLimit: calculateGasMargin(estimatedGasLimit)
-          }).then(response=>{
-            setAttemptingTxn(false)
-            addTransaction(response, {
-              summary:
-                'Remove ' +
-                parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-                ' ' +
-                currencyA?.symbol +
-                ' and ' +
-                parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-                ' ' +
-                currencyB?.symbol
-            })
-            setTxHash(response.hash)
-            ReactGA.event({
-              category: 'Liquidity',
-              action: 'Remove',
-              label: [currencyA?.symbol, currencyB?.symbol].join('/')
-            })
+    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+      methodNames.map(methodName =>
+        checkContract().estimateGas[methodName](...args)
+          .then(calculateGasMargin)
+          .catch(error => {
+            console.error(`estimateGas failed`, methodName, args, error)
+            return undefined
           })
-        )
+      )
+    )
+
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex(safeGasEstimate =>
+      BigNumber.isBigNumber(safeGasEstimate)
+    )
+
+    //all estimations failed...
+    if (indexOfSuccessfulEstimation === -1) {
+      console.error('This transaction would fail. Please contact support.')
+    } else {
+      const methodName = methodNames[indexOfSuccessfulEstimation]
+      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
+
+      await checkContract()[methodName](...args, {
+        gasLimit: safeGasEstimate
+      })
+        .then((response: TransactionResponse) => {
+          setAttemptingTxn(false)
+
+          addTransaction(response, {
+            summary:
+              'Remove ' +
+              parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
+              ' ' +
+              currencyA?.symbol +
+              ' and ' +
+              parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
+              ' ' +
+              currencyB?.symbol
+          })
+
+          setTxHash(response.hash)
+
+          ReactGA.event({
+            category: 'Liquidity',
+            action: 'Remove',
+            label: [currencyA?.symbol, currencyB?.symbol].join('/')
+          })
+        })
         .catch((error: Error) => {
           setAttemptingTxn(false)
           // we only care if the error is something _other_ than the user rejected the tx
@@ -554,7 +541,7 @@ export default function RemoveLiquidity({
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false)
-    setSignatureData(null) // important that we clear signature data to avoid bad sigs
+    //setSignatureData(null) // important that we clear signature data to avoid bad sigs
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.LIQUIDITY_PERCENT, '0')
@@ -747,9 +734,6 @@ export default function RemoveLiquidity({
                   label={'Output'}
                   onCurrencySelect={handleSelectCurrencyA}
                   id="remove-liquidity-tokena"
-                  // isCurrencyETH = {oneCurrencyIsETH}
-                  // isCurrencyWETH = {oneCurrencyIsWETH}
-                  // isCurrencyUSDT = {oneCurrencyIsUSDT}
                 />
                 <ColumnCenter>
                   <Plus size="16" color={theme.text2} />
@@ -764,9 +748,6 @@ export default function RemoveLiquidity({
                   label={'Output'}
                   onCurrencySelect={handleSelectCurrencyB}
                   id="remove-liquidity-tokenb"
-                  // isCurrencyETH = {oneCurrencyIsETH}
-                  // isCurrencyWETH = {oneCurrencyIsWETH}
-                  // isCurrencyUSDT = {oneCurrencyIsUSDT}
                 />
               </>
             )}

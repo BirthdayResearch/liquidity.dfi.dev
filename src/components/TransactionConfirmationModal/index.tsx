@@ -5,15 +5,14 @@ import Modal from '../Modal'
 import { ExternalLink } from '../../theme'
 import { Text } from 'rebass'
 import { CloseIcon, CustomLightSpinner } from '../../theme/components'
-import { RowBetween, RowFixed } from '../Row'
-import { AlertTriangle, ArrowUpCircle, CheckCircle } from 'react-feather'
-import { ButtonPrimary, ButtonLight } from '../Button'
+import { RowBetween} from '../Row'
+import { AlertTriangle, ArrowUpCircle } from 'react-feather'
+import { ButtonPrimary } from '../Button'
 import { AutoColumn, ColumnCenter } from '../Column'
 import Circle from '../../assets/images/blue-loader.svg'
-import MetaMaskLogo from '../../assets/images/metamask.png'
 import { getEtherscanLink } from '../../utils'
 import { useActiveWeb3React } from '../../hooks'
-import useAddTokenToMetamask from 'hooks/useAddTokenToMetamask'
+
 
 const Wrapper = styled.div`
   width: 100%;
@@ -32,11 +31,6 @@ const ConfirmedIcon = styled(ColumnCenter)`
   padding: 60px 0;
 `
 
-const StyledLogo = styled.img`
-  height: 16px;
-  width: 16px;
-  margin-left: 6px;
-`
 
 function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () => void; pendingText: string }) {
   return (
@@ -80,9 +74,6 @@ function TransactionSubmittedContent({
 }) {
   const theme = useContext(ThemeContext)
 
-  const { library } = useActiveWeb3React()
-
-  const { addToken, success } = useAddTokenToMetamask(currencyToAdd)
 
   return (
     <Wrapper>
@@ -104,20 +95,6 @@ function TransactionSubmittedContent({
                 View on Etherscan
               </Text>
             </ExternalLink>
-          )}
-          {currencyToAdd && library?.provider?.isMetaMask && (
-            <ButtonLight mt="12px" padding="6px 12px" width="fit-content" onClick={addToken}>
-              {!success ? (
-                <RowFixed>
-                  Add {currencyToAdd.symbol} to Metamask <StyledLogo src={MetaMaskLogo} />
-                </RowFixed>
-              ) : (
-                <RowFixed>
-                  Added {currencyToAdd.symbol}{' '}
-                  <CheckCircle size={'16px'} stroke={theme.green1} style={{ marginLeft: '6px' }} />
-                </RowFixed>
-              )}
-            </ButtonLight>
           )}
           <ButtonPrimary onClick={onDismiss} style={{ margin: '20px 0 0 0' }}>
             <Text fontWeight={500} fontSize={20}>

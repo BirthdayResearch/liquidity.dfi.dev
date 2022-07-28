@@ -1,7 +1,7 @@
-import { DFI} from './../../constants/index'
+import { DFI, DFI_TEST_ADDRESS, ETH_PROXY_ADDRESS, MUSDC, MUSDT, USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import ERC20_INTERFACE from '../../constants/abis/erc20'
+import ERC20_INTERFACE, { ETH_LP_ABI_INTERFACE, USDC_LP_ABI_INTERFACE, USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useActiveWeb3React } from '../../hooks'
 import { useMulticallContract} from '../../hooks/useContract'
@@ -93,14 +93,14 @@ export enum BalState{
 }
 
 
- export function useTokenBalancesEthProxy(
+export function useTokenBalancesEthProxy(
   address: (string | undefined)[], contractAbi : Interface, contractaddress: (string | undefined)[]
 ) {
   //const add: (string | undefined )[]= [USDC_PROXY_ADDRESS]
   const results = useMultipleContractSingleData(contractaddress, contractAbi, 'stakingMap', address)
   
   return useMemo(()=>{
-    return results.map((result, i)=>{
+    return results.map((result)=>{
       const {result: bal, loading} = result
       if(loading) return [BalState.LOADING, null]
       if(!bal) return [BalState.NOT_EXISTS, null]
@@ -109,6 +109,66 @@ export enum BalState{
     }, [results]
   )
 
+}
+
+export function useTokenBalancesProxy(
+  address?: string,
+  tokens?: (Token | undefined)[]
+): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+  const validatedTokens: Token[] = useMemo(
+    () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
+    [tokens]
+  )
+  const validatedTokenAddresses = useMemo(() => validatedTokens.map(vt => vt.address), [validatedTokens])
+
+  function checkContractAddress(){
+    if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDT.address )|| (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDT.address)){
+        return [USDT_PROXY_ADDRESS]
+      } else if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDC.address) || (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDC.address)){
+        return [USDC_PROXY_ADDRESS]
+      } else{
+        return [ETH_PROXY_ADDRESS] 
+      }
+    }
+
+  function checkContractAbi(){
+    if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDT.address) || (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDT.address)){
+        return USDT_LP_ABI_INTERFACE 
+      } else if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDT.address) || (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDT.address)){
+        return USDC_LP_ABI_INTERFACE
+      } else{
+        return ETH_LP_ABI_INTERFACE 
+      }
+    }
+  
+
+  const balances = useMultipleContractSingleData(checkContractAddress(), checkContractAbi(), 'stakingMap', [address])
+  const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
+
+  return [
+    useMemo(
+      () =>
+        address && validatedTokens.length > 0
+          ? validatedTokens.reduce<{ [tokenAddress: string]: TokenAmount | undefined }>((memo, token, i) => {
+              const value = balances?.[i]?.result?.[0]
+              const amount = value ? JSBI.BigInt(value.toString()) : undefined
+              if (amount) {
+                memo[token.address] = new TokenAmount(token, amount)
+              }
+              return memo
+            }, {})
+          : {},
+      [address, validatedTokens, balances]
+    ),
+    anyLoading
+  ]
+}
+
+export function useTokenBalanceproxy(
+  address?: string,
+  tokens?: (Token | undefined)[]
+): { [tokenAddress: string]: TokenAmount | undefined } {
+  return useTokenBalancesProxy(address, tokens)[0]
 }
 
 export function useTokenBalances(
