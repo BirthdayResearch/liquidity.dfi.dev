@@ -160,8 +160,8 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
 }
 
 export default function FullPositionCard({ pair, border, stakedBalance }: PositionCardProps) {
-  const currency0 = unwrappedToken(pair.token0)
-  const currency1 = unwrappedToken(pair.token1)
+  const currency1 = unwrappedToken(pair.token0)
+  const currency0 = unwrappedToken(pair.token1)
 
   const [showMore, setShowMore] = useState(false)
 
