@@ -1,4 +1,4 @@
-import { UNI } from './../../constants/index'
+import { PROXIES, ProxyInfo, UNI } from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
@@ -9,6 +9,7 @@ import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 import { useUserUnclaimedAmount } from '../claim/hooks'
 import { useTotalUniEarned } from '../stake/hooks'
+import PROXY_INTERFACE from 'constants/abis/proxy_staking'
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -153,4 +154,43 @@ export function useAggregateUniBalance(): TokenAmount | undefined {
       uniUnHarvested?.raw ?? JSBI.BigInt(0)
     )
   )
+}
+
+export function useProxies(): ProxyInfo[] {
+  const { chainId } = useActiveWeb3React()
+
+  return useMemo(() => PROXIES.filter(p => p.chainId === chainId), [chainId])
+}
+
+export function useGetProxyLiquidityOfUser(
+  address?: string,
+  proxies?: (ProxyInfo | undefined)[]
+): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+  const validatedProxies: ProxyInfo[] = useMemo(
+    () => proxies?.filter((p?: ProxyInfo): p is ProxyInfo => isAddress(p?.address) !== false) ?? [],
+    [proxies]
+  )
+
+  const proxyAddresses = useMemo(() => validatedProxies.map(p => p.address), [validatedProxies])
+  const balances = useMultipleContractSingleData(proxyAddresses, PROXY_INTERFACE, 'stakingMap', [address])
+  const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
+
+  return [
+    useMemo(
+      () =>
+        address && validatedProxies.length > 0
+          ? validatedProxies.reduce<{ [address: string]: TokenAmount | undefined }>((memo, proxy, i) => {
+              const value = balances?.[i]?.result?.[0]
+              const amount = value ? JSBI.BigInt(value.toString()) : undefined
+              if (amount) {
+                const token = new Token(proxy.chainId, proxy.underlyingPairAddress, 18)
+                memo[proxy.address] = new TokenAmount(token, amount)
+              }
+              return memo
+            }, {})
+          : {},
+      [address, validatedProxies, balances]
+    ),
+    anyLoading
+  ]
 }
