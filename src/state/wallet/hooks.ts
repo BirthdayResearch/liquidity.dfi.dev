@@ -1,18 +1,16 @@
-import { /*ETH_PROXY_ADDRESS,, UNI */ DFI} from './../../constants/index'
+import { DFI} from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
-//import {USDC_LP_ABI_INTERFACE }from '../../constants/abis/erc20'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
-//import ETH_LP_ABI from '../../constants/abis/eth-lp-proxy.json'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useActiveWeb3React } from '../../hooks'
-import { useMulticallContract/*, useEthLpContract, useUsdtLpContract*/, useUsdcLpContract } from '../../hooks/useContract'
+import { useMulticallContract} from '../../hooks/useContract'
 import { isAddress } from '../../utils'
-import { useSingleContractMultipleData, useMultipleContractSingleData/*, useSingleCallResult*/ } from '../multicall/hooks'
+import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 import { useUserUnclaimedAmount } from '../claim/hooks'
 import { useTotalUniEarned } from '../stake/hooks'
-import { Contract } from 'ethers'
-//import { add } from 'lodash'
+import { Interface } from '@ethersproject/abi'
+
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -87,68 +85,30 @@ export function useTokenBalancesWithLoadingIndicator(
   ]
 }
 
-/**
- * Returns a map of token addresses to their eventually consistent token balances for a single account.
- */
- export async function useTokenBalancesEthProxy(
-  address: string,
+export enum BalState{
+  LOADING,
+  NOT_EXISTS,
+  EXISTS,
+  INVALID
+}
+
+
+ export function useTokenBalancesEthProxy(
+  address: (string | undefined)[], contractAbi : Interface, contractaddress: (string | undefined)[]
 ) {
-  const usdcProxy: Contract | null = useUsdcLpContract()
-  let balance = await fetch(usdcProxy!.stakingMap(address))
-
-  if (balance){
-      const amount = balance ? balance.toString() : undefined
-      return amount
-    }
-
-  return null
+  //const add: (string | undefined )[]= [USDC_PROXY_ADDRESS]
+  const results = useMultipleContractSingleData(contractaddress, contractAbi, 'stakingMap', address)
   
-  
+  return useMemo(()=>{
+    return results.map((result, i)=>{
+      const {result: bal, loading} = result
+      if(loading) return [BalState.LOADING, null]
+      if(!bal) return [BalState.NOT_EXISTS, null]
+      return bal.toString()
+      })
+    }, [results]
+  )
 
-  // const ethProxy: Contract | null = useEthLpContract()
-  // const usdtProxy: Contract | null = useUsdtLpContract()
-  //const usdcProxy: Contract | null = useUsdcLpContract()
-  // let balance
-  // async () => {
-  //    balance = await usdcProxy!.stakingMap(address)
-  // }
-  
-  // if (balance){
-  //   const amount = balance ? balance.toString() : undefined
-  //   return amount
-  // }
-
-  // return null
-
-
-  // const validatedContract : Contract[] = [ethProxy!, usdtProxy!, usdcProxy!]
-  // const validatedTokenAddresses = useMemo(() => validatedContract.map(vt => vt.address), [validatedContract])
-
-  // const balances = useMultipleContractSingleData(validatedTokenAddresses, USDC_LP_ABI_INTERFACE, 'stakingMap', [address])
-
-  // const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
-
-  // //const balances = useSingleCallResult( ethProxy, 'stakingMap', [address])
-
-  // //const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
-
-  // return [
-  //   useMemo(
-  //     () =>
-  //       address && validatedContract.length > 0
-  //         ? validatedContract.reduce<{ [tokenAddress: string]: Contract | undefined }>((memo, token, i) => {
-  //             const value = balances?.[i]?.result?.[0]
-  //             const amount = value ? JSBI.BigInt(value.toString()) : undefined
-  //             if (amount) {
-  //               memo[token.address] = new Contract(token.address, USDC_LP_ABI_INTERFACE)
-  //             }
-  //             return memo
-  //           }, {})
-  //         : {},
-  //     [address, validatedContract, balances]
-  //   ),
-  //   anyLoading
-  // ]
 }
 
 export function useTokenBalances(

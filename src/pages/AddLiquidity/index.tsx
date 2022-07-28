@@ -19,10 +19,10 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import {MUSDT/*, MUSDC*/} from '../../constants/index'
+import {MUSDT} from '../../constants/index'
 
 
-import {  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS,/* ROUTER_ADDRESS ,*/ ETH_PROXY_ADDRESS} from '../../constants'
+import {  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS} from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -45,17 +45,15 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
-//import { Address } from 'cluster'
 
 
 const LpFrame = styled.div`
-  display: flex;
+  display: grid;
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
-  align-items: center;
   flex-direction: row;
-  width: auto;
+  width: 92%;
   top: 0;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -93,11 +91,11 @@ const StyledNavLink = styled(NavLink).attrs({
   font-size: 1rem;
   width: fit-content;
   margin: 0 10px;
-  font-weight: 200;
+  font-weight: 450;
 
   &.${activeClassName} {
-    border-radius: 10px;
-    font-weight: 300;
+    border-radius: 15px;
+    font-weight: 500;
     color: ${({ theme }) => theme.text1};
   }
 
@@ -134,11 +132,6 @@ export default function AddLiquidity({
     ((currencyA && currencyEquals(currencyA, ETHER)) ||
       (currencyB && currencyEquals(currencyB, ETHER)))
   )
-  // const oneCurrencyIsUSDC = Boolean(
-  //   chainId &&
-  //   ((currencyA && currencyEquals(currencyA, MUSDC)) ||
-  //     (currencyB && currencyEquals(currencyB, MUSDC)))
-  // )
 
   const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
 

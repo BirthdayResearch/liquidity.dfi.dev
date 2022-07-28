@@ -15,8 +15,6 @@ import { ButtonPrimary, ButtonLight, ButtonError, ButtonConfirmed } from '../../
 import { BlueCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
-//import CurrencyInputPanel from '../../components/CurrencyInputPanel'
-//import CurrencyInputPanelRemoveLp from '../../components/CurrencyInputPanelRemoveLp'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
@@ -24,7 +22,7 @@ import Row, { RowBetween, RowFixed } from '../../components/Row'
 
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { MUSDT, ROUTER_ADDRESS } from '../../constants'
+import { ETH_PROXY_ADDRESS, MUSDT, ROUTER_ADDRESS, USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { usePairContract } from '../../hooks/useContract'
@@ -51,12 +49,11 @@ import CurrencyInputPanelRemoveLp from '../../components/CurrencyInputPanelRemov
 
 const LpFrame = styled.div`
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
-  align-items: center;
   flex-direction: row;
-  width: 100%;
+  width: 92%;
   top: 0;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -72,6 +69,11 @@ const LpFrame = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
         padding: 0.5rem 1rem;
   `}
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
 `
 
 const activeClassName = 'ACTIVE'
@@ -80,7 +82,7 @@ const StyledNavLink = styled(NavLink).attrs({
   activeClassName
 })`
   ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
+  align-items: right;
   border-radius: 3rem;
   outline: none;
   cursor: pointer;
@@ -89,11 +91,11 @@ const StyledNavLink = styled(NavLink).attrs({
   font-size: 1rem;
   width: fit-content;
   margin: 0 12px;
-  font-weight: 500;
+  font-weight: 450;
 
   &.${activeClassName} {
     border-radius: 15px;
-    font-weight: 600;
+    font-weight: 500;
     color: ${({ theme }) => theme.text1};
   }
 
@@ -170,10 +172,20 @@ export default function RemoveLiquidity({
 
   // pair contract
   const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
+  //usdc pair
+  function checkingApprove(){
+    if (oneCurrencyIsETH || oneCurrencyIsWETH){
+      return ETH_PROXY_ADDRESS
+    } else if (oneCurrencyIsUSDT){
+      return USDT_PROXY_ADDRESS
+    } else {
+      return USDC_PROXY_ADDRESS
+    }
+  }
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], checkingApprove())
 
   const isArgentWallet = useIsArgentWallet()
 
@@ -296,7 +308,7 @@ export default function RemoveLiquidity({
     args: Array<string | string[] | number | boolean>
     //value: BigNumber | null
     // we have approval, use normal remove liquidity
-    if (approval === ApprovalState.APPROVED) {
+    if (approval !== ApprovalState.APPROVED) {
       // removeLiquidityETH
       if (oneCurrencyIsETH) {
         estimate = ethProxy.estimateGas.removeLiquidityETH
@@ -707,6 +719,7 @@ export default function RemoveLiquidity({
             {showDetailed && (
               <>
                 <CurrencyInputPanelRemoveLp
+                  hideBalance={false}
                   value={formattedAmounts[Field.LIQUIDITY]}
                   onUserInput={onLiquidityInput}
                   onMax={() => {
@@ -717,6 +730,9 @@ export default function RemoveLiquidity({
                   currency={pair?.liquidityToken}
                   pair={pair}
                   id="liquidity-amount"
+                  isCurrencyETH = {oneCurrencyIsETH}
+                  isCurrencyWETH = {oneCurrencyIsWETH}
+                  isCurrencyUSDT = {oneCurrencyIsUSDT}
                 />
                 <ColumnCenter>
                   <ArrowDown size="16" color={theme.text2} />
@@ -731,6 +747,9 @@ export default function RemoveLiquidity({
                   label={'Output'}
                   onCurrencySelect={handleSelectCurrencyA}
                   id="remove-liquidity-tokena"
+                  // isCurrencyETH = {oneCurrencyIsETH}
+                  // isCurrencyWETH = {oneCurrencyIsWETH}
+                  // isCurrencyUSDT = {oneCurrencyIsUSDT}
                 />
                 <ColumnCenter>
                   <Plus size="16" color={theme.text2} />
@@ -745,6 +764,9 @@ export default function RemoveLiquidity({
                   label={'Output'}
                   onCurrencySelect={handleSelectCurrencyB}
                   id="remove-liquidity-tokenb"
+                  // isCurrencyETH = {oneCurrencyIsETH}
+                  // isCurrencyWETH = {oneCurrencyIsWETH}
+                  // isCurrencyUSDT = {oneCurrencyIsUSDT}
                 />
               </>
             )}

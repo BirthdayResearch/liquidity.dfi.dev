@@ -2,7 +2,7 @@ import { Currency, Pair } from '@uniswap/sdk'
 import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
-/*import { useCurrencyBalance, useTokenBalancesEthProxy } from '../../state/wallet/hooks'*/
+import { useTokenBalancesEthProxy } from '../../state/wallet/hooks'
 import CurrencySearchModal from '../SearchModal/CurrencySearchModal'
 import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
@@ -10,15 +10,21 @@ import { RowBetween } from '../Row'
 import { TYPE } from '../../theme'
 import { Input as NumericalInput } from '../NumericalInput'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
-import { useAsync } from "react-async"
+//import { useAsync } from "react-async"
 //import { Contract } from '@ethersproject/contracts'
 // import { useUsdcLpContract } from 'hooks/useContract'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
+import { ETH_LP_ABI_INTERFACE, USDC_LP_ABI_INTERFACE, USDT_LP_ABI_INTERFACE } from 'constants/abis/erc20'
+import { ETH_PROXY_ADDRESS,USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
 //import { useUsdcLpContract } from 'hooks/useContract'
-import { getUSDCProxyContract } from 'utils'
+//import { getUSDCProxyContract } from 'utils'
+//import { useAsync } from 'react-async'
+//import { useUsdcLpContract } from 'hooks/useContract'
+//import { useAsync } from 'react-async'
+//import { Contract } from 'ethers'
 //import { BigNumber } from 'ethers'
 
 const InputRow = styled.div<{ selected: boolean }>`
@@ -121,7 +127,7 @@ const StyledBalanceMax = styled.button`
   `};
 `
 
-interface CurrencyInputPanelProps {
+interface CurrencyInputPanelPropsRemove {
   value: string
   onUserInput: (value: string) => void
   onMax?: () => void
@@ -137,7 +143,11 @@ interface CurrencyInputPanelProps {
   id: string
   showCommonBases?: boolean
   customBalanceText?: string
+  isCurrencyETH?: boolean,
+  isCurrencyUSDT?: boolean,
+  isCurrencyWETH?: boolean
 }
+
 
 export default function CurrencyInputPanelRemoveLp({
   value,
@@ -154,20 +164,38 @@ export default function CurrencyInputPanelRemoveLp({
   otherCurrency,
   id,
   showCommonBases,
-  customBalanceText
-}: CurrencyInputPanelProps) {
+  customBalanceText,
+  isCurrencyETH,
+  isCurrencyWETH,
+  isCurrencyUSDT
+}: CurrencyInputPanelPropsRemove) {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
-  const { account, chainId, library } = useActiveWeb3React()
-  
-  const usdcProxy = getUSDCProxyContract(chainId!, library!, account!)
-
-  async function test() {
-    const balance = await usdcProxy.stakingMap(account)
-    return balance.toString()
+  const { account} = useActiveWeb3React()
+  const acc: (string | undefined)[] = [account!]
+  const ethAddress : (string | undefined)[] = [ETH_PROXY_ADDRESS]
+  const usdtAddress : (string | undefined)[] = [USDT_PROXY_ADDRESS]
+  const usdcAddress : (string | undefined)[] = [USDC_PROXY_ADDRESS]
+  function checkAddress(){
+    if(isCurrencyETH || isCurrencyWETH){
+      return ethAddress
+    } else if(isCurrencyUSDT){
+      return usdtAddress
+    } else{
+      return usdcAddress
+    } 
   }
-  //const bool : boolean = false
-  const selectedCurrencyBalance =  useAsync(test())//useCurrencyBalance(account ?? undefined, currency ?? undefined)
+
+  function checkInterface() {
+    if(isCurrencyETH || isCurrencyWETH){
+      return ETH_LP_ABI_INTERFACE
+    } else if(isCurrencyUSDT){
+      return USDT_LP_ABI_INTERFACE
+    } else{
+      return USDC_LP_ABI_INTERFACE
+    }
+  }
+  const selectedCurrencyBalance =  useTokenBalancesEthProxy(acc, checkInterface(), checkAddress())[0]//useCurrencyBalance(account ?? undefined, currency ?? undefined)
   const theme = useTheme()
 
   const handleDismissSearch = useCallback(() => {
@@ -193,7 +221,7 @@ export default function CurrencyInputPanelRemoveLp({
                   style={{ display: 'inline', cursor: 'pointer' }}
                 >
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? (customBalanceText ?? 'Balace: ') + selectedCurrencyBalance//?.toSignificant(6)
+                    ? (customBalanceText ?? 'Balace: ') + selectedCurrencyBalance//.toSignificant(6)
                     : ' -'}
                 </TYPE.body>
               )}
@@ -261,3 +289,4 @@ export default function CurrencyInputPanelRemoveLp({
     </InputPanel>
   )
 }
+
