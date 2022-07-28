@@ -124,7 +124,7 @@ export default function Pool() {
                   as={Link}
                   padding="5px 8px"
                   borderRadius="12px"
-                  to="/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/"
+                  to="/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH"
                 >
                   <Text fontWeight={500} fontSize={16}>
                     Add Liquidity
