@@ -130,8 +130,6 @@ export default function Pool() {
   const userProxyLiquidityIsLoading =
     fetchingProxyLiquidity || proxyV2Pairs?.length < proxyWithBalance.length || proxyV2Pairs?.some(V2Pair => !V2Pair)
 
-  console.log(proxyV2PairsWithLiquidity)
-  console.log(userProxyLiquidityIsLoading)
   return (
     <>
       <PageWrapper>
