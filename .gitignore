@@ -1,7 +1,30 @@
-# See https://help.github.com/ignore-files/ for more about ignoring files.
+# IntelliJ
+.idea/*
+!.idea/inspectionProfiles/
+!.idea/dictionaries/
+!.idea/codeStyles/
+!.idea/modules.xml
+!.idea/*.iml
+!.idea/README.md
 
-# dependencies
-/node_modules
+!.idea/.run/
+.idea/.run/*
+!.idea/.run/run-all-jest-tests-from-proj-root.run.xml
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# node_modules
+node_modules
+package-lock.json
+!/package-lock.json
+yarn.lock
 
 # testing
 /coverage
@@ -23,11 +46,8 @@ yarn-debug.log*
 yarn-error.log*
 
 notes.txt
-.idea/
 
 .vscode/
-
-package-lock.json
 
 cypress/videos
 cypress/screenshots
