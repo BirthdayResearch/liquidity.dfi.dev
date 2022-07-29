@@ -8,7 +8,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
-import { useTokenBalanceproxy/*, useTokenBalances*/ } from '../wallet/hooks'
+import { useTokenBalanceproxy} from '../wallet/hooks'
 import { Field, typeInput } from './actions'
 
 export function useBurnState(): AppState['burn'] {
@@ -35,7 +35,6 @@ export function useDerivedBurnInfo(
   // pair + totalsupply
   const [, pair] = usePair(currencyA, currencyB)
 
-  // balances
   const relevantTokenBalances = useTokenBalanceproxy(account ?? undefined, [pair?.liquidityToken])
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
 

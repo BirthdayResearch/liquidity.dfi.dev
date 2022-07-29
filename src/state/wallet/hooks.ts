@@ -1,7 +1,7 @@
 import { DFI, DFI_TEST_ADDRESS, ETH_PROXY_ADDRESS, MUSDC, MUSDT, USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import ERC20_INTERFACE, { ETH_LP_ABI_INTERFACE, USDC_LP_ABI_INTERFACE, USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
+import ERC20_INTERFACE, { USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useActiveWeb3React } from '../../hooks'
 import { useMulticallContract} from '../../hooks/useContract'
@@ -130,19 +130,8 @@ export function useTokenBalancesProxy(
         return [ETH_PROXY_ADDRESS] 
       }
     }
-
-  function checkContractAbi(){
-    if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDT.address) || (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDT.address)){
-        return USDT_LP_ABI_INTERFACE 
-      } else if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDT.address) || (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDT.address)){
-        return USDC_LP_ABI_INTERFACE
-      } else{
-        return ETH_LP_ABI_INTERFACE 
-      }
-    }
   
-
-  const balances = useMultipleContractSingleData(checkContractAddress(), checkContractAbi(), 'stakingMap', [address])
+  const balances = useMultipleContractSingleData(checkContractAddress(), USDT_LP_ABI_INTERFACE, 'stakingMap', [address])
   const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
 
   return [

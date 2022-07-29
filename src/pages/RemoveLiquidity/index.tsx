@@ -25,7 +25,7 @@ import CurrencyLogo from '../../components/CurrencyLogo'
 import { ETH_PROXY_ADDRESS, MUSDT, /*ROUTER_ADDRESS,*/ USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
-import { usePairContract } from '../../hooks/useContract'
+import { /*usePairContract,*/ useEthLpContract, useUsdcLpContract, useUsdtLpContract } from '../../hooks/useContract'
 import useIsArgentWallet from '../../hooks/useIsArgentWallet'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
@@ -168,11 +168,22 @@ export default function RemoveLiquidity({
     [Field.CURRENCY_B]:
       independentField === Field.CURRENCY_B ? typedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? ''
   }
-
   const atMaxAmount = parsedAmounts[Field.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
 
   // pair contract
-  const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
+  const ethPairContract: Contract | null = useEthLpContract()
+  const usdcPairContract: Contract | null = useUsdcLpContract()
+  const usdtPairContract: Contract | null = useUsdtLpContract()//usePairContract(pair?.liquidityToken?.address)
+
+  function pairContract(){
+    if (oneCurrencyIsETH || oneCurrencyIsWETH){
+      return ethPairContract
+    } else if (oneCurrencyIsUSDT){
+      return usdtPairContract
+    } else {
+      return usdcPairContract
+    }
+  }
   //usdc pair
   function checkingApprove(){
     if (oneCurrencyIsETH || oneCurrencyIsWETH){
@@ -191,16 +202,8 @@ export default function RemoveLiquidity({
   const isArgentWallet = useIsArgentWallet()
 
   async function onAttemptToApprove() {
-    function checkAddress(){
-      if(oneCurrencyIsWETH || oneCurrencyIsETH){
-        return ETH_PROXY_ADDRESS
-      } else if (oneCurrencyIsUSDT){
-        return USDT_PROXY_ADDRESS
-      } else {
-        return USDC_PROXY_ADDRESS
-      }
-    }
-    if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
+  
+    if (!pairContract() || !pair || !library || !deadline) throw new Error('missing dependencies')
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
@@ -209,7 +212,7 @@ export default function RemoveLiquidity({
     }
 
     // try to gather a signature for permission
-    const nonce = await pairContract.nonces(account)
+   // const nonce = await pairContract.nonces(account)
 
     const EIP712Domain = [
       { name: 'name', type: 'string' },
@@ -232,9 +235,9 @@ export default function RemoveLiquidity({
     ]
     const message = {
       owner: account,
-      spender: checkAddress(),
+      spender: checkingApprove(),
       value: liquidityAmount.raw.toString(),
-      nonce: nonce.toHexString(),
+     // nonce: nonce.toHexString(),
       deadline: deadline.toNumber()
     }
     const data = JSON.stringify({
@@ -269,7 +272,7 @@ export default function RemoveLiquidity({
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
-      //setSignatureData(null)
+      setSignatureData(null)
       return _onUserInput(field, typedValue)
     },
     [_onUserInput]
@@ -309,7 +312,7 @@ export default function RemoveLiquidity({
       } else {
         return usdcProxy
       }
-}
+    }
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -325,10 +328,6 @@ export default function RemoveLiquidity({
 
     if (!tokenA || !tokenB) throw new Error('could not wrap')
     let methodNames: string[], args: Array<string | string[] | number | boolean>
-    // let estimate, 
-    // method: (...args: any) => Promise<TransactionResponse>, 
-    // args: Array<string | string[] | number | boolean>
-    //value: BigNumber | null
     // we have approval, use normal remove liquidity
     if (approval === ApprovalState.APPROVED) {
       // removeLiquidityETH
@@ -347,16 +346,6 @@ export default function RemoveLiquidity({
       // removeLiquidity
       else {
         methodNames = ['removeLiquidity']
-        // if(oneCurrencyIsWETH){
-        //   estimate = ethProxy.estimateGas.removeLiquidity
-        //   method = ethProxy.removeLiquidity
-        // } else if (oneCurrencyIsUSDT){
-        //   estimate = usdtProxy.estimateGas.removeLiquidity
-        //   method = usdtProxy.removeLiquidity
-        // } else {
-        //   estimate = usdcProxy.estimateGas.removeLiquidity
-        //   method = usdcProxy.removeLiquidity
-        // }
         args = [
           //tokenA.address,
           //tokenB.address,
@@ -717,9 +706,10 @@ export default function RemoveLiquidity({
                   currency={pair?.liquidityToken}
                   pair={pair}
                   id="liquidity-amount"
-                  isCurrencyETH = {oneCurrencyIsETH}
-                  isCurrencyWETH = {oneCurrencyIsWETH}
-                  isCurrencyUSDT = {oneCurrencyIsUSDT}
+                  isCurrencyETH={oneCurrencyIsETH}
+                  isCurrencyUSDT={oneCurrencyIsUSDT}
+                  isCurrencyWETH={oneCurrencyIsWETH}
+                  
                 />
                 <ColumnCenter>
                   <ArrowDown size="16" color={theme.text2} />

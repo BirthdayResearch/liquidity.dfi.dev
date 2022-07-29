@@ -17,8 +17,9 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
-import { ETH_LP_ABI_INTERFACE, USDC_LP_ABI_INTERFACE, USDT_LP_ABI_INTERFACE } from 'constants/abis/erc20'
+import { USDC_LP_ABI_INTERFACE } from 'constants/abis/erc20'
 import { ETH_PROXY_ADDRESS,USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
+
 //import { useUsdcLpContract } from 'hooks/useContract'
 //import { getUSDCProxyContract } from 'utils'
 //import { useAsync } from 'react-async'
@@ -166,13 +167,13 @@ export default function CurrencyInputPanelRemoveLp({
   showCommonBases,
   customBalanceText,
   isCurrencyETH,
-  isCurrencyWETH,
-  isCurrencyUSDT
+  isCurrencyUSDT,
+  isCurrencyWETH
 }: CurrencyInputPanelPropsRemove) {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
   const { account} = useActiveWeb3React()
-  const acc: (string | undefined)[] = [account!]
+  const address: (string | undefined)[] = [account!]
   const ethAddress : (string | undefined)[] = [ETH_PROXY_ADDRESS]
   const usdtAddress : (string | undefined)[] = [USDT_PROXY_ADDRESS]
   const usdcAddress : (string | undefined)[] = [USDC_PROXY_ADDRESS]
@@ -186,16 +187,7 @@ export default function CurrencyInputPanelRemoveLp({
     } 
   }
 
-  function checkInterface() {
-    if(isCurrencyETH || isCurrencyWETH){
-      return ETH_LP_ABI_INTERFACE
-    } else if(isCurrencyUSDT){
-      return USDT_LP_ABI_INTERFACE
-    } else{
-      return USDC_LP_ABI_INTERFACE
-    }
-  }
-  const selectedCurrencyBalance =  useTokenBalancesEthProxy(acc, checkInterface(), checkAddress())[0]//useCurrencyBalance(account ?? undefined, currency ?? undefined)
+  const selectedCurrencyBalance = useTokenBalancesEthProxy(address, USDC_LP_ABI_INTERFACE, checkAddress())
   const theme = useTheme()
 
   const handleDismissSearch = useCallback(() => {

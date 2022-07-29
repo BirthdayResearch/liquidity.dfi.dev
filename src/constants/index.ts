@@ -14,6 +14,15 @@ type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
 
+export interface ProxyInfo {
+  address: string
+  chainId: number
+  symbol: string
+  underlyingPairAddress: string
+  tokenA: Token
+  tokenB: Token
+}
+
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
 export const USDC = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
@@ -55,11 +64,39 @@ const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
 // DFI is not deployed at RINKEBY | ROPSTEN | KOVAN: Arbitrage address
 export const DFI: { [chainId in ChainId]: Token} = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, DFI_ADDRESS, 8, 'DFI', 'DeFiChain'),
-  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
-  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
-  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
-  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain')
+  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
+  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
+  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain')
 }
+
+// Proxy contact addresses
+export const PROXIES: ProxyInfo[] = [
+  {
+    address: '0x5fd39Bf6aE258351f453e55256B03085B34712f0',
+    chainId: ChainId.GÖRLI,
+    symbol: 'USDT',
+    underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: MUSDT
+  },
+  {
+    address: '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2',
+    chainId: ChainId.GÖRLI,
+    symbol: 'USDC',
+    underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: MUSDC
+  },
+  {
+    address: '0x69736086d7FF64e67ba0090229c9cdc1056fE039',
+    chainId: ChainId.GÖRLI,
+    symbol: 'WETH',
+    underlyingPairAddress: '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: WETH[ChainId.GÖRLI]
+  }
+]
 
 const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 export const UNI: { [chainId in ChainId]: Token } = {
