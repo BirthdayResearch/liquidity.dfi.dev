@@ -1,4 +1,4 @@
-import { DFI, ETH_PROXY_ADDRESS,  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
+import { PROXIES, ProxyInfo, DFI, ETH_PROXY_ADDRESS,  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE, { USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
@@ -130,7 +130,14 @@ export function useTokenBalancesProxy(
         return [USDC_PROXY_ADDRESS] 
       }
     }
-  
+  //const contractAddresses = [ETH_PROXY_ADDRESS, USDT_PROXY_ADDRESS, USDC_PROXY_ADDRESS]
+  //  const proxies = useProxies()
+  // const validatedProxies: ProxyInfo[] = useMemo(
+  //   () => proxies?.filter((p?: ProxyInfo): p is ProxyInfo => (p?.address) !== false) ?? [],
+  //   [proxies]
+  // )
+
+  // const proxyAddresses = useMemo(() => proxies.map(p => p.address), [proxies])
   const balances = useMultipleContractSingleData(checkContractAddress(), USDT_LP_ABI_INTERFACE, 'stakingMap', [address])
   const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
 
@@ -233,4 +240,43 @@ export function useAggregateUniBalance(): TokenAmount | undefined {
       uniUnHarvested?.raw ?? JSBI.BigInt(0)
     )
   )
+}
+
+export function useProxies(): ProxyInfo[] {
+  const { chainId } = useActiveWeb3React()
+
+  return useMemo(() => PROXIES.filter(p => p.chainId === chainId), [chainId])
+}
+
+export function useGetProxyLiquidityOfUser(
+  address?: string,
+  proxies?: (ProxyInfo | undefined)[]
+): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+  const validatedProxies: ProxyInfo[] = useMemo(
+    () => proxies?.filter((p?: ProxyInfo): p is ProxyInfo => isAddress(p?.address) !== false) ?? [],
+    [proxies]
+  )
+
+  const proxyAddresses = useMemo(() => validatedProxies.map(p => p.address), [validatedProxies])
+  const balances = useMultipleContractSingleData(proxyAddresses, USDT_LP_ABI_INTERFACE, 'stakingMap', [address])
+  const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
+
+  return [
+    useMemo(
+      () =>
+        address && validatedProxies.length > 0
+          ? validatedProxies.reduce<{ [address: string]: TokenAmount | undefined }>((memo, proxy, i) => {
+              const value = balances?.[i]?.result?.[0]
+              const amount = value ? JSBI.BigInt(value.toString()) : undefined
+              if (amount) {
+                const token = new Token(proxy.chainId, proxy.underlyingPairAddress, 18)
+                memo[proxy.address] = new TokenAmount(token, amount)
+              }
+              return memo
+            }, {})
+          : {},
+      [address, validatedProxies, balances]
+    ),
+    anyLoading
+  ]
 }

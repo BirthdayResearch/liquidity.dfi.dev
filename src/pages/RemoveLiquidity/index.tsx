@@ -20,7 +20,7 @@ import Row, { RowBetween, RowFixed } from '../../components/Row'
 
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { MUSDT} from '../../constants'
+import { USDT} from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
@@ -120,8 +120,8 @@ export default function RemoveLiquidity({
   )
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
-    ((currencyA && currencyEquals(currencyA, MUSDT)) ||
-      (currencyB && currencyEquals(currencyB, MUSDT)))
+    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+      (currencyB && currencyEquals(currencyB, USDT[chainId])))
   )
   const oneCurrencyIsETH = Boolean(
     chainId &&

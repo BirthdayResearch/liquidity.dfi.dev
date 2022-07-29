@@ -19,7 +19,7 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import {MUSDT} from '../../constants/index'
+import {USDT} from '../../constants/index'
 
 
 import {  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS} from '../../constants'
@@ -123,8 +123,8 @@ export default function AddLiquidity({
   )
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
-    ((currencyA && currencyEquals(currencyA, MUSDT)) ||
-      (currencyB && currencyEquals(currencyB, MUSDT)))
+    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+      (currencyB && currencyEquals(currencyB, USDT[chainId])))
   )
   const oneCurrencyIsETH = Boolean(
     chainId &&

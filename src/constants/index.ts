@@ -1,5 +1,6 @@
-import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
+import { ChainId, JSBI, Percent, Token, TokenAmount, WETH } from '@uniswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
+import { ProxyPair } from 'data/Reserves'
 
 import { injected, walletconnect } from '../connectors'
 
@@ -13,6 +14,7 @@ export { PRELOADED_PROPOSALS } from './proposals'
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
+ 
 
 export interface ProxyInfo {
   address: string
@@ -25,8 +27,6 @@ export interface ProxyInfo {
 
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
-export const USDC = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
-export const USDT = new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
 export const FEI = new Token(ChainId.MAINNET, '0x956F47F50A910163D8BF957Cf5846D573E7f87CA', 18, 'FEI', 'Fei USD')
 export const TRIBE = new Token(ChainId.MAINNET, '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B', 18, 'TRIBE', 'Tribe')
@@ -53,9 +53,7 @@ export const ETH_PROXY_ADDRESS = '0x69736086d7FF64e67ba0090229c9cdc1056fE039'
 // DFI GOERLI ADDRESS 
 export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
 // MockUSDT GOERLI USDT
-export const MUSDT = new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 8, 'MUSDT', 'Mock USDT')
-// MockUSDT GOERLI USDT
-export const MUSDC = new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 8, 'MUSDC', 'Mock USDC')
+export const MUSDC = new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC')
 // MockUSDT GOERLI USDT
 
 //MAINNET ADDRESS
@@ -70,6 +68,53 @@ export const DFI: { [chainId in ChainId]: Token} = {
   [ChainId.KOVAN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain')
 }
 
+//USDT
+//export const MUSDT_TEST = '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'
+//export const USDT = new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD')
+export const USDT: {[chainId in ChainId]: Token} = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD'),
+  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
+  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
+  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT')
+}
+
+//USDC
+//MockUSDT GOERLI USDT on other chain other than mainnet
+export const USDC_T = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
+export const USDC: {[chainId in ChainId]: Token} = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C'),
+  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
+  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
+  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC')
+
+}
+
+export const USDTProxy: {[chainId in ChainId]: ProxyPair} = {
+  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, ''), new TokenAmount(USDT[ChainId.MAINNET] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'), // This still needs to be updated with mainnet address
+  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+}
+
+export const USDCProxy: {[chainId in ChainId]: ProxyPair} = {
+  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, ''), new TokenAmount(USDC[ChainId.MAINNET] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'), // This still needs to be updated with mainnet address
+  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+}
+
+export const WETHProxy: {[chainId in ChainId]: ProxyPair} = {
+  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, ''), new TokenAmount(WETH[ChainId.MAINNET] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'), // This still needs to be updated with mainnet address
+  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+}
+
 // Proxy contact addresses
 export const PROXIES: ProxyInfo[] = [
   {
@@ -78,7 +123,7 @@ export const PROXIES: ProxyInfo[] = [
     symbol: 'USDT',
     underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
     tokenA: DFI[ChainId.GÖRLI],
-    tokenB: MUSDT
+    tokenB: USDT[ChainId.MAINNET]
   },
   {
     address: '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2',
@@ -129,7 +174,7 @@ const WETH_ONLY: ChainTokenList = {
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
@@ -158,13 +203,13 @@ export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: To
 // used for display in the default list when adding liquidity
 export const SUGGESTED_BASES: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
@@ -173,8 +218,8 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
       new Token(ChainId.MAINNET, '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', 8, 'cDAI', 'Compound Dai'),
       new Token(ChainId.MAINNET, '0x39AA39c021dfbaE8faC545936693aC917d5E7563', 8, 'cUSDC', 'Compound USD Coin')
     ],
-    [USDC, USDT],
-    [DAI, USDT]
+    [USDC[ChainId.MAINNET], USDT[ChainId.MAINNET]],
+    [DAI, USDT[ChainId.MAINNET]]
   ]
 }
 
