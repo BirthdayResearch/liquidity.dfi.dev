@@ -1,4 +1,4 @@
-import { DFI, DFI_TEST_ADDRESS, ETH_PROXY_ADDRESS, MUSDC, MUSDT, USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
+import { DFI, ETH_PROXY_ADDRESS,  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE, { USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
@@ -96,7 +96,6 @@ export enum BalState{
 export function useTokenBalancesEthProxy(
   address: (string | undefined)[], contractAbi : Interface, contractaddress: (string | undefined)[]
 ) {
-  //const add: (string | undefined )[]= [USDC_PROXY_ADDRESS]
   const results = useMultipleContractSingleData(contractaddress, contractAbi, 'stakingMap', address)
   
   return useMemo(()=>{
@@ -113,21 +112,22 @@ export function useTokenBalancesEthProxy(
 
 export function useTokenBalancesProxy(
   address?: string,
-  tokens?: (Token | undefined)[]
+  tokens?: (Token | undefined)[],
+  oneCurrencyIsETH?: boolean,
+  oneCurrencyIsWETH?: boolean,
+  oneCurrencyIsUSDT?:boolean
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
   const validatedTokens: Token[] = useMemo(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens]
   )
-  const validatedTokenAddresses = useMemo(() => validatedTokens.map(vt => vt.address), [validatedTokens])
-
   function checkContractAddress(){
-    if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDT.address )|| (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDT.address)){
+    if ( oneCurrencyIsETH || oneCurrencyIsWETH ){
+        return [ETH_PROXY_ADDRESS]
+      } else if (oneCurrencyIsUSDT){
         return [USDT_PROXY_ADDRESS]
-      } else if ((validatedTokenAddresses[0] === DFI_TEST_ADDRESS && validatedTokenAddresses[1] === MUSDC.address) || (validatedTokenAddresses[1] === DFI_TEST_ADDRESS && validatedTokenAddresses[0] === MUSDC.address)){
-        return [USDC_PROXY_ADDRESS]
       } else{
-        return [ETH_PROXY_ADDRESS] 
+        return [USDC_PROXY_ADDRESS] 
       }
     }
   
@@ -155,9 +155,12 @@ export function useTokenBalancesProxy(
 
 export function useTokenBalanceproxy(
   address?: string,
-  tokens?: (Token | undefined)[]
+  tokens?: (Token | undefined)[],
+  oneCurrencyIsETH?: boolean,
+  oneCurrencyIsWETH?: boolean,
+  oneCurrencyIsUSDT?:boolean
 ): { [tokenAddress: string]: TokenAmount | undefined } {
-  return useTokenBalancesProxy(address, tokens)[0]
+  return useTokenBalancesProxy(address, tokens, oneCurrencyIsETH, oneCurrencyIsWETH, oneCurrencyIsUSDT)[0]
 }
 
 export function useTokenBalances(
@@ -197,8 +200,6 @@ export function useCurrencyBalances(
     [account, currencies, ethBalance, tokenBalances]
   )
 }
-
-
 
 export function useCurrencyBalance(account?: string, currency?: Currency): CurrencyAmount | undefined {
   return useCurrencyBalances(account, [currency])[0]

@@ -37,7 +37,6 @@ import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hook
 import { TYPE } from '../../theme'
 import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract/*, getRouterContract*/ } from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
-//import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import AppBody from '../AppBody'
 import { Dots, Wrapper } from '../Pool/styleds'
 import { ConfirmAddModalBottom } from './ConfirmAddModalBottom'
@@ -661,12 +660,3 @@ export default function AddLiquidity({
     </>
   )
 }
-//{oneCurrencyIsWETH ? approveACallback : approveCCallback}
-// (approvalA === ApprovalState.NOT_APPROVED ||
-//   approvalA === ApprovalState.PENDING ||
-//   approvalB === ApprovalState.NOT_APPROVED ||
-//   approvalB === ApprovalState.PENDING ||
-//   approvalC === ApprovalState.NOT_APPROVED ||
-//   approvalC === ApprovalState.PENDING ||
-//   approvalD === ApprovalState.NOT_APPROVED ||
-//   approvalD === ApprovalState.PENDING) &&

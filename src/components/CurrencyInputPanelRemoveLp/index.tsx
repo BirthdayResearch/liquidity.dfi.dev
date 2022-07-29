@@ -10,9 +10,7 @@ import { RowBetween } from '../Row'
 import { TYPE } from '../../theme'
 import { Input as NumericalInput } from '../NumericalInput'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
-//import { useAsync } from "react-async"
-//import { Contract } from '@ethersproject/contracts'
-// import { useUsdcLpContract } from 'hooks/useContract'
+
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
@@ -20,13 +18,6 @@ import useTheme from '../../hooks/useTheme'
 import { USDC_LP_ABI_INTERFACE } from 'constants/abis/erc20'
 import { ETH_PROXY_ADDRESS,USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
 
-//import { useUsdcLpContract } from 'hooks/useContract'
-//import { getUSDCProxyContract } from 'utils'
-//import { useAsync } from 'react-async'
-//import { useUsdcLpContract } from 'hooks/useContract'
-//import { useAsync } from 'react-async'
-//import { Contract } from 'ethers'
-//import { BigNumber } from 'ethers'
 
 const InputRow = styled.div<{ selected: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}

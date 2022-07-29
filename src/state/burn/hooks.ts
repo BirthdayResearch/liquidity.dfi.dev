@@ -17,7 +17,10 @@ export function useBurnState(): AppState['burn'] {
 
 export function useDerivedBurnInfo(
   currencyA: Currency | undefined,
-  currencyB: Currency | undefined
+  currencyB: Currency | undefined,
+  oneCurrencyisETH?: boolean,
+  oneCurrencyisWETH?: boolean,
+  oneCurrencyisUSDT?: boolean,
 ): {
   pair?: Pair | null
   parsedAmounts: {
@@ -35,7 +38,7 @@ export function useDerivedBurnInfo(
   // pair + totalsupply
   const [, pair] = usePair(currencyA, currencyB)
 
-  const relevantTokenBalances = useTokenBalanceproxy(account ?? undefined, [pair?.liquidityToken])
+  const relevantTokenBalances = useTokenBalanceproxy(account ?? undefined, [pair?.liquidityToken], oneCurrencyisETH, oneCurrencyisWETH, oneCurrencyisUSDT)
   const userLiquidity: undefined | TokenAmount = relevantTokenBalances?.[pair?.liquidityToken?.address ?? '']
 
   const [tokenA, tokenB] = [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)]
