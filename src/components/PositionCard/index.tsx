@@ -293,7 +293,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
                   : '-'}
               </Text>
             </FixedHeightRow>
-            {uniswapPoolBalance && JSBI.greaterThan(uniswapPoolBalance.raw, BIG_INT_ZERO) && (
+            {rewardsPoolBalance && JSBI.greaterThan(rewardsPoolBalance.raw, BIG_INT_ZERO) && (
               <RowBetween marginTop="10px">
                 <ButtonPrimary
                   padding="8px"
