@@ -162,8 +162,8 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
 export default function FullPositionCard({ pair, border, stakedBalance }: PositionCardProps) {
   const { account } = useActiveWeb3React()
 
-  const currency1 = unwrappedToken(pair.token0)
-  const currency0 = unwrappedToken(pair.token1)
+  const currency0 = unwrappedToken(pair.token0)
+  const currency1 = unwrappedToken(pair.token1)
 
   const [showMore, setShowMore] = useState(false)
 
@@ -274,7 +274,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
               {token1DepositedRewards ? (
                 <RowFixed>
                   <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                    {token0DepositedRewards?.toSignificant(6)}
+                    {token1DepositedRewards?.toSignificant(6)}
                   </Text>
                   <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />
                 </RowFixed>
