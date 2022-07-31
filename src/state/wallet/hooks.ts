@@ -117,27 +117,20 @@ export function useTokenBalancesProxy(
   oneCurrencyIsWETH?: boolean,
   oneCurrencyIsUSDT?:boolean
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+  const { chainId } = useActiveWeb3React()
   const validatedTokens: Token[] = useMemo(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens]
   )
   function checkContractAddress(){
     if ( oneCurrencyIsETH || oneCurrencyIsWETH ){
-        return [ETH_PROXY_ADDRESS]
+        return [ETH_PROXY_ADDRESS[chainId!].proxyAddress]
       } else if (oneCurrencyIsUSDT){
-        return [USDT_PROXY_ADDRESS]
+        return [USDT_PROXY_ADDRESS[chainId!].proxyAddress]
       } else{
-        return [USDC_PROXY_ADDRESS] 
+        return [USDC_PROXY_ADDRESS[chainId!].proxyAddress] 
       }
     }
-  //const contractAddresses = [ETH_PROXY_ADDRESS, USDT_PROXY_ADDRESS, USDC_PROXY_ADDRESS]
-  //  const proxies = useProxies()
-  // const validatedProxies: ProxyInfo[] = useMemo(
-  //   () => proxies?.filter((p?: ProxyInfo): p is ProxyInfo => (p?.address) !== false) ?? [],
-  //   [proxies]
-  // )
-
-  // const proxyAddresses = useMemo(() => proxies.map(p => p.address), [proxies])
   const balances = useMultipleContractSingleData(checkContractAddress(), USDT_LP_ABI_INTERFACE, 'stakingMap', [address])
   const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
 

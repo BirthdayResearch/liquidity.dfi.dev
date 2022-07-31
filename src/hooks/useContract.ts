@@ -59,15 +59,18 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
 }
 
 export function useUsdtLpContract(withSignerIfPossible?:boolean): Contract | null {
-  return useContract(USDT_PROXY_ADDRESS, USDT_LP_ABI, withSignerIfPossible)
+  const { chainId } = useActiveWeb3React()
+  return useContract(USDT_PROXY_ADDRESS[chainId!].proxyAddress, USDT_LP_ABI, withSignerIfPossible)
 }
 
 export function useUsdcLpContract(withSignerIfPossible?:boolean): Contract | null {
-  return useContract(USDC_PROXY_ADDRESS, USDC_LP_ABI, withSignerIfPossible)
+  const { chainId } = useActiveWeb3React()
+  return useContract(USDC_PROXY_ADDRESS[chainId!].proxyAddress, USDC_LP_ABI, withSignerIfPossible)
 }
 
 export function useEthLpContract(withSignerIfPossible?:boolean): Contract | null {
-  return useContract(ETH_PROXY_ADDRESS, ETH_LP_ABI, withSignerIfPossible)
+  const { chainId } = useActiveWeb3React()
+  return useContract(ETH_PROXY_ADDRESS[chainId!].proxyAddress, ETH_LP_ABI, withSignerIfPossible)
 }
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {

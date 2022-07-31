@@ -20,7 +20,7 @@ import Row, { RowBetween, RowFixed } from '../../components/Row'
 
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { USDT} from '../../constants'
+import { DFI, USDC, USDT} from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
@@ -447,25 +447,25 @@ export default function RemoveLiquidity({
           <LpFrame>
             <StyledNavLink
               id={`pool-nav-link`}
-              to={'/remove/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH'}
+              to={`/remove/${DFI[chainId!].address}/ETH`}
             >
               {'DFI/ETH'}
             </StyledNavLink>
             <StyledNavLink
               id={`pool-nav-link`}
-              to={'/remove/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
+              to={`/remove/${DFI[chainId!].address}/${WETH[chainId!].address}`}
             >
               {'DFI/WETH'}
             </StyledNavLink>
             <StyledNavLink
               id={`pool-nav-link`}
-              to={'/remove/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'}
+              to={`/remove/${DFI[chainId!].address}/${USDT[chainId!].address}`}
             >
               {'DFI/USDT'}
             </StyledNavLink>
             <StyledNavLink
               id={`pool-nav-link`}
-              to={'/remove/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565'}
+              to={`/remove/${DFI[chainId!].address}/${USDC[chainId!].address}`}
             >
               {'DFI/USDC'}
             </StyledNavLink>

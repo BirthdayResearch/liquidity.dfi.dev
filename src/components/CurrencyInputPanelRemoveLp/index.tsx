@@ -163,11 +163,11 @@ export default function CurrencyInputPanelRemoveLp({
 }: CurrencyInputPanelPropsRemove) {
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState(false)
-  const { account} = useActiveWeb3React()
+  const { account, chainId} = useActiveWeb3React()
   const address: (string | undefined)[] = [account!]
-  const ethAddress : (string | undefined)[] = [ETH_PROXY_ADDRESS]
-  const usdtAddress : (string | undefined)[] = [USDT_PROXY_ADDRESS]//[USDT_PROXY_ADDRESS[chainId!].proxyAddress]
-  const usdcAddress : (string | undefined)[] = [USDC_PROXY_ADDRESS]
+  const ethAddress : (string | undefined)[] = [ETH_PROXY_ADDRESS[chainId!].proxyAddress]
+  const usdtAddress : (string | undefined)[] = [USDT_PROXY_ADDRESS[chainId!].proxyAddress]//[USDT_PROXY_ADDRESS]
+  const usdcAddress : (string | undefined)[] = [USDC_PROXY_ADDRESS[chainId!].proxyAddress]
   function checkAddress(){
     if(isCurrencyETH || isCurrencyWETH){
       return ethAddress

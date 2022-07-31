@@ -44,18 +44,8 @@ export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'
 
 export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 
-// DFI/USDT LP proxy contract on Goreli testnet
-export const USDT_PROXY_ADDRESS = '0x5fd39Bf6aE258351f453e55256B03085B34712f0'
-// DFI/USDC LP proxy contract on Goreli testnet
-export const USDC_PROXY_ADDRESS = '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'
-// DFI/ETH LP proxy contract on Goreli testnet
-export const ETH_PROXY_ADDRESS = '0x69736086d7FF64e67ba0090229c9cdc1056fE039'
 // DFI GOERLI ADDRESS 
 export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
-// MockUSDT GOERLI USDT
-export const MUSDC = new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC')
-// MockUSDT GOERLI USDT
-
 //MAINNET ADDRESS
 const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
 
@@ -81,7 +71,7 @@ export const USDT: {[chainId in ChainId]: Token} = {
 
 //USDC
 //MockUSDT GOERLI USDT on other chain other than mainnet
-export const USDC_T = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
+export const USDC_T = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')//To avoid writing the whole code. USDC_T and USDC are the same.
 export const USDC: {[chainId in ChainId]: Token} = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C'),
   [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
@@ -91,28 +81,28 @@ export const USDC: {[chainId in ChainId]: Token} = {
 
 }
 
-export const USDTProxy: {[chainId in ChainId]: ProxyPair} = {
-  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, ''), new TokenAmount(USDT[ChainId.MAINNET] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'), // This still needs to be updated with mainnet address
-  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
-  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
-  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
-  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDT[ChainId.GÖRLI] as Token, ''),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+export const USDT_PROXY_ADDRESS: {[chainId in ChainId]: ProxyPair} = {
+  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, '0'), new TokenAmount(USDT[ChainId.MAINNET] as Token, '0'),'0x9e251daeb17981477509779612dc2ffa8075aa8e'), // This still needs to be updated with mainnet address
+  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDT[ChainId.GÖRLI] as Token, '0'),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDT[ChainId.GÖRLI] as Token, '0'),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDT[ChainId.GÖRLI] as Token, '0'),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
+  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDT[ChainId.GÖRLI] as Token, '0'),'0x5fd39Bf6aE258351f453e55256B03085B34712f0'),
 }
 
-export const USDCProxy: {[chainId in ChainId]: ProxyPair} = {
-  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, ''), new TokenAmount(USDC[ChainId.MAINNET] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'), // This still needs to be updated with mainnet address
-  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
-  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
-  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
-  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(USDC[ChainId.GÖRLI] as Token, ''),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+export const USDC_PROXY_ADDRESS: {[chainId in ChainId]: ProxyPair} = {
+  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, '0'), new TokenAmount(USDC[ChainId.MAINNET] as Token, '0'),'0xd239216ac7e44a09da67d6852cd757fc5e829fe2'), // This still needs to be updated with mainnet address
+  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDC[ChainId.GÖRLI] as Token, '0'),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDC[ChainId.GÖRLI] as Token, '0'),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDC[ChainId.GÖRLI] as Token, '0'),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
+  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(USDC[ChainId.GÖRLI] as Token, '0'),'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'),
 }
 
-export const WETHProxy: {[chainId in ChainId]: ProxyPair} = {
-  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, ''), new TokenAmount(WETH[ChainId.MAINNET] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'), // This still needs to be updated with mainnet address
-  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
-  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
-  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
-  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, ''), new TokenAmount(WETH[ChainId.GÖRLI] as Token, ''),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+export const ETH_PROXY_ADDRESS: {[chainId in ChainId]: ProxyPair} = {
+  [ChainId.MAINNET]: new ProxyPair(new TokenAmount(DFI[ChainId.MAINNET] as Token, '0'), new TokenAmount(WETH[ChainId.MAINNET] as Token, '0'),'0xb079d6be3faf5771e354586dbc47d0a3d37c34fb'), // This still needs to be updated with mainnet address
+  [ChainId.RINKEBY]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(WETH[ChainId.GÖRLI] as Token, '0'),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+  [ChainId.ROPSTEN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(WETH[ChainId.GÖRLI] as Token, '0'),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+  [ChainId.GÖRLI]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(WETH[ChainId.GÖRLI] as Token, '0'),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
+  [ChainId.KOVAN]: new ProxyPair(new TokenAmount(DFI[ChainId.GÖRLI] as Token, '0'), new TokenAmount(WETH[ChainId.GÖRLI] as Token, '0'),'0x69736086d7FF64e67ba0090229c9cdc1056fE039'),
 }
 
 // Proxy contact addresses
@@ -123,7 +113,7 @@ export const PROXIES: ProxyInfo[] = [
     symbol: 'USDT',
     underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
     tokenA: DFI[ChainId.GÖRLI],
-    tokenB: USDT[ChainId.MAINNET]
+    tokenB: USDT[ChainId.GÖRLI]
   },
   {
     address: '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2',
@@ -131,7 +121,7 @@ export const PROXIES: ProxyInfo[] = [
     symbol: 'USDC',
     underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
     tokenA: DFI[ChainId.GÖRLI],
-    tokenB: MUSDC
+    tokenB: USDC[ChainId.GÖRLI]
   },
   {
     address: '0x69736086d7FF64e67ba0090229c9cdc1056fE039',

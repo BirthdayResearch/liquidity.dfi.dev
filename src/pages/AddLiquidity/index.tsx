@@ -19,8 +19,7 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import {USDT} from '../../constants/index'
-
+import {USDT, USDC, DFI} from '../../constants/index'
 
 import {  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS} from '../../constants'
 import { PairState } from '../../data/Reserves'
@@ -35,7 +34,7 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract/*, getRouterContract*/ } from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract} from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import AppBody from '../AppBody'
 import { Dots, Wrapper } from '../Pool/styleds'
@@ -192,12 +191,12 @@ export default function AddLiquidity({
     {}
   )
 
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS);
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS);
-  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS);
-  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS);
-  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS);
-  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS);
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS[chainId!].proxyAddress);
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS[chainId!].proxyAddress);
+  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS[chainId!].proxyAddress);
+  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS[chainId!].proxyAddress);
+  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS[chainId!].proxyAddress);
+  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS[chainId!].proxyAddress);
   
   function checkAPendingApprove() {
     if (oneCurrencyIsWETH || oneCurrencyIsETH){
@@ -499,7 +498,7 @@ export default function AddLiquidity({
                 <><LpFrame>
                  <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH'}
+                    to={`/add/${DFI[chainId!].address}/ETH`}
                   >
                   {'DFI/ETH'}
                   </StyledNavLink>
@@ -508,19 +507,19 @@ export default function AddLiquidity({
                       
                     }}
                     id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
+                    to={`/add/${DFI[chainId!].address}/${WETH[chainId!].address}`}
                   > 
                   {'DFI/WETH'}
                   </StyledNavLink>
                   <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'}
+                    to={`/add/${DFI[chainId!].address}/${USDT[chainId!].address}`}
                   > 
                   {'DFI/USDT'}
                   </StyledNavLink>
                   <StyledNavLink
                     id={`pool-nav-link`}
-                    to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565'}
+                    to={`/add/${DFI[chainId!].address}/${USDC[chainId!].address}`}
                   > 
                   {'DFI/USDC'}
                   </StyledNavLink>

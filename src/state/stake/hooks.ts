@@ -35,19 +35,6 @@ export const STAKING_REWARDS_INFO: {
       tokens: [WETH[ChainId.MAINNET], WBTC],
       stakingRewardAddress: '0xCA35e32e7926b96A9988f61d510E038108d8068e'
     },
-    // {
-    //   tokens: [DFI[ChainId.GÖRLI], USDT[chainId]],
-    //   stakingRewardAddress: USDT_PROXY_ADDRESS
-    // },
-    // {
-    //   tokens: [DFI[ChainId.GÖRLI], MUSDC],
-    //   stakingRewardAddress: USDC_PROXY_ADDRESS
-    // },
-    // {
-    //   tokens: [DFI[ChainId.GÖRLI], WETH[ChainId.GÖRLI]],
-    //   stakingRewardAddress: ETH_PROXY_ADDRESS
-    // }
-    
   ]
 }
 
