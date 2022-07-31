@@ -160,29 +160,32 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
 }
 
 export default function FullPositionCard({ pair, border, stakedBalance }: PositionCardProps) {
+  const { account } = useActiveWeb3React()
+
   const currency1 = unwrappedToken(pair.token0)
   const currency0 = unwrappedToken(pair.token1)
 
   const [showMore, setShowMore] = useState(false)
 
+  const uniswapPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
+  const rewardsPoolBalance = stakedBalance
   const totalPoolTokens = useTotalSupply(pair.liquidityToken)
 
-  const userPoolBalance = stakedBalance
-
   const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
-      ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
+    !!rewardsPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, rewardsPoolBalance.raw)
+      ? new Percent(rewardsPoolBalance.raw, totalPoolTokens.raw)
       : undefined
 
-  const [token0Deposited, token1Deposited] =
+  const [token0DepositedRewards, token1DepositedRewards] =
     !!pair &&
     !!totalPoolTokens &&
-    !!userPoolBalance &&
+    !!uniswapPoolBalance &&
+    !!rewardsPoolBalance &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+    JSBI.greaterThanOrEqual(totalPoolTokens.raw, rewardsPoolBalance.raw)
       ? [
-          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
-          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
+          pair.getLiquidityValue(pair.token0, totalPoolTokens, rewardsPoolBalance, false),
+          pair.getLiquidityValue(pair.token1, totalPoolTokens, rewardsPoolBalance, false)
         ]
       : [undefined, undefined]
 
@@ -223,18 +226,21 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
 
         {showMore && (
           <AutoColumn gap="8px">
-            <FixedHeightRow>
-              <Text fontSize={16} fontWeight={500}>
-                Your total pool tokens:
-              </Text>
-              <Text fontSize={16} fontWeight={500}>
-                {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-              </Text>
-            </FixedHeightRow>
             {stakedBalance && (
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
-                  Pool tokens in rewards pool:
+                  Pool tokens in Uniswap pool:
+                </Text>
+                <Text fontSize={16} fontWeight={500}>
+                  {uniswapPoolBalance ? uniswapPoolBalance.toSignificant(4) : '-'}
+                </Text>
+              </FixedHeightRow>
+            )}
+
+            {stakedBalance && (
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  Pool tokens in Rewards pool:
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
                   {stakedBalance.toSignificant(4)}
@@ -244,13 +250,13 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
             <FixedHeightRow>
               <RowFixed>
                 <Text fontSize={16} fontWeight={500}>
-                  Pooled {currency0.symbol}:
+                  Rewards pool {currency0.symbol}:
                 </Text>
               </RowFixed>
-              {token0Deposited ? (
+              {token0DepositedRewards ? (
                 <RowFixed>
                   <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                    {token0Deposited?.toSignificant(6)}
+                    {token0DepositedRewards?.toSignificant(6)}
                   </Text>
                   <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />
                 </RowFixed>
@@ -262,13 +268,13 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
             <FixedHeightRow>
               <RowFixed>
                 <Text fontSize={16} fontWeight={500}>
-                  Pooled {currency1.symbol}:
+                  Rewards pool {currency1.symbol}:
                 </Text>
               </RowFixed>
-              {token1Deposited ? (
+              {token1DepositedRewards ? (
                 <RowFixed>
                   <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                    {token1Deposited?.toSignificant(6)}
+                    {token0DepositedRewards?.toSignificant(6)}
                   </Text>
                   <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />
                 </RowFixed>
@@ -279,7 +285,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
 
             <FixedHeightRow>
               <Text fontSize={16} fontWeight={500}>
-                Your pool share:
+                Your Rewards pool share:
               </Text>
               <Text fontSize={16} fontWeight={500}>
                 {poolTokenPercentage
@@ -287,7 +293,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
                   : '-'}
               </Text>
             </FixedHeightRow>
-            {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, BIG_INT_ZERO) && (
+            {uniswapPoolBalance && JSBI.greaterThan(uniswapPoolBalance.raw, BIG_INT_ZERO) && (
               <RowBetween marginTop="10px">
                 <ButtonPrimary
                   padding="8px"
