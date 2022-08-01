@@ -7,9 +7,10 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import USDT_LP_ABI from '../constants/abis/usdt-lp-proxy.json'
 import ETH_LP_ABI from '../constants/abis/eth-lp-proxy.json'
 import USDC_LP_ABI from '../constants/abis/usdc-lp-proxy.json'
-import { ROUTER_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS, USDC_PROXY_ADDRESS } from '../constants'
+import { ROUTER_ADDRESS, PROXIES} from '../constants'
 import { ChainId, JSBI, Percent, Token, CurrencyAmount, Currency, ETHER } from '@uniswap/sdk'
 import { TokenAddressMap } from '../state/lists/hooks'
+//import { useActiveWeb3React } from 'hooks'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -106,18 +107,18 @@ export function getRouterContract(_: number, library: Web3Provider, account?: st
 }
 
 //DFI-USDT lp proxy contract
-export function getUSDTProxyContract(_: number, library: Web3Provider, account?: string): Contract {
-  return getContract(USDT_PROXY_ADDRESS, USDT_LP_ABI, library, account)
+export function getUSDTProxyContract(_: ChainId, library: Web3Provider, account?: string): Contract {
+  return getContract(PROXIES[0].address, USDT_LP_ABI, library, account)
 }
 
 // DFI-USDC lp proxy contract
-export function getUSDCProxyContract(_: number, library: Web3Provider, account?: string): Contract {
-  return getContract(USDC_PROXY_ADDRESS, USDC_LP_ABI, library, account)
+export function getUSDCProxyContract(_: ChainId, library: Web3Provider, account?: string): Contract {
+  return getContract(PROXIES[1].address, USDC_LP_ABI, library, account)
 }
 
 // DFI-WETH/ETH lp proxy contract
-export function getETHProxyContract(_: number, library: Web3Provider, account?: string): Contract {
-  return getContract(ETH_PROXY_ADDRESS, ETH_LP_ABI, library, account)
+export function getETHProxyContract(_: ChainId, library: Web3Provider, account?: string): Contract {
+  return getContract(PROXIES[2].address, ETH_LP_ABI, library, account)
 }
 
 export function escapeRegExp(string: string): string {

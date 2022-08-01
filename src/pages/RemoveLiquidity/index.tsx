@@ -1,5 +1,3 @@
-import { splitSignature } from '@ethersproject/bytes'
-import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, currencyEquals, ETHER, Percent, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
@@ -11,11 +9,10 @@ import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import { darken } from 'polished'  
 import { ThemeContext } from 'styled-components'
-import { ButtonPrimary, ButtonLight, ButtonError, ButtonConfirmed } from '../../components/Button'
+import { ButtonPrimary, ButtonLight, ButtonError} from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
-import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
@@ -23,38 +20,35 @@ import Row, { RowBetween, RowFixed } from '../../components/Row'
 
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { ROUTER_ADDRESS } from '../../constants'
+import { DFI, USDC, USDT} from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
-import { usePairContract } from '../../hooks/useContract'
-import useIsArgentWallet from '../../hooks/useIsArgentWallet'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { StyledInternalLink, TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount,/* getRouterContract,*/ getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract} from '../../utils'
 import { currencyId } from '../../utils/currencyId'
 import useDebouncedChangeHandler from '../../utils/useDebouncedChangeHandler'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import AppBody from '../AppBody'
 import { ClickableText, MaxButton, Wrapper } from '../Pool/styleds'
-import { useApproveCallback, ApprovalState } from '../../hooks/useApproveCallback'
-import { Dots } from '../../components/swap/styleds'
 import { useBurnActionHandlers } from '../../state/burn/hooks'
 import { useDerivedBurnInfo, useBurnState } from '../../state/burn/hooks'
 import { Field } from '../../state/burn/actions'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
+import CurrencyInputPanelRemoveLp from '../../components/CurrencyInputPanelRemoveLp'
 import { BigNumber } from '@ethersproject/bignumber'
+
 
 const LpFrame = styled.div`
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
-  align-items: center;
   flex-direction: row;
-  width: 100%;
+  width: 92%;
   top: 0;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -70,6 +64,11 @@ const LpFrame = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
         padding: 0.5rem 1rem;
   `}
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+  }
 `
 
 const activeClassName = 'ACTIVE'
@@ -78,7 +77,7 @@ const StyledNavLink = styled(NavLink).attrs({
   activeClassName
 })`
   ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
+  align-items: right;
   border-radius: 3rem;
   outline: none;
   cursor: pointer;
@@ -87,11 +86,11 @@ const StyledNavLink = styled(NavLink).attrs({
   font-size: 1rem;
   width: fit-content;
   margin: 0 12px;
-  font-weight: 500;
+  font-weight: 450;
 
   &.${activeClassName} {
     border-radius: 15px;
-    font-weight: 600;
+    font-weight: 500;
     color: ${({ theme }) => theme.text1};
   }
 
@@ -114,7 +113,21 @@ export default function RemoveLiquidity({
     currencyB,
     chainId
   ])
-
+  const oneCurrencyIsWETH = Boolean(
+    chainId &&
+      ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
+        (currencyB && currencyEquals(currencyB, WETH[chainId])))
+  )
+  const oneCurrencyIsUSDT = Boolean(
+    chainId &&
+    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+      (currencyB && currencyEquals(currencyB, USDT[chainId])))
+  )
+  const oneCurrencyIsETH = Boolean(
+    chainId &&
+    ((currencyA && currencyEquals(currencyA, ETHER)) ||
+      (currencyB && currencyEquals(currencyB, ETHER)))
+  )
   const theme = useContext(ThemeContext)
 
   // toggle wallet when disconnected
@@ -122,7 +135,7 @@ export default function RemoveLiquidity({
 
   // burn state
   const { independentField, typedValue } = useBurnState()
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
+  const { pair, parsedAmounts, error } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined, oneCurrencyIsETH, oneCurrencyIsWETH, oneCurrencyIsUSDT)
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
 
@@ -149,89 +162,11 @@ export default function RemoveLiquidity({
     [Field.CURRENCY_B]:
       independentField === Field.CURRENCY_B ? typedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? ''
   }
-
   const atMaxAmount = parsedAmounts[Field.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
-
-  // pair contract
-  const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
-
-  // allowance handling
-  const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
-
-  const isArgentWallet = useIsArgentWallet()
-
-  async function onAttemptToApprove() {
-    if (!pairContract || !pair || !library || !deadline) throw new Error('missing dependencies')
-    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
-    if (!liquidityAmount) throw new Error('missing liquidity amount')
-
-    if (isArgentWallet) {
-      return approveCallback()
-    }
-
-    // try to gather a signature for permission
-    const nonce = await pairContract.nonces(account)
-
-    const EIP712Domain = [
-      { name: 'name', type: 'string' },
-      { name: 'version', type: 'string' },
-      { name: 'chainId', type: 'uint256' },
-      { name: 'verifyingContract', type: 'address' }
-    ]
-    const domain = {
-      name: 'Uniswap V2',
-      version: '1',
-      chainId: chainId,
-      verifyingContract: pair.liquidityToken.address
-    }
-    const Permit = [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' }
-    ]
-    const message = {
-      owner: account,
-      spender: ROUTER_ADDRESS,
-      value: liquidityAmount.raw.toString(),
-      nonce: nonce.toHexString(),
-      deadline: deadline.toNumber()
-    }
-    const data = JSON.stringify({
-      types: {
-        EIP712Domain,
-        Permit
-      },
-      domain,
-      primaryType: 'Permit',
-      message
-    })
-
-    library
-      .send('eth_signTypedData_v4', [account, data])
-      .then(splitSignature)
-      .then(signature => {
-        setSignatureData({
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-          deadline: deadline.toNumber()
-        })
-      })
-      .catch(error => {
-        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-        if (error?.code !== 4001) {
-          approveCallback()
-        }
-      })
-  }
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
-      setSignatureData(null)
       return _onUserInput(field, typedValue)
     },
     [_onUserInput]
@@ -255,7 +190,20 @@ export default function RemoveLiquidity({
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts')
     }
-    const router = getRouterContract(chainId, library, account)
+    //const router = getRouterContract(chainId, library, account)
+    const ethProxy = getETHProxyContract(chainId, library, account)
+    const usdtProxy = getUSDTProxyContract(chainId, library, account)
+    const usdcProxy = getUSDCProxyContract(chainId, library, account)
+
+    function checkContract(){
+      if(oneCurrencyIsWETH || oneCurrencyIsETH){
+       return ethProxy 
+      } else if (oneCurrencyIsUSDT){
+        return usdtProxy
+      } else {
+        return usdcProxy
+      }
+    }
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -267,81 +215,38 @@ export default function RemoveLiquidity({
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
     const currencyBIsETH = currencyB === ETHER
-    const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
 
     if (!tokenA || !tokenB) throw new Error('could not wrap')
-
     let methodNames: string[], args: Array<string | string[] | number | boolean>
-    // we have approval, use normal remove liquidity
-    if (approval === ApprovalState.APPROVED) {
       // removeLiquidityETH
-      if (oneCurrencyIsETH) {
-        methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          deadline.toHexString()
-        ]
-      }
+    if (oneCurrencyIsETH) {
+      methodNames = ['removeLiquidityETH']
+      args = [
+        //currencyBIsETH ? tokenA.address : tokenB.address,
+        liquidityAmount.raw.toString(),
+        amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+        amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+        //account,
+        deadline.toHexString()
+      ]
+    }else {
       // removeLiquidity
-      else {
         methodNames = ['removeLiquidity']
         args = [
-          tokenA.address,
-          tokenB.address,
+          //tokenA.address,
+          //tokenB.address,
           liquidityAmount.raw.toString(),
           amountsMin[Field.CURRENCY_A].toString(),
           amountsMin[Field.CURRENCY_B].toString(),
-          account,
+          //account,
           deadline.toHexString()
         ]
+        
       }
-    }
-    // we have a signataure, use permit versions of remove liquidity
-    else if (signatureData !== null) {
-      // removeLiquidityETHWithPermit
-      if (oneCurrencyIsETH) {
-        methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s
-        ]
-      }
-      // removeLiquidityETHWithPermit
-      else {
-        methodNames = ['removeLiquidityWithPermit']
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s
-        ]
-      }
-    } else {
-      throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
-    }
 
     const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
       methodNames.map(methodName =>
-        router.estimateGas[methodName](...args)
+        checkContract().estimateGas[methodName](...args)
           .then(calculateGasMargin)
           .catch(error => {
             console.error(`estimateGas failed`, methodName, args, error)
@@ -354,15 +259,14 @@ export default function RemoveLiquidity({
       BigNumber.isBigNumber(safeGasEstimate)
     )
 
-    // all estimations failed...
+    //all estimations failed...
     if (indexOfSuccessfulEstimation === -1) {
       console.error('This transaction would fail. Please contact support.')
     } else {
       const methodName = methodNames[indexOfSuccessfulEstimation]
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
 
-      setAttemptingTxn(true)
-      await router[methodName](...args, {
+      await checkContract()[methodName](...args, {
         gasLimit: safeGasEstimate
       })
         .then((response: TransactionResponse) => {
@@ -394,7 +298,7 @@ export default function RemoveLiquidity({
           console.error(error)
         })
     }
-  }
+      }
 
   function modalHeader() {
     return (
@@ -465,7 +369,7 @@ export default function RemoveLiquidity({
             </RowBetween>
           </>
         )}
-        <ButtonPrimary disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onRemove}>
+        <ButtonPrimary onClick={onRemove}>
           <Text fontWeight={500} fontSize={20}>
             Confirm
           </Text>
@@ -483,13 +387,6 @@ export default function RemoveLiquidity({
       onUserInput(Field.LIQUIDITY_PERCENT, value.toString())
     },
     [onUserInput]
-  )
-
-  const oneCurrencyIsETH = currencyA === ETHER || currencyB === ETHER
-  const oneCurrencyIsWETH = Boolean(
-    chainId &&
-      ((currencyA && currencyEquals(WETH[chainId], currencyA)) ||
-        (currencyB && currencyEquals(WETH[chainId], currencyB)))
   )
 
   const handleSelectCurrencyA = useCallback(
@@ -515,7 +412,6 @@ export default function RemoveLiquidity({
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false)
-    setSignatureData(null) // important that we clear signature data to avoid bad sigs
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onUserInput(Field.LIQUIDITY_PERCENT, '0')
@@ -551,15 +447,27 @@ export default function RemoveLiquidity({
           <LpFrame>
             <StyledNavLink
               id={`pool-nav-link`}
-              to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/ETH'}
+              to={`/remove/${DFI[chainId!].address}/ETH`}
             >
               {'DFI/ETH'}
             </StyledNavLink>
             <StyledNavLink
               id={`pool-nav-link`}
-              to={'/remove/0x8fc8f8269ebca376d046ce292dc7eac40c8d358a/0xdAC17F958D2ee523a2206206994597C13D831ec7'}
+              to={`/remove/${DFI[chainId!].address}/${WETH[chainId!].address}`}
+            >
+              {'DFI/WETH'}
+            </StyledNavLink>
+            <StyledNavLink
+              id={`pool-nav-link`}
+              to={`/remove/${DFI[chainId!].address}/${USDT[chainId!].address}`}
             >
               {'DFI/USDT'}
+            </StyledNavLink>
+            <StyledNavLink
+              id={`pool-nav-link`}
+              to={`/remove/${DFI[chainId!].address}/${USDC[chainId!].address}`}
+            >
+              {'DFI/USDC'}
             </StyledNavLink>
           </LpFrame>
           <AutoColumn gap="md">
@@ -667,7 +575,8 @@ export default function RemoveLiquidity({
 
             {showDetailed && (
               <>
-                <CurrencyInputPanel
+                <CurrencyInputPanelRemoveLp
+                  hideBalance={false}
                   value={formattedAmounts[Field.LIQUIDITY]}
                   onUserInput={onLiquidityInput}
                   onMax={() => {
@@ -678,11 +587,15 @@ export default function RemoveLiquidity({
                   currency={pair?.liquidityToken}
                   pair={pair}
                   id="liquidity-amount"
+                  isCurrencyETH={oneCurrencyIsETH}
+                  isCurrencyUSDT={oneCurrencyIsUSDT}
+                  isCurrencyWETH={oneCurrencyIsWETH}
+                  
                 />
                 <ColumnCenter>
                   <ArrowDown size="16" color={theme.text2} />
                 </ColumnCenter>
-                <CurrencyInputPanel
+                <CurrencyInputPanelRemoveLp
                   hideBalance={true}
                   value={formattedAmounts[Field.CURRENCY_A]}
                   onUserInput={onCurrencyAInput}
@@ -696,7 +609,7 @@ export default function RemoveLiquidity({
                 <ColumnCenter>
                   <Plus size="16" color={theme.text2} />
                 </ColumnCenter>
-                <CurrencyInputPanel
+                <CurrencyInputPanelRemoveLp
                   hideBalance={true}
                   value={formattedAmounts[Field.CURRENCY_B]}
                   onUserInput={onCurrencyBInput}
@@ -730,27 +643,11 @@ export default function RemoveLiquidity({
                 <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
               ) : (
                 <RowBetween>
-                  <ButtonConfirmed
-                    onClick={onAttemptToApprove}
-                    confirmed={approval === ApprovalState.APPROVED || signatureData !== null}
-                    disabled={approval !== ApprovalState.NOT_APPROVED || signatureData !== null}
-                    mr="0.5rem"
-                    fontWeight={500}
-                    fontSize={16}
-                  >
-                    {approval === ApprovalState.PENDING ? (
-                      <Dots>Approving</Dots>
-                    ) : approval === ApprovalState.APPROVED || signatureData !== null ? (
-                      'Approved'
-                    ) : (
-                      'Approve'
-                    )}
-                  </ButtonConfirmed>
                   <ButtonError
                     onClick={() => {
                       setShowConfirm(true)
                     }}
-                    disabled={!isValid || (signatureData === null && approval !== ApprovalState.APPROVED)}
+                    disabled={!isValid}
                     error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
                   >
                     <Text fontSize={16} fontWeight={500}>
