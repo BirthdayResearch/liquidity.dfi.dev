@@ -45,11 +45,11 @@ export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'
 export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 
 // DFI/USDT LP proxy contract on Goreli testnet
-export const USDT_PROXY_ADDRESS = '0x5fd39Bf6aE258351f453e55256B03085B34712f0'
+export const USDT_PROXY_ADDRESS = '0x9952D026E161DD9F26C2b83B4Cc787eAAe154ca8'
 // DFI/USDC LP proxy contract on Goreli testnet
-export const USDC_PROXY_ADDRESS = '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2'
+export const USDC_PROXY_ADDRESS = '0xdBb40e382c826163fe7690973C990bFa4193900D'
 // DFI/ETH LP proxy contract on Goreli testnet
-export const ETH_PROXY_ADDRESS = '0x69736086d7FF64e67ba0090229c9cdc1056fE039'
+export const ETH_PROXY_ADDRESS = '0x505ddc81C40ec998654BAE861585b6570a1E17E5'
 // DFI GOERLI ADDRESS
 export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
 // MockUSDT GOERLI USDT
@@ -63,16 +63,16 @@ const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
 // DFI is not deployed at RINKEBY | ROPSTEN | KOVAN: Arbitrage address
 export const DFI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, DFI_ADDRESS, 8, 'DFI', 'DeFiChain'),
-  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
-  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
+  [ChainId.RINKEBY]: new Token(ChainId.RINKEBY, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
+  [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
   [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
-  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain')
+  [ChainId.KOVAN]: new Token(ChainId.KOVAN, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain')
 }
 
 // Proxy contact addresses
 export const PROXIES: ProxyInfo[] = [
   {
-    address: '0x5fd39Bf6aE258351f453e55256B03085B34712f0',
+    address: '0x9952D026E161DD9F26C2b83B4Cc787eAAe154ca8',
     chainId: ChainId.GÖRLI,
     symbol: 'USDT',
     underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
@@ -80,7 +80,7 @@ export const PROXIES: ProxyInfo[] = [
     tokenB: MUSDT
   },
   {
-    address: '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2',
+    address: '0xdBb40e382c826163fe7690973C990bFa4193900D',
     chainId: ChainId.GÖRLI,
     symbol: 'USDC',
     underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
@@ -88,7 +88,7 @@ export const PROXIES: ProxyInfo[] = [
     tokenB: MUSDC
   },
   {
-    address: '0x69736086d7FF64e67ba0090229c9cdc1056fE039',
+    address: '0x505ddc81C40ec998654BAE861585b6570a1E17E5',
     chainId: ChainId.GÖRLI,
     symbol: 'WETH',
     underlyingPairAddress: '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',

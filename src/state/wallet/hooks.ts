@@ -1,4 +1,4 @@
-import { PROXIES, ProxyInfo, UNI } from './../../constants/index'
+import { DFI, PROXIES, ProxyInfo, UNI } from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
@@ -8,7 +8,7 @@ import { useMulticallContract } from '../../hooks/useContract'
 import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 import { useUserUnclaimedAmount } from '../claim/hooks'
-import { useTotalUniEarned } from '../stake/hooks'
+import { useTotalDfiEarned, useTotalUniEarned } from '../stake/hooks'
 import PROXY_INTERFACE from 'constants/abis/proxy_staking'
 
 /**
@@ -152,6 +152,26 @@ export function useAggregateUniBalance(): TokenAmount | undefined {
     JSBI.add(
       JSBI.add(uniBalance?.raw ?? JSBI.BigInt(0), uniUnclaimed?.raw ?? JSBI.BigInt(0)),
       uniUnHarvested?.raw ?? JSBI.BigInt(0)
+    )
+  )
+}
+
+export function useAggregateDfiBalance(): TokenAmount | undefined {
+  const { account, chainId } = useActiveWeb3React()
+
+  const dfi = chainId ? DFI[chainId] : undefined
+
+  const dfiBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, dfi)
+  const dfiUnclaimed: TokenAmount | undefined = useUserUnclaimedAmount(account)
+  const dfiUnHarvested: TokenAmount | undefined = useTotalDfiEarned()
+
+  if (!dfi) return undefined
+
+  return new TokenAmount(
+    dfi,
+    JSBI.add(
+      JSBI.add(dfiBalance?.raw ?? JSBI.BigInt(0), dfiUnclaimed?.raw ?? JSBI.BigInt(0)),
+      dfiUnHarvested?.raw ?? JSBI.BigInt(0)
     )
   )
 }

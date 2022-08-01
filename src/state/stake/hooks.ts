@@ -1,11 +1,13 @@
 import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import { DAI, UNI, USDC, USDT, WBTC } from '../../constants'
+import { DAI, DFI, PROXIES, ProxyInfo, UNI, USDC, USDT, WBTC } from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { useActiveWeb3React } from '../../hooks'
 import { NEVER_RELOAD, useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
 import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
+import { Contract } from 'ethers'
+import PROXY_INTERFACE, { PROXY_ABI } from 'constants/abis/proxy_staking'
 
 export const STAKING_GENESIS = 1600387200
 
@@ -226,6 +228,96 @@ export function useTotalUniEarned(): TokenAmount | undefined {
       ) ?? new TokenAmount(uni, '0')
     )
   }, [stakingInfos, uni])
+}
+
+function staticCallDfiEarned(proxyAddress: string, account: string) {
+  const proxyContract = new Contract(proxyAddress, PROXY_ABI)
+  const rewardUnclaimed = proxyContract.callStatic.claimRewards(account)
+
+  return rewardUnclaimed
+}
+
+async function totalDfiEarned(proxies: ProxyInfo[], account: string) {
+  return await Promise.all(
+    proxies.map(proxy => {
+      return staticCallDfiEarned(proxy.address, account)
+    })
+  )
+}
+
+// function useTotalDfiEarned(proxies: ProxyInfo[], account: string) {
+//   return useCallback(() => {
+
+//   },[])
+// }
+
+export function useTotalDfiEarned(account?: string): TokenAmount | undefined {
+  const { chainId } = useActiveWeb3React()
+  const dfi = chainId ? DFI[chainId] : undefined
+
+  const proxies = PROXIES.filter(p => p.chainId === chainId)
+
+  const accountArg = useMemo(() => [account ?? undefined], [account])
+  const balanceStatus = useMultipleContractSingleData(
+    proxies.map(p => p.address),
+    PROXY_INTERFACE,
+    'checkReward',
+    accountArg
+  )
+
+  return useMemo(() => {
+    if (!dfi) return undefined
+
+    const totalAmount = balanceStatus.reduce<JSBI>((accumulator, current) => {
+      if (current.loading) {
+        return accumulator
+      }
+
+      const xx = current?.result?.[0] ?? 0
+      if (xx > 0) {
+        console.log(xx)
+      }
+
+      accumulator = JSBI.add(accumulator, JSBI.BigInt(current?.result?.[0] ?? 0))
+      return accumulator
+    }, JSBI.BigInt(0))
+
+    return new TokenAmount(dfi, totalAmount)
+  }, [dfi, balanceStatus])
+}
+
+export function useTotalDfiEarned2(account?: string): TokenAmount | undefined {
+  const { chainId } = useActiveWeb3React()
+  const dfi = chainId ? DFI[chainId] : undefined
+
+  const proxies = PROXIES.filter(p => p.chainId === chainId)
+  // const staticCallback = totalDfiEarned(proxies, account)
+
+  const totalAmount = useMemo(() => {
+    if (!proxies || proxies.length === 0 || !account) return JSBI.BigInt(0)
+
+    const totalPromise = totalDfiEarned(proxies, account)
+    return totalPromise
+      .then(amount => {
+        const totalAmount = amount.reduce<JSBI>((accumulator, current) => {
+          accumulator = JSBI.add(accumulator, JSBI.BigInt(current))
+          return accumulator
+        }, JSBI.BigInt(0))
+
+        return totalAmount
+      })
+      .catch(() => {
+        return JSBI.BigInt(0)
+      })
+  }, [proxies, account])
+
+  return useMemo(() => {
+    if (!dfi) return undefined
+
+    console.log(totalAmount)
+
+    return new TokenAmount(dfi, JSBI.BigInt(1))
+  }, [dfi, totalAmount])
 }
 
 // based on typed value
