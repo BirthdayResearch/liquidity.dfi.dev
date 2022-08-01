@@ -317,7 +317,7 @@ export default function FullPositionCard({
                   borderRadius="8px"
                   as={Link}
                   to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
-                  width="48%"
+                  width="32%"
                 >
                   Add
                 </ButtonPrimary>
@@ -325,12 +325,12 @@ export default function FullPositionCard({
                   padding="8px"
                   borderRadius="8px"
                   as={Link}
-                  width="48%"
+                  width="32%"
                   to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
                 >
                   Remove
                 </ButtonPrimary>
-                <ButtonPrimary padding="8px" borderRadius="8px" onClick={claimCallback} width="48%">
+                <ButtonPrimary padding="8px" borderRadius="8px" onClick={claimCallback} width="32%">
                   Claim
                 </ButtonPrimary>
               </RowBetween>
