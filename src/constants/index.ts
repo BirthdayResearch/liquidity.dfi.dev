@@ -24,15 +24,6 @@ export interface ProxyInfo {
   tokenB: Token
 }
 
-export interface ProxyInfo {
-  address: string
-  chainId: number
-  symbol: string
-  underlyingPairAddress: string
-  tokenA: Token
-  tokenB: Token
-}
-
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
@@ -91,28 +82,28 @@ export const USDC: {[chainId in ChainId]: Token} = {
 // Proxy contact addresses
 export const PROXIES: ProxyInfo[] = [
   { //Need to update the address with Mainnet
-    address: ChainId.MAINNET ? '0x5fd39Bf6aE258351f453e55256B03085B34712f0' : '0x5fd39Bf6aE258351f453e55256B03085B34712f0',
-    chainId: ChainId.MAINNET ? ChainId.MAINNET : ChainId.GÖRLI,
+    address: '0x5fd39Bf6aE258351f453e55256B03085B34712f0',
+    chainId: ChainId.GÖRLI,
     symbol: 'USDT',
-    underlyingPairAddress: ChainId.MAINNET ? '0x9e251daeb17981477509779612dc2ffa8075aa8e' : '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
-    tokenA: ChainId.MAINNET ? DFI[ChainId.MAINNET] : DFI[ChainId.GÖRLI],
-    tokenB: ChainId.MAINNET ? USDT[ChainId.MAINNET] :USDT[ChainId.GÖRLI]
+    underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: USDT[ChainId.GÖRLI]
   },
   { //Need to update the address with Mainnet
-    address: ChainId.MAINNET ? '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2' :'0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2',
-    chainId: ChainId.MAINNET ? ChainId.MAINNET : ChainId.GÖRLI,
+    address: '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2',
+    chainId: ChainId.GÖRLI,
     symbol: 'USDC',
-    underlyingPairAddress: ChainId.MAINNET ? '0xd239216ac7e44a09da67d6852cd757fc5e829fe2' :'0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
-    tokenA: ChainId.MAINNET ? DFI[ChainId.MAINNET] : DFI[ChainId.GÖRLI],
-    tokenB: ChainId.MAINNET ? USDC[ChainId.MAINNET] : USDC[ChainId.GÖRLI]
+    underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: USDC[ChainId.GÖRLI]
   },
   { //Need to update the address with Mainnet
-    address: ChainId.MAINNET ? '0x69736086d7FF64e67ba0090229c9cdc1056fE039' : '0x69736086d7FF64e67ba0090229c9cdc1056fE039',
-    chainId: ChainId.MAINNET ? ChainId.MAINNET : ChainId.GÖRLI,
+    address: '0x69736086d7FF64e67ba0090229c9cdc1056fE039',
+    chainId: ChainId.GÖRLI,
     symbol: 'WETH',
-    underlyingPairAddress: ChainId.MAINNET ? '' : '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',
-    tokenA: ChainId.MAINNET ? DFI[ChainId.MAINNET] : DFI[ChainId.GÖRLI],
-    tokenB: ChainId.MAINNET ? WETH[ChainId.MAINNET] : WETH[ChainId.GÖRLI]
+    underlyingPairAddress: '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: WETH[ChainId.GÖRLI]
   }
 ]
 
