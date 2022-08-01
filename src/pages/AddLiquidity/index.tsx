@@ -21,7 +21,7 @@ import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
 import {USDT, USDC, DFI} from '../../constants/index'
 
-import {  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS} from '../../constants'
+import { PROXIES } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -190,13 +190,16 @@ export default function AddLiquidity({
     },
     {}
   )
-
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS[chainId!].proxyAddress);
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS[chainId!].proxyAddress);
-  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS[chainId!].proxyAddress);
-  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS[chainId!].proxyAddress);
-  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS[chainId!].proxyAddress);
-  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS[chainId!].proxyAddress);
+  
+  //ETH APPROVAL
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[2].address);
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[2].address);
+  //USDT APPROVAL
+  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[0].address);
+  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[0].address);
+  //USDC APPROVAL
+  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[1].address);
+  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[1].address);
   
   function checkAPendingApprove() {
     if (oneCurrencyIsWETH || oneCurrencyIsETH){

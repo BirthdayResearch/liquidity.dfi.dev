@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, DFI, USDT_PROXY_ADDRESS, ETH_PROXY_ADDRESS, USDC_PROXY_ADDRESS } from '../constants'
+import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, DFI, PROXIES  } from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -59,18 +59,15 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
 }
 
 export function useUsdtLpContract(withSignerIfPossible?:boolean): Contract | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(USDT_PROXY_ADDRESS[chainId!].proxyAddress, USDT_LP_ABI, withSignerIfPossible)
+  return useContract(PROXIES[0].address, USDT_LP_ABI, withSignerIfPossible)
 }
 
 export function useUsdcLpContract(withSignerIfPossible?:boolean): Contract | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(USDC_PROXY_ADDRESS[chainId!].proxyAddress, USDC_LP_ABI, withSignerIfPossible)
+  return useContract(PROXIES[1].address, USDC_LP_ABI, withSignerIfPossible)
 }
 
 export function useEthLpContract(withSignerIfPossible?:boolean): Contract | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(ETH_PROXY_ADDRESS[chainId!].proxyAddress, ETH_LP_ABI, withSignerIfPossible)
+  return useContract(PROXIES[2].address, ETH_LP_ABI, withSignerIfPossible)
 }
 
 export function useWETHContract(withSignerIfPossible?: boolean): Contract | null {

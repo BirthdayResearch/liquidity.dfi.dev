@@ -1,4 +1,4 @@
-import { PROXIES, ProxyInfo, DFI, ETH_PROXY_ADDRESS,  USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS} from './../../constants/index'
+import { PROXIES, ProxyInfo, DFI} from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE, { USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
@@ -117,18 +117,17 @@ export function useTokenBalancesProxy(
   oneCurrencyIsWETH?: boolean,
   oneCurrencyIsUSDT?:boolean
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
-  const { chainId } = useActiveWeb3React()
   const validatedTokens: Token[] = useMemo(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens]
   )
   function checkContractAddress(){
     if ( oneCurrencyIsETH || oneCurrencyIsWETH ){
-        return [ETH_PROXY_ADDRESS[chainId!].proxyAddress]
+        return [PROXIES[2].address]
       } else if (oneCurrencyIsUSDT){
-        return [USDT_PROXY_ADDRESS[chainId!].proxyAddress]
+        return [PROXIES[0].address]
       } else{
-        return [USDC_PROXY_ADDRESS[chainId!].proxyAddress] 
+        return [PROXIES[1].address]
       }
     }
   const balances = useMultipleContractSingleData(checkContractAddress(), USDT_LP_ABI_INTERFACE, 'stakingMap', [address])
