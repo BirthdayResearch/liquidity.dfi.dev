@@ -1,5 +1,5 @@
 import { ChainId, TokenAmount } from '@uniswap/sdk'
-import React/*, { useMemo }*/ from 'react'
+import React /*, { useMemo }*/ from 'react'
 import { X } from 'react-feather'
 import styled from 'styled-components'
 import tokenLogo from '../../assets/images/dfi-logo.png'
@@ -10,7 +10,7 @@ import { useActiveWeb3React } from '../../hooks'
 // import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp'
 import { useTotalDfiEarned, useTotalUniEarned } from '../../state/stake/hooks'
 import { useAggregateUniBalance, useTokenBalance } from '../../state/wallet/hooks'
-import { ExternalLink, StyledInternalLink, TYPE, UniTokenAnimated } from '../../theme'
+import { ExternalLink, TYPE, UniTokenAnimated } from '../../theme'
 //import { computeUniCirculation } from '../../utils/computeUniCirculation'
 import useUSDCPrice from '../../utils/useUSDCPrice'
 import { AutoColumn } from '../Column'
@@ -83,14 +83,7 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
                 </RowBetween>
                 <RowBetween>
                   <TYPE.white color="white">Unclaimed:</TYPE.white>
-                  <TYPE.white color="white">
-                    {dfiToClaim?.toFixed(4, { groupSeparator: ',' })}{' '}
-                    {dfiToClaim && dfiToClaim.greaterThan('0') && (
-                      <StyledInternalLink onClick={() => setShowUniBalanceModal(false)} to="/uni">
-                        (claim)
-                      </StyledInternalLink>
-                    )}
-                  </TYPE.white>
+                  <TYPE.white color="white">{dfiToClaim?.toFixed(4, { groupSeparator: ',' })} </TYPE.white>
                 </RowBetween>
               </AutoColumn>
             </CardSection>
