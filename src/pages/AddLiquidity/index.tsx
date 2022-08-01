@@ -19,9 +19,9 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import { MUSDT /*, MUSDC*/ } from '../../constants/index'
+import {USDT, USDC, DFI} from '../../constants/index'
 
-import { USDC_PROXY_ADDRESS, USDT_PROXY_ADDRESS, /* ROUTER_ADDRESS ,*/ ETH_PROXY_ADDRESS } from '../../constants'
+import { PROXIES } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -34,15 +34,8 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
-import {
-  calculateGasMargin,
-  calculateSlippageAmount,
-  getETHProxyContract,
-  getUSDTProxyContract,
-  getUSDCProxyContract /*, getRouterContract*/
-} from '../../utils'
+import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract} from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
-//import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import AppBody from '../AppBody'
 import { Dots, Wrapper } from '../Pool/styleds'
 import { ConfirmAddModalBottom } from './ConfirmAddModalBottom'
@@ -50,17 +43,14 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
-//import { Address } from 'cluster'
 
 const LpFrame = styled.div`
-  display: flex;
-  overflow: auto;
+  display: grid;
   grid-template-columns: 20% 20% 20% 20%;
   align-items: center;
   justify-content: space-between;
-  align-items: center;
   flex-direction: row;
-  width: auto;
+  width: 92%;
   top: 0;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -98,11 +88,11 @@ const StyledNavLink = styled(NavLink).attrs({
   font-size: 1rem;
   width: fit-content;
   margin: 0 10px;
-  font-weight: 200;
+  font-weight: 450;
 
   &.${activeClassName} {
-    border-radius: 10px;
-    font-weight: 300;
+    border-radius: 15px;
+    font-weight: 500;
     color: ${({ theme }) => theme.text1};
   }
 
@@ -130,16 +120,13 @@ export default function AddLiquidity({
         (currencyB && currencyEquals(currencyB, WETH[chainId])))
   )
   const oneCurrencyIsUSDT = Boolean(
-    chainId && ((currencyA && currencyEquals(currencyA, MUSDT)) || (currencyB && currencyEquals(currencyB, MUSDT)))
+    chainId &&
+    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+      (currencyB && currencyEquals(currencyB, USDT[chainId])))
   )
   const oneCurrencyIsETH = Boolean(
     chainId && ((currencyA && currencyEquals(currencyA, ETHER)) || (currencyB && currencyEquals(currencyB, ETHER)))
   )
-  // const oneCurrencyIsUSDC = Boolean(
-  //   chainId &&
-  //   ((currencyA && currencyEquals(currencyA, MUSDC)) ||
-  //     (currencyB && currencyEquals(currencyB, MUSDC)))
-  // )
 
   const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
 
@@ -168,9 +155,6 @@ export default function AddLiquidity({
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
-  // const [showWeth, setShowWeth] = useState<boolean>(false)
-  // const [showUsdt, setShowUsdt] = useState<boolean>(true)
-  // const [showUsdc, setShowUsdc] = useState<boolean>(true)
 
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
@@ -203,14 +187,17 @@ export default function AddLiquidity({
     },
     {}
   )
-
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ETH_PROXY_ADDRESS)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ETH_PROXY_ADDRESS)
-  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDT_PROXY_ADDRESS)
-  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDT_PROXY_ADDRESS)
-  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], USDC_PROXY_ADDRESS)
-  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], USDC_PROXY_ADDRESS)
-
+  
+  //ETH APPROVAL
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[2].address);
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[2].address);
+  //USDT APPROVAL
+  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[0].address);
+  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[0].address);
+  //USDC APPROVAL
+  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[1].address);
+  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[1].address);
+  
   function checkAPendingApprove() {
     if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalA === ApprovalState.PENDING
@@ -508,32 +495,36 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
-                <>
-                  <LpFrame>
-                    <StyledNavLink id={`pool-nav-link`} to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH'}>
-                      {'DFI/ETH'}
-                    </StyledNavLink>
-                    <StyledNavLink
-                      onClick={() => {}}
-                      id={`pool-nav-link`}
-                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'}
-                    >
-                      {'DFI/WETH'}
-                    </StyledNavLink>
-                    <StyledNavLink
-                      id={`pool-nav-link`}
-                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'}
-                    >
-                      {'DFI/USDT'}
-                    </StyledNavLink>
-                    <StyledNavLink
-                      id={`pool-nav-link`}
-                      to={'/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565'}
-                    >
-                      {'DFI/USDC'}
-                    </StyledNavLink>
-                  </LpFrame>
-                  <ColumnCenter>
+                <><LpFrame>
+                 <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={`/add/${DFI[chainId!].address}/ETH`}
+                  >
+                  {'DFI/ETH'}
+                  </StyledNavLink>
+                  <StyledNavLink 
+                    onClick={()=>{
+                      
+                    }}
+                    id={`pool-nav-link`}
+                    to={`/add/${DFI[chainId!].address}/${WETH[chainId!].address}`}
+                  > 
+                  {'DFI/WETH'}
+                  </StyledNavLink>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={`/add/${DFI[chainId!].address}/${USDT[chainId!].address}`}
+                  > 
+                  {'DFI/USDT'}
+                  </StyledNavLink>
+                  <StyledNavLink
+                    id={`pool-nav-link`}
+                    to={`/add/${DFI[chainId!].address}/${USDC[chainId!].address}`}
+                  > 
+                  {'DFI/USDC'}
+                  </StyledNavLink>
+                </LpFrame>
+                <ColumnCenter>
                     <BlueCard>
                       <AutoColumn gap="30px">
                         <TYPE.link fontWeight={400} color={'primaryText1'}>
@@ -675,12 +666,3 @@ export default function AddLiquidity({
     </>
   )
 }
-//{oneCurrencyIsWETH ? approveACallback : approveCCallback}
-// (approvalA === ApprovalState.NOT_APPROVED ||
-//   approvalA === ApprovalState.PENDING ||
-//   approvalB === ApprovalState.NOT_APPROVED ||
-//   approvalB === ApprovalState.PENDING ||
-//   approvalC === ApprovalState.NOT_APPROVED ||
-//   approvalC === ApprovalState.PENDING ||
-//   approvalD === ApprovalState.NOT_APPROVED ||
-//   approvalD === ApprovalState.PENDING) &&

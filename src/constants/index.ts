@@ -13,6 +13,7 @@ export { PRELOADED_PROPOSALS } from './proposals'
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
+ 
 
 export interface ProxyInfo {
   address: string
@@ -25,8 +26,6 @@ export interface ProxyInfo {
 
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
-export const USDC = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
-export const USDT = new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
 export const FEI = new Token(ChainId.MAINNET, '0x956F47F50A910163D8BF957Cf5846D573E7f87CA', 18, 'FEI', 'Fei USD')
 export const TRIBE = new Token(ChainId.MAINNET, '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B', 18, 'TRIBE', 'Tribe')
@@ -44,50 +43,64 @@ export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'
 
 export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 
-// DFI/USDT LP proxy contract on Goreli testnet
-export const USDT_PROXY_ADDRESS = '0x9952D026E161DD9F26C2b83B4Cc787eAAe154ca8'
-// DFI/USDC LP proxy contract on Goreli testnet
-export const USDC_PROXY_ADDRESS = '0xdBb40e382c826163fe7690973C990bFa4193900D'
-// DFI/ETH LP proxy contract on Goreli testnet
-export const ETH_PROXY_ADDRESS = '0x505ddc81C40ec998654BAE861585b6570a1E17E5'
-// DFI GOERLI ADDRESS
+// DFI GOERLI ADDRESS 
 export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
-// MockUSDT GOERLI USDT
-export const MUSDT = new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT')
-// MockUSDC GOERLI USDC
-export const MUSDC = new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC')
-
 //MAINNET ADDRESS
 const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
 
 // DFI is not deployed at RINKEBY | ROPSTEN | KOVAN: Arbitrage address
 export const DFI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, DFI_ADDRESS, 8, 'DFI', 'DeFiChain'),
-  [ChainId.RINKEBY]: new Token(ChainId.RINKEBY, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
-  [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain'),
+  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
+  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
   [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
-  [ChainId.KOVAN]: new Token(ChainId.KOVAN, DFI_TEST_ADDRESS, 18, 'DFI', 'DFiChain')
+  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain')
+}
+
+//USDT
+//export const MUSDT_TEST = '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'
+//export const USDT = new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD')
+export const USDT: { [chainId in ChainId]: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD'),
+  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
+  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
+  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT')
+}
+
+//USDC
+//MockUSDT GOERLI USDT on other chain other than mainnet
+export const USDC_T = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')//To avoid writing the whole code. USDC_T and USDC are the same.
+export const USDC: {[chainId in ChainId]: Token} = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C'),
+  [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
+  [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
+  [ChainId.KOVAN]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC')
 }
 
 // Proxy contact addresses
 export const PROXIES: ProxyInfo[] = [
   {
+    //Need to update the address with Mainnet
     address: '0x9952D026E161DD9F26C2b83B4Cc787eAAe154ca8',
     chainId: ChainId.GÖRLI,
     symbol: 'USDT',
     underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
     tokenA: DFI[ChainId.GÖRLI],
-    tokenB: MUSDT
+    tokenB: USDT[ChainId.GÖRLI]
   },
   {
+    //Need to update the address with Mainnet
     address: '0xdBb40e382c826163fe7690973C990bFa4193900D',
     chainId: ChainId.GÖRLI,
     symbol: 'USDC',
     underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
     tokenA: DFI[ChainId.GÖRLI],
-    tokenB: MUSDC
+    tokenB: USDC[ChainId.GÖRLI]
   },
   {
+    //Need to update the address with Mainnet
     address: '0x505ddc81C40ec998654BAE861585b6570a1E17E5',
     chainId: ChainId.GÖRLI,
     symbol: 'WETH',
@@ -128,7 +141,7 @@ const WETH_ONLY: ChainTokenList = {
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
@@ -157,13 +170,13 @@ export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: To
 // used for display in the default list when adding liquidity
 export const SUGGESTED_BASES: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC, USDT, WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
@@ -172,8 +185,8 @@ export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } 
       new Token(ChainId.MAINNET, '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', 8, 'cDAI', 'Compound Dai'),
       new Token(ChainId.MAINNET, '0x39AA39c021dfbaE8faC545936693aC917d5E7563', 8, 'cUSDC', 'Compound USD Coin')
     ],
-    [USDC, USDT],
-    [DAI, USDT]
+    [USDC[ChainId.MAINNET], USDT[ChainId.MAINNET]],
+    [DAI, USDT[ChainId.MAINNET]]
   ]
 }
 
