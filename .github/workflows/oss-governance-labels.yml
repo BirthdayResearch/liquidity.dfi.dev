@@ -2,7 +2,7 @@ name: OSS Governance
 
 on:
   push:
-    branches: [ main ]
+    branches: [ $default-branch ]
     paths: [ .github/labels.yml ]
 
 permissions:
