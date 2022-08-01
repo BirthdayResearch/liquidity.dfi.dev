@@ -25,6 +25,7 @@ import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
 import { Dots } from '../swap/styleds'
 import { BIG_INT_ZERO } from '../../constants'
+import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -50,6 +51,7 @@ interface PositionCardProps {
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
   claimmable?: TokenAmount
+  proxyAddress?: string
 }
 
 export function MinimalPositionCard({ pair, showUnwrapped = false, border }: PositionCardProps) {
@@ -160,7 +162,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   )
 }
 
-export default function FullPositionCard({ pair, border, stakedBalance, claimmable }: PositionCardProps) {
+export default function FullPositionCard({ pair, border, stakedBalance, claimmable, proxyAddress }: PositionCardProps) {
   const currency1 = unwrappedToken(pair.token0)
   const currency0 = unwrappedToken(pair.token1)
 
@@ -188,6 +190,8 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimmab
       : [undefined, undefined]
 
   const backgroundColor = useColor(pair?.token0)
+
+  const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
 
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
@@ -319,6 +323,9 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimmab
                   to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
                 >
                   Remove
+                </ButtonPrimary>
+                <ButtonPrimary padding="8px" borderRadius="8px" onClick={claimCallback} width="48%">
+                  Claim
                 </ButtonPrimary>
               </RowBetween>
             )}

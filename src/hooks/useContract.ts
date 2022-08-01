@@ -75,6 +75,11 @@ export function useWETHContract(withSignerIfPossible?: boolean): Contract | null
   return useContract(chainId ? WETH[chainId].address : undefined, WETH_ABI, withSignerIfPossible)
 }
 
+export function useProxyToClaimContract(proxyAddress?: string, withSignerIfPossible?: boolean): Contract | null {
+  // doesnt matter which abi as long as it has 'claimRewards'
+  return useContract(proxyAddress, USDT_LP_ABI, withSignerIfPossible)
+}
+
 export function useArgentWalletDetectorContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(

@@ -162,6 +162,7 @@ export default function Pool() {
                     pair={v2Pair}
                     stakedBalance={userProxyLiquidity[v2Pair.proxyAddress]}
                     claimmable={userClaimmableDfi[v2Pair.proxyAddress]}
+                    proxyAddress={v2Pair.proxyAddress}
                   />
                 ))}
               </>

@@ -13,7 +13,6 @@ export { PRELOADED_PROPOSALS } from './proposals'
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
- 
 
 export interface ProxyInfo {
   address: string
