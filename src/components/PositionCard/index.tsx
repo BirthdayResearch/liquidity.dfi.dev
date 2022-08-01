@@ -50,7 +50,7 @@ interface PositionCardProps {
   showUnwrapped?: boolean
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
-  claimmable?: TokenAmount
+  claimable?: TokenAmount
   proxyAddress?: string
 }
 
@@ -162,7 +162,13 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   )
 }
 
-export default function FullPositionCard({ pair, border, stakedBalance, claimmable, proxyAddress }: PositionCardProps) {
+export default function FullPositionCard({
+  pair,
+  border,
+  stakedBalance,
+  claimable: claimable,
+  proxyAddress
+}: PositionCardProps) {
   const currency1 = unwrappedToken(pair.token0)
   const currency0 = unwrappedToken(pair.token1)
 
@@ -293,13 +299,13 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimmab
               </Text>
             </FixedHeightRow>
 
-            {claimmable && (
+            {claimable && (
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
-                  Claimmable DFI:
+                  Claimable DFI:
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
-                  {claimmable?.toFixed(4, { groupSeparator: ',' })} DFI
+                  {claimable?.toFixed(4, { groupSeparator: ',' })} DFI
                 </Text>
               </FixedHeightRow>
             )}

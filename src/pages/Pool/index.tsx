@@ -3,7 +3,7 @@ import styled, { ThemeContext } from 'styled-components'
 import { Link } from 'react-router-dom'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
 import FullPositionCard from '../../components/PositionCard'
-import { useGetClaimmableRewardOfUser, useGetProxyLiquidityOfUser, useProxies } from '../../state/wallet/hooks'
+import { useGetClaimableRewardOfUser as useGetClaimableRewardOfUser, useGetProxyLiquidityOfUser, useProxies } from '../../state/wallet/hooks'
 import { TYPE, HideSmall } from '../../theme'
 import { Text } from 'rebass'
 import Card from '../../components/Card'
@@ -77,11 +77,11 @@ export default function Pool() {
     .map(([, pair]) => pair)
     .filter((v2Pair): v2Pair is ProxyPair => Boolean(v2Pair))
 
-  const [userClaimmableDfi, fetchingClaimmable] = useGetClaimmableRewardOfUser(account ?? undefined, proxies)
+  const [userClaimableDfi, fetchingClaimable] = useGetClaimableRewardOfUser(account ?? undefined, proxies)
 
   const userProxyLiquidityIsLoading =
     fetchingProxyLiquidity ||
-    fetchingClaimmable ||
+    fetchingClaimable ||
     proxyV2Pairs2?.length < proxyWithBalance.length ||
     proxyV2Pairs2?.some(V2Pair => !V2Pair)
 
@@ -161,7 +161,7 @@ export default function Pool() {
                     key={v2Pair.liquidityToken.address}
                     pair={v2Pair}
                     stakedBalance={userProxyLiquidity[v2Pair.proxyAddress]}
-                    claimmable={userClaimmableDfi[v2Pair.proxyAddress]}
+                    claimable={userClaimableDfi[v2Pair.proxyAddress]}
                     proxyAddress={v2Pair.proxyAddress}
                   />
                 ))}

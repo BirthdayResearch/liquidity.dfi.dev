@@ -294,7 +294,7 @@ export function useGetProxyLiquidityOfUser(
   ]
 }
 
-export function useGetClaimmableRewardOfUser(
+export function useGetClaimableRewardOfUser(
   address?: string,
   proxies?: (ProxyInfo | undefined)[]
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
