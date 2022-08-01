@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { BookOpen, Code, Info, MessageCircle } from 'react-feather'
+import { BookOpen, Code, HelpCircle, Info, MessageCircle } from 'react-feather'
 import styled from 'styled-components'
 import { ReactComponent as MenuIcon } from '../../assets/images/menu.svg'
 import { useActiveWeb3React } from '../../hooks'
@@ -120,6 +120,13 @@ export default function Menu() {
           <MenuItem id="link" href="https://discord.com/invite/py55egyaGy">
             <MessageCircle size={14} />
             Discord
+          </MenuItem>
+          <MenuItem
+            id="link"
+            href="https://birthdayresearch.notion.site/DeFiChain-DFI-Liquidity-Mining-Program-1696a9cb66fd4fc38d9ccf14c782cba0"
+          >
+            <HelpCircle size={14} />
+            FAQs
           </MenuItem>
           {account && (
             <ButtonPrimary onClick={openClaimModal} padding="8px 16px" width="100%" borderRadius="12px" mt="0.5rem">
