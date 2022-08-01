@@ -5,14 +5,13 @@ import Modal from '../Modal'
 import { ExternalLink } from '../../theme'
 import { Text } from 'rebass'
 import { CloseIcon, CustomLightSpinner } from '../../theme/components'
-import { RowBetween} from '../Row'
+import { RowBetween } from '../Row'
 import { AlertTriangle, ArrowUpCircle } from 'react-feather'
 import { ButtonPrimary } from '../Button'
 import { AutoColumn, ColumnCenter } from '../Column'
 import Circle from '../../assets/images/blue-loader.svg'
 import { getEtherscanLink } from '../../utils'
 import { useActiveWeb3React } from '../../hooks'
-
 
 const Wrapper = styled.div`
   width: 100%;
@@ -30,7 +29,6 @@ const BottomSection = styled(Section)`
 const ConfirmedIcon = styled(ColumnCenter)`
   padding: 60px 0;
 `
-
 
 function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () => void; pendingText: string }) {
   return (
@@ -73,7 +71,6 @@ function TransactionSubmittedContent({
   currencyToAdd?: Currency | undefined
 }) {
   const theme = useContext(ThemeContext)
-
 
   return (
     <Wrapper>

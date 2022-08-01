@@ -24,6 +24,15 @@ export interface ProxyInfo {
   tokenB: Token
 }
 
+export interface ProxyInfo {
+  address: string
+  chainId: number
+  symbol: string
+  underlyingPairAddress: string
+  tokenA: Token
+  tokenB: Token
+}
+
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
@@ -49,7 +58,7 @@ export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
 const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
 
 // DFI is not deployed at RINKEBY | ROPSTEN | KOVAN: Arbitrage address
-export const DFI: { [chainId in ChainId]: Token} = {
+export const DFI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, DFI_ADDRESS, 8, 'DFI', 'DeFiChain'),
   [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),
   [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, DFI_TEST_ADDRESS, 8, 'DFI', 'DFiChain'),

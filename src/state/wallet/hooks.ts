@@ -1,4 +1,4 @@
-import { PROXIES, ProxyInfo, DFI} from './../../constants/index'
+import { DFI, PROXIES, ProxyInfo} from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE, { USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
@@ -11,6 +11,7 @@ import { useUserUnclaimedAmount } from '../claim/hooks'
 import { useTotalUniEarned } from '../stake/hooks'
 import { Interface } from '@ethersproject/abi'
 
+import PROXY_INTERFACE from 'constants/abis/proxy_staking'
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -250,7 +251,7 @@ export function useGetProxyLiquidityOfUser(
   )
 
   const proxyAddresses = useMemo(() => validatedProxies.map(p => p.address), [validatedProxies])
-  const balances = useMultipleContractSingleData(proxyAddresses, USDT_LP_ABI_INTERFACE, 'stakingMap', [address])
+  const balances = useMultipleContractSingleData(proxyAddresses, PROXY_INTERFACE, 'stakingMap', [address])
   const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
 
   return [
