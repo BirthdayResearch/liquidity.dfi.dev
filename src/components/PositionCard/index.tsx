@@ -162,13 +162,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   )
 }
 
-export default function FullPositionCard({
-  pair,
-  border,
-  stakedBalance,
-  claimable: claimable,
-  proxyAddress
-}: PositionCardProps) {
+export default function FullPositionCard({ pair, border, stakedBalance, claimable, proxyAddress }: PositionCardProps) {
   const currency1 = unwrappedToken(pair.token0)
   const currency0 = unwrappedToken(pair.token1)
 
