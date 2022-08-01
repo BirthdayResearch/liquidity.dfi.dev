@@ -273,11 +273,6 @@ export function useTotalDfiEarned(account?: string): TokenAmount | undefined {
         return accumulator
       }
 
-      const xx = current?.result?.[0] ?? 0
-      if (xx > 0) {
-        console.log(xx)
-      }
-
       accumulator = JSBI.add(accumulator, JSBI.BigInt(current?.result?.[0] ?? 0))
       return accumulator
     }, JSBI.BigInt(0))

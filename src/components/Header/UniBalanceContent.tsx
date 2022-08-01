@@ -8,7 +8,7 @@ import { useTotalSupply } from '../../data/TotalSupply'
 import { useActiveWeb3React } from '../../hooks'
 // import { useMerkleDistributorContract } from '../../hooks/useContract'
 // import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp'
-import { useTotalDfiEarned, useTotalUniEarned } from '../../state/stake/hooks'
+import { useTotalDfiEarned } from '../../state/stake/hooks'
 import { useAggregateUniBalance, useTokenBalance } from '../../state/wallet/hooks'
 import { ExternalLink, TYPE, UniTokenAnimated } from '../../theme'
 //import { computeUniCirculation } from '../../utils/computeUniCirculation'
@@ -47,8 +47,6 @@ export default function UniBalanceContent({ setShowUniBalanceModal }: { setShowU
   const total = useAggregateUniBalance()
   console.log(total)
   const dfiBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, dfi)
-  const uniToClaim: TokenAmount | undefined = useTotalUniEarned()
-  console.log(uniToClaim)
 
   const dfiToClaim = useTotalDfiEarned(account ?? undefined)
 

@@ -214,3 +214,36 @@ export function useGetProxyLiquidityOfUser(
     anyLoading
   ]
 }
+
+export function useGetClaimmableRewardOfUser(
+  address?: string,
+  proxies?: (ProxyInfo | undefined)[]
+): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+  const validatedProxies: ProxyInfo[] = useMemo(
+    () => proxies?.filter((p?: ProxyInfo): p is ProxyInfo => isAddress(p?.address) !== false) ?? [],
+    [proxies]
+  )
+
+  const proxyAddresses = useMemo(() => validatedProxies.map(p => p.address), [validatedProxies])
+  const reward = useMultipleContractSingleData(proxyAddresses, PROXY_INTERFACE, 'checkReward', [address])
+  const anyLoading: boolean = useMemo(() => reward.some(callState => callState.loading), [reward])
+
+  return [
+    useMemo(
+      () =>
+        address && validatedProxies.length > 0
+          ? validatedProxies.reduce<{ [address: string]: TokenAmount | undefined }>((memo, proxy, i) => {
+              const value = reward?.[i]?.result?.[0]
+              const amount = value ? JSBI.BigInt(value.toString()) : undefined
+              if (amount) {
+                const token = new Token(proxy.chainId, proxy.underlyingPairAddress, 8)
+                memo[proxy.address] = new TokenAmount(token, amount)
+              }
+              return memo
+            }, {})
+          : {},
+      [address, validatedProxies, reward]
+    ),
+    anyLoading
+  ]
+}

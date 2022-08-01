@@ -49,6 +49,7 @@ interface PositionCardProps {
   showUnwrapped?: boolean
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
+  claimmable?: TokenAmount
 }
 
 export function MinimalPositionCard({ pair, showUnwrapped = false, border }: PositionCardProps) {
@@ -159,7 +160,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   )
 }
 
-export default function FullPositionCard({ pair, border, stakedBalance }: PositionCardProps) {
+export default function FullPositionCard({ pair, border, stakedBalance, claimmable }: PositionCardProps) {
   const currency1 = unwrappedToken(pair.token0)
   const currency0 = unwrappedToken(pair.token1)
 
@@ -287,6 +288,18 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
                   : '-'}
               </Text>
             </FixedHeightRow>
+
+            {claimmable && (
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  Claimmable DFI:
+                </Text>
+                <Text fontSize={16} fontWeight={500}>
+                  {claimmable?.toFixed(4, { groupSeparator: ',' })} DFI
+                </Text>
+              </FixedHeightRow>
+            )}
+
             {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, BIG_INT_ZERO) && (
               <RowBetween marginTop="10px">
                 <ButtonPrimary
