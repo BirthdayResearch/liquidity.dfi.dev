@@ -58,15 +58,15 @@ export function useTokenContract(tokenAddress?: string, withSignerIfPossible?: b
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useUsdtLpContract(withSignerIfPossible?:boolean): Contract | null {
+export function useUsdtLpContract(withSignerIfPossible?: boolean): Contract | null {
   return useContract(PROXIES[0].address, USDT_LP_ABI, withSignerIfPossible)
 }
 
-export function useUsdcLpContract(withSignerIfPossible?:boolean): Contract | null {
+export function useUsdcLpContract(withSignerIfPossible?: boolean): Contract | null {
   return useContract(PROXIES[1].address, USDC_LP_ABI, withSignerIfPossible)
 }
 
-export function useEthLpContract(withSignerIfPossible?:boolean): Contract | null {
+export function useEthLpContract(withSignerIfPossible?: boolean): Contract | null {
   return useContract(PROXIES[2].address, ETH_LP_ABI, withSignerIfPossible)
 }
 
