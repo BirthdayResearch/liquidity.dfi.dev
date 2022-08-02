@@ -1,10 +1,9 @@
 import React, { useContext, useMemo } from 'react'
 import styled, { ThemeContext } from 'styled-components'
-import { Pair } from '@uniswap/sdk'
 import { Link } from 'react-router-dom'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
 import FullPositionCard from '../../components/PositionCard'
-import { useGetProxyLiquidityOfUser, useProxies } from '../../state/wallet/hooks'
+import { useGetClaimableRewardOfUser, useGetProxyLiquidityOfUser, useProxies } from '../../state/wallet/hooks'
 import { TYPE, HideSmall } from '../../theme'
 import { Text } from 'rebass'
 import Card from '../../components/Card'
@@ -13,7 +12,7 @@ import { ButtonPrimary } from '../../components/Button'
 import { AutoColumn } from '../../components/Column'
 
 import { useActiveWeb3React } from '../../hooks'
-import { ProxyPair, usePairs, usePairs2 } from '../../data/Reserves'
+import { ProxyPair, usePairs2 } from '../../data/Reserves'
 import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 
@@ -78,14 +77,13 @@ export default function Pool() {
     .map(([, pair]) => pair)
     .filter((v2Pair): v2Pair is ProxyPair => Boolean(v2Pair))
 
-  const proxyV2Pairs = usePairs(proxyWithBalance.map(p => [p.tokenA, p.tokenB]))
-  const proxyV2PairsWithLiquidity = proxyV2Pairs
-    .map(([, pair]) => pair)
-    .filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
-  console.log(proxyV2PairsWithLiquidity)
+  const [userClaimableDfi, fetchingClaimable] = useGetClaimableRewardOfUser(account ?? undefined, proxies)
 
   const userProxyLiquidityIsLoading =
-    fetchingProxyLiquidity || proxyV2Pairs2?.length < proxyWithBalance.length || proxyV2Pairs2?.some(V2Pair => !V2Pair)
+    fetchingProxyLiquidity ||
+    fetchingClaimable ||
+    proxyV2Pairs2?.length < proxyWithBalance.length ||
+    proxyV2Pairs2?.some(V2Pair => !V2Pair)
 
   return (
     <>
@@ -163,6 +161,8 @@ export default function Pool() {
                     key={v2Pair.liquidityToken.address}
                     pair={v2Pair}
                     stakedBalance={userProxyLiquidity[v2Pair.proxyAddress]}
+                    claimable={userClaimableDfi[v2Pair.proxyAddress]}
+                    proxyAddress={v2Pair.proxyAddress}
                   />
                 ))}
               </>

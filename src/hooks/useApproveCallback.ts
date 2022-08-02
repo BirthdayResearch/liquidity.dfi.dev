@@ -9,7 +9,7 @@ import { Field } from '../state/swap/actions'
 import { useTransactionAdder, useHasPendingApproval } from '../state/transactions/hooks'
 import { computeSlippageAdjustedAmounts } from '../utils/prices'
 import { calculateGasMargin } from '../utils'
-import { useTokenContract } from './useContract'
+import { useProxyToClaimContract, useTokenContract } from './useContract'
 import { useActiveWeb3React } from './index'
 import { Version } from './useToggledVersion'
 
@@ -97,6 +97,39 @@ export function useApproveCallback(
   }, [approvalState, token, tokenContract, amountToApprove, spender, addTransaction])
 
   return [approvalState, approve]
+}
+
+export function useClaimRewardProxyCallback(proxyAddress: string): () => Promise<void> {
+  const { account } = useActiveWeb3React()
+  const proxyContract = useProxyToClaimContract(proxyAddress)
+  const addTransaction = useTransactionAdder()
+
+  const claim = useCallback(async (): Promise<void> => {
+    if (!proxyContract) {
+      console.error('proxyContract is null')
+      return
+    }
+
+    const estimatedGas = await proxyContract.estimateGas.claimRewards(account).catch(() => {
+      // general fallback for tokens who restrict approval amounts
+      return proxyContract.estimateGas.claimRewards(account)
+    })
+
+    return proxyContract
+      .claimRewards(account, {
+        gasLimit: calculateGasMargin(estimatedGas)
+      })
+      .then((response: TransactionResponse) => {
+        addTransaction(response, {
+          summary: 'Claim DFI '
+        })
+      })
+      .catch((error: Error) => {
+        console.debug('Failed to approve token', error)
+        throw error
+      })
+  }, [proxyContract, addTransaction, account])
+  return claim
 }
 
 // wraps useApproveCallback in the context of a swap
