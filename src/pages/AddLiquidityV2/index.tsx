@@ -3,14 +3,12 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { Trans } from '@lingui/macro'
 import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core'
 import { useWeb3React } from '@web3-react/core'
-import { ElementName, Event, EventName } from 'components/AmplitudeAnalytics/constants'
-import { TraceEvent } from 'components/AmplitudeAnalytics/TraceEvent'
 import { sendEvent } from 'components/analytics'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import { SwitchLocaleLink } from 'components/SwitchLocaleLink'
 import { useCallback, useContext, useState } from 'react'
 import { Plus } from 'react-feather'
-import { useHistory, useParams } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components/macro'
 
@@ -49,9 +47,12 @@ import { PoolPriceBar } from './PoolPriceBar'
 
 const DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE = new Percent(50, 10_000)
 
-export default function AddLiquidity() {
-  const { currencyIdA, currencyIdB } = useParams<{ currencyIdA?: string; currencyIdB?: string }>()
-  const history = useHistory()
+export default function AddLiquidity({
+  match: {
+    params: { currencyIdA, currencyIdB },
+  },
+  history,
+}: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
   const { account, chainId, provider } = useWeb3React()
 
   const theme = useContext(ThemeContext)
@@ -346,13 +347,13 @@ export default function AddLiquidity() {
                 <ColumnCenter>
                   <BlueCard>
                     <AutoColumn gap="10px">
-                      <ThemedText.Link fontWeight={600} color={'deprecated_primaryText1'}>
+                      <ThemedText.Link fontWeight={600} color={'primaryText1'}>
                         <Trans>You are the first liquidity provider.</Trans>
                       </ThemedText.Link>
-                      <ThemedText.Link fontWeight={400} color={'deprecated_primaryText1'}>
+                      <ThemedText.Link fontWeight={400} color={'primaryText1'}>
                         <Trans>The ratio of tokens you add will set the price of this pool.</Trans>
                       </ThemedText.Link>
-                      <ThemedText.Link fontWeight={400} color={'deprecated_primaryText1'}>
+                      <ThemedText.Link fontWeight={400} color={'primaryText1'}>
                         <Trans>Once you are happy with the rate click supply to review.</Trans>
                       </ThemedText.Link>
                     </AutoColumn>
@@ -362,7 +363,7 @@ export default function AddLiquidity() {
                 <ColumnCenter>
                   <BlueCard>
                     <AutoColumn gap="10px">
-                      <ThemedText.Link fontWeight={400} color={'deprecated_primaryText1'}>
+                      <ThemedText.Link fontWeight={400} color={'primaryText1'}>
                         <Trans>
                           <b>
                             <Trans>Tip:</Trans>
@@ -389,7 +390,7 @@ export default function AddLiquidity() {
               showCommonBases
             />
             <ColumnCenter>
-              <Plus size="16" color={theme.deprecated_text2} />
+              <Plus size="16" color={theme.text2} />
             </ColumnCenter>
             <CurrencyInputPanel
               value={formattedAmounts[Field.CURRENCY_B]}
@@ -434,16 +435,9 @@ export default function AddLiquidity() {
                 </ThemedText.Main>
               </ButtonPrimary>
             ) : !account ? (
-              <TraceEvent
-                events={[Event.onClick]}
-                name={EventName.CONNECT_WALLET_BUTTON_CLICKED}
-                properties={{ received_swap_quote: false }}
-                element={ElementName.CONNECT_WALLET_BUTTON}
-              >
-                <ButtonLight onClick={toggleWalletModal}>
-                  <Trans>Connect Wallet</Trans>
-                </ButtonLight>
-              </TraceEvent>
+              <ButtonLight onClick={toggleWalletModal}>
+                <Trans>Connect Wallet</Trans>
+              </ButtonLight>
             ) : (
               <AutoColumn gap={'md'}>
                 {(approvalA === ApprovalState.NOT_APPROVED ||

@@ -1,8 +1,6 @@
 import { Trans } from '@lingui/macro'
 import { Currency, CurrencyAmount, Token } from '@uniswap/sdk-core'
 import { useWeb3React } from '@web3-react/core'
-import { ElementName, Event, EventName } from 'components/AmplitudeAnalytics/constants'
-import { TraceEvent } from 'components/AmplitudeAnalytics/TraceEvent'
 import { LightGreyCard } from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
 import useTheme from 'hooks/useTheme'
@@ -38,8 +36,8 @@ const StyledBalanceText = styled(Text)`
 `
 
 const Tag = styled.div`
-  background-color: ${({ theme }) => theme.deprecated_bg3};
-  color: ${({ theme }) => theme.deprecated_text2};
+  background-color: ${({ theme }) => theme.bg3};
+  color: ${({ theme }) => theme.text2};
   font-size: 14px;
   border-radius: 4px;
   padding: 0.25rem 0.3rem 0.25rem 0.3rem;
@@ -108,7 +106,6 @@ function CurrencyRow({
   otherSelected,
   style,
   showCurrencyAmount,
-  eventProperties,
 }: {
   currency: Currency
   onSelect: () => void
@@ -116,7 +113,6 @@ function CurrencyRow({
   otherSelected: boolean
   style: CSSProperties
   showCurrencyAmount?: boolean
-  eventProperties: Record<string, unknown>
 }) {
   const { account } = useWeb3React()
   const key = currencyKey(currency)
@@ -127,42 +123,35 @@ function CurrencyRow({
 
   // only show add or remove buttons if not on selected list
   return (
-    <TraceEvent
-      events={[Event.onClick, Event.onKeyPress]}
-      name={EventName.TOKEN_SELECTED}
-      properties={{ is_imported_by_user: customAdded, ...eventProperties }}
-      element={ElementName.TOKEN_SELECTOR_ROW}
+    <MenuItem
+      tabIndex={0}
+      style={style}
+      className={`token-item-${key}`}
+      onKeyPress={(e) => (!isSelected && e.key === 'Enter' ? onSelect() : null)}
+      onClick={() => (isSelected ? null : onSelect())}
+      disabled={isSelected}
+      selected={otherSelected}
     >
-      <MenuItem
-        tabIndex={0}
-        style={style}
-        className={`token-item-${key}`}
-        onKeyPress={(e) => (!isSelected && e.key === 'Enter' ? onSelect() : null)}
-        onClick={() => (isSelected ? null : onSelect())}
-        disabled={isSelected}
-        selected={otherSelected}
-      >
-        <CurrencyLogo currency={currency} size={'24px'} />
-        <Column>
-          <Text title={currency.name} fontWeight={500}>
-            {currency.symbol}
-          </Text>
-          <ThemedText.DarkGray ml="0px" fontSize={'12px'} fontWeight={300}>
-            {!currency.isNative && !isOnSelectedList && customAdded ? (
-              <Trans>{currency.name} • Added by user</Trans>
-            ) : (
-              currency.name
-            )}
-          </ThemedText.DarkGray>
-        </Column>
-        <TokenTags currency={currency} />
-        {showCurrencyAmount && (
-          <RowFixed style={{ justifySelf: 'flex-end' }}>
-            {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
-          </RowFixed>
-        )}
-      </MenuItem>
-    </TraceEvent>
+      <CurrencyLogo currency={currency} size={'24px'} />
+      <Column>
+        <Text title={currency.name} fontWeight={500}>
+          {currency.symbol}
+        </Text>
+        <ThemedText.DarkGray ml="0px" fontSize={'12px'} fontWeight={300}>
+          {!currency.isNative && !isOnSelectedList && customAdded ? (
+            <Trans>{currency.name} • Added by user</Trans>
+          ) : (
+            currency.name
+          )}
+        </ThemedText.DarkGray>
+      </Column>
+      <TokenTags currency={currency} />
+      {showCurrencyAmount && (
+        <RowFixed style={{ justifySelf: 'flex-end' }}>
+          {balance ? <Balance balance={balance} /> : account ? <Loader /> : null}
+        </RowFixed>
+      )}
+    </MenuItem>
   )
 }
 
@@ -180,7 +169,7 @@ function BreakLineComponent({ style }: { style: CSSProperties }) {
         <RowBetween>
           <RowFixed>
             <TokenListLogoWrapper src={TokenListLogo} />
-            <ThemedText.Main ml="6px" fontSize="12px" color={theme.deprecated_text1}>
+            <ThemedText.Main ml="6px" fontSize="12px" color={theme.text1}>
               <Trans>Expanded results from inactive Token Lists</Trans>
             </ThemedText.Main>
           </RowFixed>
@@ -197,31 +186,6 @@ function BreakLineComponent({ style }: { style: CSSProperties }) {
   )
 }
 
-interface TokenRowProps {
-  data: Array<Currency | BreakLine>
-  index: number
-  style: CSSProperties
-}
-
-const formatAnalyticsEventProperties = (
-  token: Token,
-  index: number,
-  data: any[],
-  searchQuery: string,
-  isAddressSearch: string | false
-) => ({
-  token_symbol: token?.symbol,
-  token_address: token?.address,
-  is_suggested_token: false,
-  is_selected_from_list: true,
-  scroll_position: '',
-  token_list_index: index,
-  token_list_length: data.length,
-  ...(isAddressSearch === false
-    ? { search_token_symbol_input: searchQuery }
-    : { search_token_address_input: isAddressSearch }),
-})
-
 export default function CurrencyList({
   height,
   currencies,
@@ -234,8 +198,6 @@ export default function CurrencyList({
   setImportToken,
   showCurrencyAmount,
   isLoading,
-  searchQuery,
-  isAddressSearch,
 }: {
   height: number
   currencies: Currency[]
@@ -248,8 +210,6 @@ export default function CurrencyList({
   setImportToken: (token: Token) => void
   showCurrencyAmount?: boolean
   isLoading: boolean
-  searchQuery: string
-  isAddressSearch: string | false
 }) {
   const itemData: (Currency | BreakLine)[] = useMemo(() => {
     if (otherListTokens && otherListTokens?.length > 0) {
@@ -259,7 +219,7 @@ export default function CurrencyList({
   }, [currencies, otherListTokens])
 
   const Row = useCallback(
-    function TokenRow({ data, index, style }: TokenRowProps) {
+    function TokenRow({ data, index, style }) {
       const row: Currency | BreakLine = data[index]
 
       if (isBreakLine(row)) {
@@ -297,7 +257,6 @@ export default function CurrencyList({
             onSelect={handleSelect}
             otherSelected={otherSelected}
             showCurrencyAmount={showCurrencyAmount}
-            eventProperties={formatAnalyticsEventProperties(token, index, data, searchQuery, isAddressSearch)}
           />
         )
       } else {
@@ -313,8 +272,6 @@ export default function CurrencyList({
       showImportView,
       showCurrencyAmount,
       isLoading,
-      isAddressSearch,
-      searchQuery,
     ]
   )
 

@@ -1,3 +1,6 @@
+// include style rules in snapshots
+import 'jest-styled-components'
+
 import { fireEvent, render, screen } from 'test-utils'
 
 import { ResizingTextArea, TextInput } from './'

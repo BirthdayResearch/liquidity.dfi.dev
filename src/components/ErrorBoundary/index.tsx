@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro'
 import { sendEvent } from 'components/analytics'
-import React, { ErrorInfo, PropsWithChildren } from 'react'
+import React, { ErrorInfo } from 'react'
 import styled from 'styled-components/macro'
 
 import store, { AppState } from '../../state'
@@ -24,18 +24,18 @@ const BodyWrapper = styled.div<{ margin?: string }>`
 `
 
 const CodeBlockWrapper = styled.div`
-  background: ${({ theme }) => theme.deprecated_bg0};
+  background: ${({ theme }) => theme.bg0};
   overflow: auto;
   white-space: pre;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
   border-radius: 24px;
   padding: 18px 24px;
-  color: ${({ theme }) => theme.deprecated_text1};
+  color: ${({ theme }) => theme.text1};
 `
 
 const LinkWrapper = styled.div`
-  color: ${({ theme }) => theme.deprecated_blue1};
+  color: ${({ theme }) => theme.blue1};
   padding: 6px 24px;
 `
 
@@ -56,8 +56,8 @@ async function updateServiceWorker(): Promise<ServiceWorkerRegistration> {
   return ready.update() as unknown as Promise<ServiceWorkerRegistration>
 }
 
-export default class ErrorBoundary extends React.Component<PropsWithChildren<unknown>, ErrorBoundaryState> {
-  constructor(props: PropsWithChildren<unknown>) {
+export default class ErrorBoundary extends React.Component<unknown, ErrorBoundaryState> {
+  constructor(props: unknown) {
     super(props)
     this.state = { error: null }
   }

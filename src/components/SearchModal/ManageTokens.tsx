@@ -6,7 +6,7 @@ import Column from 'components/Column'
 import CurrencyLogo from 'components/CurrencyLogo'
 import Row, { RowBetween, RowFixed } from 'components/Row'
 import { useToken } from 'hooks/Tokens'
-import { ChangeEvent, RefObject, useCallback, useMemo, useRef, useState } from 'react'
+import { RefObject, useCallback, useMemo, useRef, useState } from 'react'
 import { useRemoveUserAddedToken, useUserAddedTokens } from 'state/user/hooks'
 import styled from 'styled-components/macro'
 import { ButtonText, ExternalLink, ExternalLinkIcon, ThemedText, TrashIcon } from 'theme'
@@ -32,7 +32,7 @@ const Footer = styled.div`
   border-radius: 20px;
   border-top-right-radius: 0;
   border-top-left-radius: 0;
-  border-top: 1px solid ${({ theme }) => theme.deprecated_bg3};
+  border-top: 1px solid ${({ theme }) => theme.bg3};
   padding: 20px;
   text-align: center;
 `
@@ -51,7 +51,7 @@ export default function ManageTokens({
 
   // manage focus on modal show
   const inputRef = useRef<HTMLInputElement>()
-  const handleInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+  const handleInput = useCallback((event) => {
     const input = event.target.value
     const checksummedInput = isAddress(input)
     setSearchQuery(checksummedInput || input)
@@ -116,7 +116,7 @@ export default function ManageTokens({
             </ThemedText.Error>
           )}
           {searchToken && (
-            <Card backgroundColor={theme.deprecated_bg2} padding="10px 0">
+            <Card backgroundColor={theme.bg2} padding="10px 0">
               <ImportRow
                 token={searchToken}
                 showImportView={() => setModalView(CurrencyModalView.importToken)}

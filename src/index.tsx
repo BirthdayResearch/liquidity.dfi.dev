@@ -6,7 +6,7 @@ import 'components/analytics'
 import { BlockNumberProvider } from 'lib/hooks/useBlockNumber'
 import { MulticallUpdater } from 'lib/state/multicall'
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { HashRouter } from 'react-router-dom'
 
@@ -42,9 +42,7 @@ function Updaters() {
   )
 }
 
-const container = document.getElementById('root') as HTMLElement
-
-createRoot(container).render(
+ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
       <HashRouter>
@@ -63,7 +61,8 @@ createRoot(container).render(
         </LanguageProvider>
       </HashRouter>
     </Provider>
-  </StrictMode>
+  </StrictMode>,
+  document.getElementById('root')
 )
 
 if (process.env.REACT_APP_SERVICE_WORKER !== 'false') {
