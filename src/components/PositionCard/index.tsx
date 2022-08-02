@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp } from 'react-feather'
 import { Link } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled from 'styled-components'
-import { useTotalSupply } from '../../data/TotalSupply'
+import { useTotalStake, useTotalSupply } from '../../data/TotalSupply'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -169,12 +169,13 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   const [showMore, setShowMore] = useState(false)
 
   const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const totalStake = useTotalStake(proxyAddress, pair.liquidityToken)
 
   const userPoolBalance = stakedBalance
 
   const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
-      ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
+    !!userPoolBalance && !!totalStake && JSBI.greaterThanOrEqual(totalStake.raw, userPoolBalance.raw)
+      ? new Percent(userPoolBalance.raw, totalStake.raw)
       : undefined
 
   const [token0Deposited, token1Deposited] =
@@ -236,16 +237,6 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                 {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
               </Text>
             </FixedHeightRow>
-            {stakedBalance && (
-              <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
-                  Pool tokens in rewards pool:
-                </Text>
-                <Text fontSize={16} fontWeight={500}>
-                  {stakedBalance.toSignificant(4)}
-                </Text>
-              </FixedHeightRow>
-            )}
             <FixedHeightRow>
               <RowFixed>
                 <Text fontSize={16} fontWeight={500}>

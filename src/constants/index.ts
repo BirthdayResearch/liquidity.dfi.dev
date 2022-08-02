@@ -70,7 +70,7 @@ export const USDT: { [chainId in ChainId]: Token } = {
 //USDC
 //MockUSDT GOERLI USDT on other chain other than mainnet
 export const USDC_T = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')//To avoid writing the whole code. USDC_T and USDC are the same.
-export const USDC: {[chainId in ChainId]: Token} = {
+export const USDC: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C'),
   [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
   [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),
