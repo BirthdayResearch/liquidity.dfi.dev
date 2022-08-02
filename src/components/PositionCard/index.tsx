@@ -178,6 +178,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
       ? new Percent(userPoolBalance.raw, totalStake.raw)
       : undefined
 
+  // pair.token1 -> token0Deposited and pair.token0 -> token1Deposited is intended
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
