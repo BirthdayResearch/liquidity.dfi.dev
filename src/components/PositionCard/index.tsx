@@ -25,6 +25,7 @@ import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
 import { Dots } from '../swap/styleds'
 import { BIG_INT_ZERO } from '../../constants'
+import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -49,6 +50,8 @@ interface PositionCardProps {
   showUnwrapped?: boolean
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
+  claimable?: TokenAmount
+  proxyAddress?: string
 }
 
 export function MinimalPositionCard({ pair, showUnwrapped = false, border }: PositionCardProps) {
@@ -159,7 +162,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   )
 }
 
-export default function FullPositionCard({ pair, border, stakedBalance }: PositionCardProps) {
+export default function FullPositionCard({ pair, border, stakedBalance, claimable, proxyAddress }: PositionCardProps) {
   const currency1 = unwrappedToken(pair.token0)
   const currency0 = unwrappedToken(pair.token1)
 
@@ -187,6 +190,8 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
       : [undefined, undefined]
 
   const backgroundColor = useColor(pair?.token0)
+
+  const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
 
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
@@ -287,6 +292,18 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
                   : '-'}
               </Text>
             </FixedHeightRow>
+
+            {claimable && (
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  Claimable DFI:
+                </Text>
+                <Text fontSize={16} fontWeight={500}>
+                  {claimable?.toFixed(4, { groupSeparator: ',' })} DFI
+                </Text>
+              </FixedHeightRow>
+            )}
+
             {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, BIG_INT_ZERO) && (
               <RowBetween marginTop="10px">
                 <ButtonPrimary
@@ -294,7 +311,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
                   borderRadius="8px"
                   as={Link}
                   to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
-                  width="48%"
+                  width="32%"
                 >
                   Add
                 </ButtonPrimary>
@@ -302,10 +319,13 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
                   padding="8px"
                   borderRadius="8px"
                   as={Link}
-                  width="48%"
+                  width="32%"
                   to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
                 >
                   Remove
+                </ButtonPrimary>
+                <ButtonPrimary padding="8px" borderRadius="8px" onClick={claimCallback} width="32%">
+                  Claim
                 </ButtonPrimary>
               </RowBetween>
             )}

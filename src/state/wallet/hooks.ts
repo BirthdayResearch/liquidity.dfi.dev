@@ -1,14 +1,14 @@
-import { DFI, PROXIES, ProxyInfo} from './../../constants/index'
+import { DFI, PROXIES, ProxyInfo } from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE, { USDT_LP_ABI_INTERFACE } from '../../constants/abis/erc20'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useActiveWeb3React } from '../../hooks'
-import { useMulticallContract} from '../../hooks/useContract'
+import { useMulticallContract } from '../../hooks/useContract'
 import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 import { useUserUnclaimedAmount } from '../claim/hooks'
-import { useTotalUniEarned } from '../stake/hooks'
+import { useTotalDfiEarned, useTotalUniEarned } from '../stake/hooks'
 import { Interface } from '@ethersproject/abi'
 
 import PROXY_INTERFACE from 'constants/abis/proxy_staking'
@@ -235,6 +235,26 @@ export function useAggregateUniBalance(): TokenAmount | undefined {
   )
 }
 
+export function useAggregateDfiBalance(): TokenAmount | undefined {
+  const { account, chainId } = useActiveWeb3React()
+
+  const dfi = chainId ? DFI[chainId] : undefined
+
+  const dfiBalance: TokenAmount | undefined = useTokenBalance(account ?? undefined, dfi)
+  const dfiUnclaimed: TokenAmount | undefined = useUserUnclaimedAmount(account)
+  const dfiUnHarvested: TokenAmount | undefined = useTotalDfiEarned()
+
+  if (!dfi) return undefined
+
+  return new TokenAmount(
+    dfi,
+    JSBI.add(
+      JSBI.add(dfiBalance?.raw ?? JSBI.BigInt(0), dfiUnclaimed?.raw ?? JSBI.BigInt(0)),
+      dfiUnHarvested?.raw ?? JSBI.BigInt(0)
+    )
+  )
+}
+
 export function useProxies(): ProxyInfo[] {
   const { chainId } = useActiveWeb3React()
 
@@ -269,6 +289,39 @@ export function useGetProxyLiquidityOfUser(
             }, {})
           : {},
       [address, validatedProxies, balances]
+    ),
+    anyLoading
+  ]
+}
+
+export function useGetClaimableRewardOfUser(
+  address?: string,
+  proxies?: (ProxyInfo | undefined)[]
+): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+  const validatedProxies: ProxyInfo[] = useMemo(
+    () => proxies?.filter((p?: ProxyInfo): p is ProxyInfo => isAddress(p?.address) !== false) ?? [],
+    [proxies]
+  )
+
+  const proxyAddresses = useMemo(() => validatedProxies.map(p => p.address), [validatedProxies])
+  const reward = useMultipleContractSingleData(proxyAddresses, PROXY_INTERFACE, 'checkReward', [address])
+  const anyLoading: boolean = useMemo(() => reward.some(callState => callState.loading), [reward])
+
+  return [
+    useMemo(
+      () =>
+        address && validatedProxies.length > 0
+          ? validatedProxies.reduce<{ [address: string]: TokenAmount | undefined }>((memo, proxy, i) => {
+              const value = reward?.[i]?.result?.[0]
+              const amount = value ? JSBI.BigInt(value.toString()) : undefined
+              if (amount) {
+                const token = new Token(proxy.chainId, proxy.underlyingPairAddress, 8)
+                memo[proxy.address] = new TokenAmount(token, amount)
+              }
+              return memo
+            }, {})
+          : {},
+      [address, validatedProxies, reward]
     ),
     anyLoading
   ]
