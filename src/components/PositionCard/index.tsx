@@ -163,8 +163,15 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
 }
 
 export default function FullPositionCard({ pair, border, stakedBalance, claimable, proxyAddress }: PositionCardProps) {
-  const currency0 = unwrappedToken(pair.token0)
-  const currency1 = unwrappedToken(pair.token1)
+  // prioritise DFI as currency0
+  const currency0 =
+    pair.token0.symbol === 'DFI' && pair.token1.symbol !== 'DFI'
+      ? unwrappedToken(pair.token0)
+      : unwrappedToken(pair.token1)
+  const currency1 =
+    pair.token0.symbol === 'DFI' && pair.token1.symbol !== 'DFI'
+      ? unwrappedToken(pair.token1)
+      : unwrappedToken(pair.token0)
 
   const [showMore, setShowMore] = useState(false)
 
