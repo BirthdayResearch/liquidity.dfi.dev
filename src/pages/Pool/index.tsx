@@ -15,6 +15,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { ProxyPair, usePairs2 } from '../../data/Reserves'
 import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
+import { DFI } from '../../constants/index'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -63,7 +64,7 @@ const EmptyProposals = styled.div`
 
 export default function Pool() {
   const theme = useContext(ThemeContext)
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   const proxies = useProxies()
   const [userProxyLiquidity, fetchingProxyLiquidity] = useGetProxyLiquidityOfUser(account ?? undefined, proxies)
@@ -122,7 +123,7 @@ export default function Pool() {
                   as={Link}
                   padding="5px 8px"
                   borderRadius="12px"
-                  to="/add/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH"
+                  to={`/add/${DFI[chainId!].address}/ETH`}
                 >
                   <Text fontWeight={500} fontSize={16}>
                     Add Liquidity
@@ -133,7 +134,7 @@ export default function Pool() {
                   as={Link}
                   padding="5px 8px"
                   borderRadius="12px"
-                  to="/remove/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673/ETH"
+                  to={`/remove/${DFI[chainId!].address}/ETH`}
                 >
                   <Text fontWeight={500} fontSize={16}>
                     Remove Liquidity
