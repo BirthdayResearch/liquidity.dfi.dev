@@ -6,6 +6,8 @@
     "debug": "BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' react-scripts start",
     "eject": "react-scripts eject",
     "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "lint:fix": "yarn run lint --fix",
     "start": "react-scripts start",
     "start:service-worker": "yarn build && yarn serve -s build",
     "test": "react-scripts test --env=jsdom"
