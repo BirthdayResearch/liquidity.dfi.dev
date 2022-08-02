@@ -13,7 +13,6 @@ export { PRELOADED_PROPOSALS } from './proposals'
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
- 
 
 export interface ProxyInfo {
   address: string
@@ -60,7 +59,7 @@ export const DFI: { [chainId in ChainId]: Token } = {
 //USDT
 //export const MUSDT_TEST = '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72'
 //export const USDT = new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD')
-export const USDT: {[chainId in ChainId]: Token} = {
+export const USDT: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xdAC17F958D2ee523a2206206994597C13D831ec7', 6, 'USDT', 'Tether USD'),
   [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
   [ChainId.ROPSTEN]: new Token(ChainId.GÖRLI, '0xcf46184A1dB0dB31b05d42Cba17a2389f969Db72', 6, 'MUSDT', 'Mock USDT'),
@@ -81,24 +80,27 @@ export const USDC: {[chainId in ChainId]: Token} = {
 
 // Proxy contact addresses
 export const PROXIES: ProxyInfo[] = [
-  { //Need to update the address with Mainnet
-    address: '0x5fd39Bf6aE258351f453e55256B03085B34712f0',
+  {
+    //Need to update the address with Mainnet
+    address: '0x9952D026E161DD9F26C2b83B4Cc787eAAe154ca8',
     chainId: ChainId.GÖRLI,
     symbol: 'USDT',
     underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
     tokenA: DFI[ChainId.GÖRLI],
     tokenB: USDT[ChainId.GÖRLI]
   },
-  { //Need to update the address with Mainnet
-    address: '0xABC0a27Fa5BB9f3E63CC0876614d9D83d3689ae2',
+  {
+    //Need to update the address with Mainnet
+    address: '0xdBb40e382c826163fe7690973C990bFa4193900D',
     chainId: ChainId.GÖRLI,
     symbol: 'USDC',
     underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
     tokenA: DFI[ChainId.GÖRLI],
     tokenB: USDC[ChainId.GÖRLI]
   },
-  { //Need to update the address with Mainnet
-    address: '0x69736086d7FF64e67ba0090229c9cdc1056fE039',
+  {
+    //Need to update the address with Mainnet
+    address: '0x505ddc81C40ec998654BAE861585b6570a1E17E5',
     chainId: ChainId.GÖRLI,
     symbol: 'WETH',
     underlyingPairAddress: '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',
