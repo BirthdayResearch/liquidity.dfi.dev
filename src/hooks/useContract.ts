@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, DFI, PROXIES  } from '../constants'
+import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, DFI, PROXIES } from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -96,9 +96,9 @@ export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contrac
     switch (chainId) {
       case ChainId.MAINNET:
       case ChainId.GÖRLI:
-      // case ChainId.ROPSTEN:
-      // case ChainId.RINKEBY:
-      //   address = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
+        // case ChainId.ROPSTEN:
+        // case ChainId.RINKEBY:
+        //   address = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
         break
     }
   }

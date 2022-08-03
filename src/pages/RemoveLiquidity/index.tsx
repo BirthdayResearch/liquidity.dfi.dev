@@ -7,9 +7,9 @@ import { RouteComponentProps } from 'react-router'
 import { Text } from 'rebass'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
-import { darken } from 'polished'  
+import { darken } from 'polished'
 import { ThemeContext } from 'styled-components'
-import { ButtonPrimary, ButtonLight, ButtonError} from '../../components/Button'
+import { ButtonPrimary, ButtonLight, ButtonError } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
@@ -20,14 +20,20 @@ import Row, { RowBetween, RowFixed } from '../../components/Row'
 
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { DFI, USDC, USDT} from '../../constants'
+import { DFI, USDC, USDT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { StyledInternalLink, TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount,/* getRouterContract,*/ getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract} from '../../utils'
+import {
+  calculateGasMargin,
+  calculateSlippageAmount,
+  /* getRouterContract,*/ getETHProxyContract,
+  getUSDTProxyContract,
+  getUSDCProxyContract
+} from '../../utils'
 import { currencyId } from '../../utils/currencyId'
 import useDebouncedChangeHandler from '../../utils/useDebouncedChangeHandler'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
@@ -40,7 +46,6 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
 import CurrencyInputPanelRemoveLp from '../../components/CurrencyInputPanelRemoveLp'
 import { BigNumber } from '@ethersproject/bignumber'
-
 
 const LpFrame = styled.div`
   display: grid;
@@ -120,13 +125,11 @@ export default function RemoveLiquidity({
   )
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
-    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
-      (currencyB && currencyEquals(currencyB, USDT[chainId])))
+      ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+        (currencyB && currencyEquals(currencyB, USDT[chainId])))
   )
   const oneCurrencyIsETH = Boolean(
-    chainId &&
-    ((currencyA && currencyEquals(currencyA, ETHER)) ||
-      (currencyB && currencyEquals(currencyB, ETHER)))
+    chainId && ((currencyA && currencyEquals(currencyA, ETHER)) || (currencyB && currencyEquals(currencyB, ETHER)))
   )
   const theme = useContext(ThemeContext)
 
@@ -135,7 +138,13 @@ export default function RemoveLiquidity({
 
   // burn state
   const { independentField, typedValue } = useBurnState()
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined, oneCurrencyIsETH, oneCurrencyIsWETH, oneCurrencyIsUSDT)
+  const { pair, parsedAmounts, error } = useDerivedBurnInfo(
+    currencyA ?? undefined,
+    currencyB ?? undefined,
+    oneCurrencyIsETH,
+    oneCurrencyIsWETH,
+    oneCurrencyIsUSDT
+  )
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
 
@@ -195,10 +204,10 @@ export default function RemoveLiquidity({
     const usdtProxy = getUSDTProxyContract(chainId, library, account)
     const usdcProxy = getUSDCProxyContract(chainId, library, account)
 
-    function checkContract(){
-      if(oneCurrencyIsWETH || oneCurrencyIsETH){
-       return ethProxy 
-      } else if (oneCurrencyIsUSDT){
+    function checkContract() {
+      if (oneCurrencyIsWETH || oneCurrencyIsETH) {
+        return ethProxy
+      } else if (oneCurrencyIsUSDT) {
         return usdtProxy
       } else {
         return usdcProxy
@@ -218,7 +227,7 @@ export default function RemoveLiquidity({
 
     if (!tokenA || !tokenB) throw new Error('could not wrap')
     let methodNames: string[], args: Array<string | string[] | number | boolean>
-      // removeLiquidityETH
+    // removeLiquidityETH
     if (oneCurrencyIsETH) {
       methodNames = ['removeLiquidityETH']
       args = [
@@ -229,24 +238,24 @@ export default function RemoveLiquidity({
         //account,
         deadline.toHexString()
       ]
-    }else {
+    } else {
       // removeLiquidity
-        methodNames = ['removeLiquidity']
-        args = [
-          //tokenA.address,
-          //tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          //account,
-          deadline.toHexString()
-        ]
-        
-      }
+      methodNames = ['removeLiquidity']
+      args = [
+        //tokenA.address,
+        //tokenB.address,
+        liquidityAmount.raw.toString(),
+        amountsMin[Field.CURRENCY_A].toString(),
+        amountsMin[Field.CURRENCY_B].toString(),
+        //account,
+        deadline.toHexString()
+      ]
+    }
 
     const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
       methodNames.map(methodName =>
-        checkContract().estimateGas[methodName](...args)
+        checkContract()
+          .estimateGas[methodName](...args)
           .then(calculateGasMargin)
           .catch(error => {
             console.error(`estimateGas failed`, methodName, args, error)
@@ -266,9 +275,10 @@ export default function RemoveLiquidity({
       const methodName = methodNames[indexOfSuccessfulEstimation]
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
 
-      await checkContract()[methodName](...args, {
-        gasLimit: safeGasEstimate
-      })
+      await checkContract()
+        [methodName](...args, {
+          gasLimit: safeGasEstimate
+        })
         .then((response: TransactionResponse) => {
           setAttemptingTxn(false)
 
@@ -298,7 +308,7 @@ export default function RemoveLiquidity({
           console.error(error)
         })
     }
-      }
+  }
 
   function modalHeader() {
     return (
@@ -445,28 +455,16 @@ export default function RemoveLiquidity({
             pendingText={pendingText}
           />
           <LpFrame>
-            <StyledNavLink
-              id={`pool-nav-link`}
-              to={`/remove/${DFI[chainId!].address}/ETH`}
-            >
+            <StyledNavLink id={`pool-nav-link`} to={`/remove/${DFI[chainId!].address}/ETH`}>
               {'DFI/ETH'}
             </StyledNavLink>
-            <StyledNavLink
-              id={`pool-nav-link`}
-              to={`/remove/${DFI[chainId!].address}/${WETH[chainId!].address}`}
-            >
+            <StyledNavLink id={`pool-nav-link`} to={`/remove/${DFI[chainId!].address}/${WETH[chainId!].address}`}>
               {'DFI/WETH'}
             </StyledNavLink>
-            <StyledNavLink
-              id={`pool-nav-link`}
-              to={`/remove/${DFI[chainId!].address}/${USDT[chainId!].address}`}
-            >
+            <StyledNavLink id={`pool-nav-link`} to={`/remove/${DFI[chainId!].address}/${USDT[chainId!].address}`}>
               {'DFI/USDT'}
             </StyledNavLink>
-            <StyledNavLink
-              id={`pool-nav-link`}
-              to={`/remove/${DFI[chainId!].address}/${USDC[chainId!].address}`}
-            >
+            <StyledNavLink id={`pool-nav-link`} to={`/remove/${DFI[chainId!].address}/${USDC[chainId!].address}`}>
               {'DFI/USDC'}
             </StyledNavLink>
           </LpFrame>
@@ -474,7 +472,9 @@ export default function RemoveLiquidity({
             <BlueCard>
               <AutoColumn gap="10px">
                 <TYPE.link fontWeight={400} color={'primaryText1'}>
-                  <b>Tip:</b> Removing pool tokens converts your position back into underlying tokens at the current rate, proportional to your share of the pool. Accrued fees and DFI rewards are included in the amounts you receive.
+                  <b>Tip:</b> Removing pool tokens converts your position back into underlying tokens at the current
+                  rate, proportional to your share of the pool. Accrued fees and DFI rewards are included in the amounts
+                  you receive.
                 </TYPE.link>
               </AutoColumn>
             </BlueCard>
@@ -589,7 +589,6 @@ export default function RemoveLiquidity({
                   isCurrencyETH={oneCurrencyIsETH}
                   isCurrencyUSDT={oneCurrencyIsUSDT}
                   isCurrencyWETH={oneCurrencyIsWETH}
-                  
                 />
                 <ColumnCenter>
                   <ArrowDown size="16" color={theme.text2} />
@@ -660,12 +659,13 @@ export default function RemoveLiquidity({
         </Wrapper>
       </AppBody>
 
-      {pair ? null //(
-        // <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
-        //   <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
-        // </AutoColumn>
-     //) 
-      : null}
+      {pair
+        ? null //(
+        : // <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
+          //   <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
+          // </AutoColumn>
+          //)
+          null}
     </>
   )
 }

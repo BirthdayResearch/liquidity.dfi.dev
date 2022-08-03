@@ -42,7 +42,7 @@ export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'
 
 export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 
-// DFI GOERLI ADDRESS 
+// DFI GOERLI ADDRESS
 export const DFI_TEST_ADDRESS = '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673'
 //MAINNET ADDRESS
 const DFI_ADDRESS = '0x8fc8f8269ebca376d046ce292dc7eac40c8d358a'
@@ -69,7 +69,7 @@ export const USDT: { [chainId in ChainId]: Token } = {
 
 //USDC
 //MockUSDT GOERLI USDT on other chain other than mainnet
-export const USDC_T = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')//To avoid writing the whole code. USDC_T and USDC are the same.
+export const USDC_T = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C') //To avoid writing the whole code. USDC_T and USDC are the same.
 export const USDC: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C'),
   [ChainId.RINKEBY]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC'),

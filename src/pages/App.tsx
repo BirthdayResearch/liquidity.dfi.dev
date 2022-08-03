@@ -14,7 +14,7 @@ import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 //import AddLiquidity from './AddLiquidity'
 import {
   RedirectDuplicateTokenIds,
-  RedirectOldAddLiquidityPathStructure,
+  RedirectOldAddLiquidityPathStructure
   //RedirectToAddLiquidity
 } from './AddLiquidity/redirects'
 //import Earn from './Earn'
