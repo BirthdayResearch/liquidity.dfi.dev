@@ -17,7 +17,7 @@ import TransactionConfirmationModal, { ConfirmationModalContent } from '../../co
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
-import { MinimalPositionCard } from '../../components/PositionCard'
+///import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
 import {USDT, USDC, DFI} from '../../constants/index'
 
@@ -652,11 +652,12 @@ export default function AddLiquidity({
         </Wrapper>
       </AppBody>
       {!addIsUnsupported ? (
-        pair && !noLiquidity && pairState !== PairState.INVALID ? (
-          <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
-            <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
-          </AutoColumn>
-        ) : null
+        pair && !noLiquidity && pairState !== PairState.INVALID ? null// (
+        //   <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
+        //     <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
+        //   </AutoColumn>
+        // ) 
+        : null
       ) : (
         <UnsupportedCurrencyFooter
           show={addIsUnsupported}
