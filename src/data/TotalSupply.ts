@@ -19,5 +19,4 @@ export function useTotalStake(proxyAddress?: string, token?: Token): TokenAmount
   const totalStake: BigNumber = useSingleCallResult(contract, 'totalStake')?.result?.[0]
 
   return token && totalStake ? new TokenAmount(token, totalStake.toString()) : undefined
-
 }

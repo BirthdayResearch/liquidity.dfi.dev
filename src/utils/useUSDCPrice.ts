@@ -4,7 +4,7 @@ import { USDC_T } from '../constants'
 import { PairState, usePairs } from '../data/Reserves'
 import { useActiveWeb3React } from '../hooks'
 import { wrappedCurrency } from './wrappedCurrency'
-///@notice For the purpose of keeping the constant align without disturbiing the rest of the structure. We named USDC_T to USDC_T 
+///@notice For the purpose of keeping the constant align without disturbiing the rest of the structure. We named USDC_T to USDC_T
 /**
  * Returns the price in USDC_T/USDC_T of the input currency
  * @param currency currency to compute the USDC_T price of
