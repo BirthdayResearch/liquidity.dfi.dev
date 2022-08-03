@@ -15,7 +15,7 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
-import { USDC_LP_ABI_INTERFACE } from 'constants/abis/erc20'
+//import { USDC_LP_ABI_INTERFACE } from 'constants/abis/erc20'
 import { PROXIES} from './../../constants/index'
 
 
@@ -179,7 +179,7 @@ export default function CurrencyInputPanelRemoveLp({
     } 
   }
 
-  const selectedCurrencyBalance = useTokenBalancesEthProxy(address, USDC_LP_ABI_INTERFACE, checkAddress())
+  const selectedCurrencyBalance = useTokenBalancesEthProxy(address, checkAddress())
   const theme = useTheme()
 
   const handleDismissSearch = useCallback(() => {
