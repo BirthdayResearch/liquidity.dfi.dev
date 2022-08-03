@@ -86,29 +86,24 @@ export function useTokenBalancesWithLoadingIndicator(
   ]
 }
 
-export enum BalState{
+export enum BalState {
   LOADING,
   NOT_EXISTS,
   EXISTS,
   INVALID
 }
 
-
-export function useTokenBalancesEthProxy(
-  address: (string | undefined)[], contractaddress: (string | undefined)[]
-) {
+export function useTokenBalancesEthProxy(address: (string | undefined)[], contractaddress: (string | undefined)[]) {
   const results = useMultipleContractSingleData(contractaddress, USDT_LP_ABI_INTERFACE, 'stakingMap', address)
-  
-  return useMemo(()=>{
-    return results.map((result)=>{
-      const {result: bal, loading} = result
-      if(loading) return [BalState.LOADING, null]
-      if(!bal) return [BalState.NOT_EXISTS, null]
-      return bal.toString()
-      })
-    }, [results]
-  )
 
+  return useMemo(() => {
+    return results.map(result => {
+      const { result: bal, loading } = result
+      if (loading) return [BalState.LOADING, null]
+      if (!bal) return [BalState.NOT_EXISTS, null]
+      return bal.toString()
+    })
+  }, [results])
 }
 
 export function useTokenBalancesProxy(
@@ -116,21 +111,21 @@ export function useTokenBalancesProxy(
   tokens?: (Token | undefined)[],
   oneCurrencyIsETH?: boolean,
   oneCurrencyIsWETH?: boolean,
-  oneCurrencyIsUSDT?:boolean
+  oneCurrencyIsUSDT?: boolean
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
   const validatedTokens: Token[] = useMemo(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens]
   )
-  function checkContractAddress(){
-    if ( oneCurrencyIsETH || oneCurrencyIsWETH ){
-        return [PROXIES[2].address]
-      } else if (oneCurrencyIsUSDT){
-        return [PROXIES[0].address]
-      } else{
-        return [PROXIES[1].address]
-      }
+  function checkContractAddress() {
+    if (oneCurrencyIsETH || oneCurrencyIsWETH) {
+      return [PROXIES[2].address]
+    } else if (oneCurrencyIsUSDT) {
+      return [PROXIES[0].address]
+    } else {
+      return [PROXIES[1].address]
     }
+  }
   const balances = useMultipleContractSingleData(checkContractAddress(), USDT_LP_ABI_INTERFACE, 'stakingMap', [address])
   const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
 
@@ -158,7 +153,7 @@ export function useTokenBalanceproxy(
   tokens?: (Token | undefined)[],
   oneCurrencyIsETH?: boolean,
   oneCurrencyIsWETH?: boolean,
-  oneCurrencyIsUSDT?:boolean
+  oneCurrencyIsUSDT?: boolean
 ): { [tokenAddress: string]: TokenAmount | undefined } {
   return useTokenBalancesProxy(address, tokens, oneCurrencyIsETH, oneCurrencyIsWETH, oneCurrencyIsUSDT)[0]
 }

@@ -7,7 +7,7 @@ import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUnisw
 import USDT_LP_ABI from '../constants/abis/usdt-lp-proxy.json'
 import ETH_LP_ABI from '../constants/abis/eth-lp-proxy.json'
 import USDC_LP_ABI from '../constants/abis/usdc-lp-proxy.json'
-import { ROUTER_ADDRESS, PROXIES} from '../constants'
+import { ROUTER_ADDRESS, PROXIES } from '../constants'
 import { ChainId, JSBI, Percent, Token, CurrencyAmount, Currency, ETHER } from '@uniswap/sdk'
 import { TokenAddressMap } from '../state/lists/hooks'
 //import { useActiveWeb3React } from 'hooks'

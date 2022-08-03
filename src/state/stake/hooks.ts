@@ -36,7 +36,7 @@ export const STAKING_REWARDS_INFO: {
     {
       tokens: [WETH[ChainId.MAINNET], WBTC],
       stakingRewardAddress: '0xCA35e32e7926b96A9988f61d510E038108d8068e'
-    },
+    }
   ]
 }
 
