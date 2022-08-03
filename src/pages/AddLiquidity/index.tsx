@@ -19,7 +19,7 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 ///import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import {USDT, USDC, DFI} from '../../constants/index'
+import { USDT, USDC, DFI } from '../../constants/index'
 
 import { PROXIES } from '../../constants'
 import { PairState } from '../../data/Reserves'
@@ -34,7 +34,13 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
-import { calculateGasMargin, calculateSlippageAmount, getETHProxyContract, getUSDTProxyContract, getUSDCProxyContract} from '../../utils'
+import {
+  calculateGasMargin,
+  calculateSlippageAmount,
+  getETHProxyContract,
+  getUSDTProxyContract,
+  getUSDCProxyContract
+} from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import AppBody from '../AppBody'
 import { Dots, Wrapper } from '../Pool/styleds'
@@ -121,8 +127,8 @@ export default function AddLiquidity({
   )
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
-    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
-      (currencyB && currencyEquals(currencyB, USDT[chainId])))
+      ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+        (currencyB && currencyEquals(currencyB, USDT[chainId])))
   )
   const oneCurrencyIsETH = Boolean(
     chainId && ((currencyA && currencyEquals(currencyA, ETHER)) || (currencyB && currencyEquals(currencyB, ETHER)))
@@ -187,17 +193,17 @@ export default function AddLiquidity({
     },
     {}
   )
-  
+
   //ETH APPROVAL
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[2].address);
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[2].address);
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[2].address)
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[2].address)
   //USDT APPROVAL
-  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[0].address);
-  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[0].address);
+  const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[0].address)
+  const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[0].address)
   //USDC APPROVAL
-  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[1].address);
-  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[1].address);
-  
+  const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[1].address)
+  const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[1].address)
+
   function checkAPendingApprove() {
     if (oneCurrencyIsWETH || oneCurrencyIsETH) {
       return approvalA === ApprovalState.PENDING
@@ -495,40 +501,32 @@ export default function AddLiquidity({
                   </BlueCard>
                 </ColumnCenter>
               ) : (
-                <><LpFrame>
-                 <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={`/add/${DFI[chainId!].address}/ETH`}
-                  >
-                  {'DFI/ETH'}
-                  </StyledNavLink>
-                  <StyledNavLink 
-                    onClick={()=>{
-                      
-                    }}
-                    id={`pool-nav-link`}
-                    to={`/add/${DFI[chainId!].address}/${WETH[chainId!].address}`}
-                  > 
-                  {'DFI/WETH'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={`/add/${DFI[chainId!].address}/${USDT[chainId!].address}`}
-                  > 
-                  {'DFI/USDT'}
-                  </StyledNavLink>
-                  <StyledNavLink
-                    id={`pool-nav-link`}
-                    to={`/add/${DFI[chainId!].address}/${USDC[chainId!].address}`}
-                  > 
-                  {'DFI/USDC'}
-                  </StyledNavLink>
-                </LpFrame>
-                <ColumnCenter>
+                <>
+                  <LpFrame>
+                    <StyledNavLink id={`pool-nav-link`} to={`/add/${DFI[chainId!].address}/ETH`}>
+                      {'DFI/ETH'}
+                    </StyledNavLink>
+                    <StyledNavLink
+                      onClick={() => {}}
+                      id={`pool-nav-link`}
+                      to={`/add/${DFI[chainId!].address}/${WETH[chainId!].address}`}
+                    >
+                      {'DFI/WETH'}
+                    </StyledNavLink>
+                    <StyledNavLink id={`pool-nav-link`} to={`/add/${DFI[chainId!].address}/${USDT[chainId!].address}`}>
+                      {'DFI/USDT'}
+                    </StyledNavLink>
+                    <StyledNavLink id={`pool-nav-link`} to={`/add/${DFI[chainId!].address}/${USDC[chainId!].address}`}>
+                      {'DFI/USDC'}
+                    </StyledNavLink>
+                  </LpFrame>
+                  <ColumnCenter>
                     <BlueCard>
                       <AutoColumn gap="30px">
                         <TYPE.link fontWeight={400} color={'primaryText1'}>
-                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and additional DFI rewards. It can be redeemed at any time.
+                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing
+                          your position. These tokens automatically earn fees proportional to your share of the pool,
+                          and additional DFI rewards. It can be redeemed at any time.
                         </TYPE.link>
                       </AutoColumn>
                     </BlueCard>
@@ -650,12 +648,7 @@ export default function AddLiquidity({
         </Wrapper>
       </AppBody>
       {!addIsUnsupported ? (
-        pair && !noLiquidity && pairState !== PairState.INVALID ? null// (
-        //   <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}>
-        //     <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
-        //   </AutoColumn>
-        // ) 
-        : null
+        pair && !noLiquidity && pairState !== PairState.INVALID ? null : null // ) //   </AutoColumn> //     <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} /> //   <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}> // (
       ) : (
         <UnsupportedCurrencyFooter
           show={addIsUnsupported}

@@ -11,13 +11,11 @@ import { TYPE } from '../../theme'
 import { Input as NumericalInput } from '../NumericalInput'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 
-
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
 //import { USDC_LP_ABI_INTERFACE } from 'constants/abis/erc20'
-import { PROXIES} from './../../constants/index'
-
+import { PROXIES } from './../../constants/index'
 
 const InputRow = styled.div<{ selected: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -135,11 +133,10 @@ interface CurrencyInputPanelPropsRemove {
   id: string
   showCommonBases?: boolean
   customBalanceText?: string
-  isCurrencyETH?: boolean,
-  isCurrencyUSDT?: boolean,
+  isCurrencyETH?: boolean
+  isCurrencyUSDT?: boolean
   isCurrencyWETH?: boolean
 }
-
 
 export default function CurrencyInputPanelRemoveLp({
   value,
@@ -165,18 +162,18 @@ export default function CurrencyInputPanelRemoveLp({
   const [modalOpen, setModalOpen] = useState(false)
   const { account } = useActiveWeb3React()
   const address: (string | undefined)[] = [account!]
-  const usdtAddress : (string | undefined)[] = [PROXIES[0].address]//[USDT_PROXY_ADDRESS]
-  const usdcAddress : (string | undefined)[] = [PROXIES[1].address]
-  const ethAddress : (string | undefined)[] = [PROXIES[2].address]
-  
-  function checkAddress(){
-    if(isCurrencyETH || isCurrencyWETH){
+  const usdtAddress: (string | undefined)[] = [PROXIES[0].address] //[USDT_PROXY_ADDRESS]
+  const usdcAddress: (string | undefined)[] = [PROXIES[1].address]
+  const ethAddress: (string | undefined)[] = [PROXIES[2].address]
+
+  function checkAddress() {
+    if (isCurrencyETH || isCurrencyWETH) {
       return ethAddress
-    } else if(isCurrencyUSDT){
+    } else if (isCurrencyUSDT) {
       return usdtAddress
-    } else{
+    } else {
       return usdcAddress
-    } 
+    }
   }
 
   const selectedCurrencyBalance = useTokenBalancesEthProxy(address, checkAddress())
@@ -198,14 +195,13 @@ export default function CurrencyInputPanelRemoveLp({
               {account && (
                 <TYPE.body
                   onClick={onMax}
-                 
                   color={theme.text2}
                   fontWeight={500}
                   fontSize={14}
                   style={{ display: 'inline', cursor: 'pointer' }}
                 >
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? (customBalanceText ?? 'Balace: ') + selectedCurrencyBalance//.toSignificant(6)
+                    ? (customBalanceText ?? 'Balace: ') + selectedCurrencyBalance //.toSignificant(6)
                     : ' -'}
                 </TYPE.body>
               )}
@@ -273,4 +269,3 @@ export default function CurrencyInputPanelRemoveLp({
     </InputPanel>
   )
 }
-
