@@ -528,9 +528,7 @@ export default function AddLiquidity({
                     <BlueCard>
                       <AutoColumn gap="30px">
                         <TYPE.link fontWeight={400} color={'primaryText1'}>
-                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing
-                          your position. These tokens automatically earn fees proportional to your share of the pool,
-                          and can be redeemed at any time.
+                          <b>Tip:</b> When you add liquidity, this smart contract will receive the tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and additional DFI rewards. It can be redeemed at any time.
                         </TYPE.link>
                       </AutoColumn>
                     </BlueCard>
