@@ -178,6 +178,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
       ? new Percent(userPoolBalance.raw, totalStake.raw)
       : undefined
 
+  // pair.token1 -> token0Deposited and pair.token0 -> token1Deposited is intended
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -185,8 +186,8 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
     JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? [
-          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
-          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
+          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false),
+          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false)
         ]
       : [undefined, undefined]
 
