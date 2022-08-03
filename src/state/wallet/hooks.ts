@@ -177,19 +177,6 @@ export function useTokenBalance(account?: string, token?: Token): TokenAmount | 
   return tokenBalances[token.address]
 }
 
-export function useTokenBalancesProxies(
-  address?: string,
-  tokens?: (Token | undefined)[]
-): { [tokenAddress: string]: TokenAmount | undefined } {
-  return useTokenBalancesProxy(address, tokens)[0]
-}
-
-export function useTokenBalanceViaProxies(account?: string, token?: Token): TokenAmount | undefined {
-  const tokenBalances = useTokenBalancesProxies(account, [token])
-  if (!token) return undefined
-  return tokenBalances[token.address]
-}
-
 export function useCurrencyBalances(
   account?: string,
   currencies?: (Currency | undefined)[]
