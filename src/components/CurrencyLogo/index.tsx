@@ -39,6 +39,8 @@ export default function CurrencyLogo({
   const srcs: string[] = useMemo(() => {
     if (currency === ETHER) return []
 
+    if (currency?.symbol === 'DFI') return ['https://s2.coinmarketcap.com/static/img/coins/64x64/5804.png']
+
     if (currency instanceof Token) {
       if (currency instanceof WrappedTokenInfo) {
         return [...uriLocations, getTokenLogoURL(currency.address)]
