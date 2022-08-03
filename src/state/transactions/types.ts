@@ -2,7 +2,7 @@ import { TradeType } from '@uniswap/sdk-core'
 
 import { VoteOption } from '../governance/types'
 
-export interface SerializableTransactionReceipt {
+interface SerializableTransactionReceipt {
   to: string
   from: string
   contractAddress: string

@@ -1,8 +1,6 @@
 import { Trans } from '@lingui/macro'
 import { Trade } from '@uniswap/router-sdk'
 import { Currency, Percent, TradeType } from '@uniswap/sdk-core'
-import { ModalName } from 'components/AmplitudeAnalytics/constants'
-import { Trace } from 'components/AmplitudeAnalytics/Trace'
 import { ReactNode, useCallback, useMemo } from 'react'
 import { InterfaceTrade } from 'state/routing/types'
 import { tradeMeaningfullyDiffers } from 'utils/tradeMeaningFullyDiffer'
@@ -61,13 +59,11 @@ export default function ConfirmSwapModal({
       <SwapModalFooter
         onConfirm={onConfirm}
         trade={trade}
-        txHash={txHash}
-        allowedSlippage={allowedSlippage}
         disabledConfirm={showAcceptChanges}
         swapErrorMessage={swapErrorMessage}
       />
     ) : null
-  }, [onConfirm, showAcceptChanges, swapErrorMessage, trade, allowedSlippage, txHash])
+  }, [onConfirm, showAcceptChanges, swapErrorMessage, trade])
 
   // text to show while loading
   const pendingText = (
@@ -93,16 +89,14 @@ export default function ConfirmSwapModal({
   )
 
   return (
-    <Trace modal={ModalName.CONFIRM_SWAP} shouldLogImpression={isOpen}>
-      <TransactionConfirmationModal
-        isOpen={isOpen}
-        onDismiss={onDismiss}
-        attemptingTxn={attemptingTxn}
-        hash={txHash}
-        content={confirmationContent}
-        pendingText={pendingText}
-        currencyToAdd={trade?.outputAmount.currency}
-      />
-    </Trace>
+    <TransactionConfirmationModal
+      isOpen={isOpen}
+      onDismiss={onDismiss}
+      attemptingTxn={attemptingTxn}
+      hash={txHash}
+      content={confirmationContent}
+      pendingText={pendingText}
+      currencyToAdd={trade?.outputAmount.currency}
+    />
   )
 }

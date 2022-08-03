@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/macro'
 import { useWeb3React } from '@web3-react/core'
-import useTheme from 'hooks/useTheme'
 import JSBI from 'jsbi'
 import styled from 'styled-components/macro'
 
@@ -41,7 +40,6 @@ flex-direction: column;
 `
 
 export default function Earn() {
-  const theme = useTheme()
   const { chainId } = useWeb3React()
 
   // staking info for connected account
@@ -77,7 +75,7 @@ export default function Earn() {
                 </ThemedText.White>
               </RowBetween>{' '}
               <ExternalLink
-                style={{ color: theme.deprecated_white, textDecoration: 'underline' }}
+                style={{ color: 'white', textDecoration: 'underline' }}
                 href="https://uniswap.org/blog/uni/"
                 target="_blank"
               >

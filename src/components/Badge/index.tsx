@@ -20,24 +20,24 @@ interface BadgeProps {
 function pickBackgroundColor(variant: BadgeVariant | undefined, theme: DefaultTheme): Color {
   switch (variant) {
     case BadgeVariant.NEGATIVE:
-      return theme.deprecated_error
+      return theme.error
     case BadgeVariant.POSITIVE:
-      return theme.deprecated_success
+      return theme.success
     case BadgeVariant.PRIMARY:
-      return theme.deprecated_primary1
+      return theme.primary1
     case BadgeVariant.WARNING:
-      return theme.deprecated_warning
+      return theme.warning
     case BadgeVariant.WARNING_OUTLINE:
       return 'transparent'
     default:
-      return theme.deprecated_bg2
+      return theme.bg2
   }
 }
 
 function pickBorder(variant: BadgeVariant | undefined, theme: DefaultTheme): string {
   switch (variant) {
     case BadgeVariant.WARNING_OUTLINE:
-      return `1px solid ${theme.deprecated_warning}`
+      return `1px solid ${theme.warning}`
     default:
       return 'unset'
   }
@@ -46,15 +46,15 @@ function pickBorder(variant: BadgeVariant | undefined, theme: DefaultTheme): str
 function pickFontColor(variant: BadgeVariant | undefined, theme: DefaultTheme): string {
   switch (variant) {
     case BadgeVariant.NEGATIVE:
-      return readableColor(theme.deprecated_error)
+      return readableColor(theme.error)
     case BadgeVariant.POSITIVE:
-      return readableColor(theme.deprecated_success)
+      return readableColor(theme.success)
     case BadgeVariant.WARNING:
-      return readableColor(theme.deprecated_warning)
+      return readableColor(theme.warning)
     case BadgeVariant.WARNING_OUTLINE:
-      return theme.deprecated_warning
+      return theme.warning
     default:
-      return readableColor(theme.deprecated_bg2)
+      return readableColor(theme.bg2)
   }
 }
 

@@ -7,11 +7,9 @@ export interface ITraceContext {
   // Highest order context: eg Swap or Explore.
   page?: PageName
 
-  // Enclosed section name. For contexts with modals, refers to the
-  // section of the page from which the user triggered the modal.
-  section?: SectionName
-
-  modal?: ModalName
+  // Enclosed section name. Can be as wide or narrow as necessary to
+  // provide context.
+  section?: SectionName | ModalName
 
   // Element name mostly used to identify events sources
   // Does not need to be unique given the higher order page and section.

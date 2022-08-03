@@ -3,7 +3,8 @@ import { CurrencyAmount, Token } from '@uniswap/sdk-core'
 import { useWeb3React } from '@web3-react/core'
 import JSBI from 'jsbi'
 import { useCallback, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router-dom'
 import styled from 'styled-components/macro'
 import { CountUp } from 'use-count-up'
 
@@ -51,13 +52,11 @@ const StyledDataCard = styled(DataCard)<{ bgColor?: any; showBackground?: any }>
   z-index: 2;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   background: ${({ theme, bgColor, showBackground }) =>
-    `radial-gradient(91.85% 100% at 1.84% 0%, ${bgColor} 0%,  ${
-      showBackground ? theme.deprecated_black : theme.deprecated_bg5
-    } 100%) `};
+    `radial-gradient(91.85% 100% at 1.84% 0%, ${bgColor} 0%,  ${showBackground ? theme.black : theme.bg5} 100%) `};
 `
 
 const StyledBottomCard = styled(DataCard)<{ dim: any }>`
-  background: ${({ theme }) => theme.deprecated_bg3};
+  background: ${({ theme }) => theme.bg3};
   opacity: ${({ dim }) => (dim ? 0.4 : 1)};
   margin-top: -40px;
   padding: 0 1.25rem 1rem 1.25rem;
@@ -67,7 +66,7 @@ const StyledBottomCard = styled(DataCard)<{ dim: any }>`
 
 const PoolData = styled(DataCard)`
   background: none;
-  border: 1px solid ${({ theme }) => theme.deprecated_bg4};
+  border: 1px solid ${({ theme }) => theme.bg4};
   padding: 1rem;
   z-index: 1;
 `
@@ -87,8 +86,11 @@ const DataRow = styled(RowBetween)`
   `};
 `
 
-export default function Manage() {
-  const { currencyIdA, currencyIdB } = useParams<{ currencyIdA: string; currencyIdB: string }>()
+export default function Manage({
+  match: {
+    params: { currencyIdA, currencyIdB },
+  },
+}: RouteComponentProps<{ currencyIdA: string; currencyIdB: string }>) {
   const { account } = useWeb3React()
 
   // get currencies and pair

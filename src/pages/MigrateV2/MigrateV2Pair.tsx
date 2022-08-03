@@ -24,8 +24,7 @@ import JSBI from 'jsbi'
 import { NEVER_RELOAD, useSingleCallResult } from 'lib/hooks/multicall'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { AlertCircle, AlertTriangle, ArrowDown } from 'react-feather'
-import { Redirect } from 'react-router'
-import { useParams } from 'react-router-dom'
+import { Redirect, RouteComponentProps } from 'react-router'
 import { Text } from 'rebass'
 import { useAppDispatch } from 'state/hooks'
 import { Bound, resetMintState } from 'state/mint/v3/actions'
@@ -436,7 +435,7 @@ function V2PairMigration({
           <FeeSelector feeAmount={feeAmount} handleFeePoolSelect={setFeeAmount} />
           {noLiquidity && (
             <BlueCard style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <AlertCircle color={theme.deprecated_text1} style={{ marginBottom: '12px', opacity: 0.8 }} />
+              <AlertCircle color={theme.text1} style={{ marginBottom: '12px', opacity: 0.8 }} />
               <ThemedText.Body
                 fontSize={14}
                 style={{ marginBottom: 8, fontWeight: 500, opacity: 0.8 }}
@@ -564,7 +563,7 @@ function V2PairMigration({
           {outOfRange ? (
             <YellowCard padding="8px 12px" $borderRadius="12px">
               <RowBetween>
-                <AlertTriangle stroke={theme.deprecated_yellow3} size="16px" />
+                <AlertTriangle stroke={theme.yellow3} size="16px" />
                 <ThemedText.Yellow ml="12px" fontSize="12px">
                   <Trans>
                     Your position will not earn fees or be used in trades until the market price moves into your range.
@@ -577,7 +576,7 @@ function V2PairMigration({
           {invalidRange ? (
             <YellowCard padding="8px 12px" $borderRadius="12px">
               <RowBetween>
-                <AlertTriangle stroke={theme.deprecated_yellow3} size="16px" />
+                <AlertTriangle stroke={theme.yellow3} size="16px" />
                 <ThemedText.Yellow ml="12px" fontSize="12px">
                   <Trans>Invalid range selected. The min price must be lower than the max price.</Trans>
                 </ThemedText.Yellow>
@@ -663,8 +662,11 @@ function V2PairMigration({
   )
 }
 
-export default function MigrateV2Pair() {
-  const { address } = useParams<{ address: string }>()
+export default function MigrateV2Pair({
+  match: {
+    params: { address },
+  },
+}: RouteComponentProps<{ address: string }>) {
   // reset mint state on component mount, and as a cleanup (on unmount)
   const dispatch = useAppDispatch()
   useEffect(() => {

@@ -8,7 +8,6 @@ type TraceEventProps = {
   events: Event[]
   name: EventName
   properties?: Record<string, unknown>
-  shouldLogImpression?: boolean
 } & ITraceContext
 
 /**
@@ -20,7 +19,7 @@ type TraceEventProps = {
  *  </TraceEvent>
  */
 export const TraceEvent = memo((props: PropsWithChildren<TraceEventProps>) => {
-  const { shouldLogImpression, name, properties, events, children, ...traceProps } = props
+  const { name, properties, events, children, ...traceProps } = props
 
   return (
     <Trace {...traceProps}>
@@ -31,11 +30,8 @@ export const TraceEvent = memo((props: PropsWithChildren<TraceEventProps>) => {
               return child
             }
 
-            // For each child, augment event handlers defined in `events` with event tracing.
-            return cloneElement(
-              child,
-              getEventHandlers(child, traceContext, events, name, properties, shouldLogImpression)
-            )
+            // For each child, augment event handlers defined in `actionNames`  with event tracing
+            return cloneElement(child, getEventHandlers(child, traceContext, events, name, properties))
           })
         }
       </TraceContext.Consumer>
@@ -46,7 +42,7 @@ export const TraceEvent = memo((props: PropsWithChildren<TraceEventProps>) => {
 TraceEvent.displayName = 'TraceEvent'
 
 /**
- * Given a set of child element and event props, returns a spreadable
+ * Given a set of child element and action props, returns a spreadable
  * object of the event handlers augmented with analytics logging.
  */
 function getEventHandlers(
@@ -54,8 +50,7 @@ function getEventHandlers(
   traceContext: ITraceContext,
   events: Event[],
   name: EventName,
-  properties?: Record<string, unknown>,
-  shouldLogImpression = true
+  properties?: Record<string, unknown>
 ) {
   const eventHandlers: Partial<Record<Event, (e: SyntheticEvent<Element, Event>) => void>> = {}
 
@@ -66,7 +61,7 @@ function getEventHandlers(
       child.props[event]?.apply(child, args)
 
       // augment handler with analytics logging
-      if (shouldLogImpression) sendAnalyticsEvent(name, { ...traceContext, ...properties, action: event })
+      sendAnalyticsEvent(name, { ...traceContext, ...properties })
     }
   }
 
