@@ -9,7 +9,7 @@ import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 import { useUserUnclaimedAmount } from '../claim/hooks'
 import { useTotalDfiEarned, useTotalUniEarned } from '../stake/hooks'
-import { Interface } from '@ethersproject/abi'
+//import { Interface } from '@ethersproject/abi'
 
 import PROXY_INTERFACE from 'constants/abis/proxy_staking'
 
@@ -95,9 +95,9 @@ export enum BalState{
 
 
 export function useTokenBalancesEthProxy(
-  address: (string | undefined)[], contractAbi : Interface, contractaddress: (string | undefined)[]
+  address: (string | undefined)[], contractaddress: (string | undefined)[]
 ) {
-  const results = useMultipleContractSingleData(contractaddress, contractAbi, 'stakingMap', address)
+  const results = useMultipleContractSingleData(contractaddress, USDT_LP_ABI_INTERFACE, 'stakingMap', address)
   
   return useMemo(()=>{
     return results.map((result)=>{
@@ -173,6 +173,19 @@ export function useTokenBalances(
 // get the balance for a single token/account combo
 export function useTokenBalance(account?: string, token?: Token): TokenAmount | undefined {
   const tokenBalances = useTokenBalances(account, [token])
+  if (!token) return undefined
+  return tokenBalances[token.address]
+}
+
+export function useTokenBalancesProxies(
+  address?: string,
+  tokens?: (Token | undefined)[]
+): { [tokenAddress: string]: TokenAmount | undefined } {
+  return useTokenBalancesProxy(address, tokens)[0]
+}
+
+export function useTokenBalanceViaProxies(account?: string, token?: Token): TokenAmount | undefined {
+  const tokenBalances = useTokenBalancesProxies(account, [token])
   if (!token) return undefined
   return tokenBalances[token.address]
 }
