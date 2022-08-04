@@ -296,7 +296,7 @@ export default function Header() {
           </UniIcon>
         </Title>
         <HeaderLinks>
-          <StyledNavLink
+          {/* <StyledNavLink
             id={`pool-nav-link`}
             to={'/pool'}
             isActive={(match, { pathname }) =>
@@ -308,7 +308,7 @@ export default function Header() {
             }
           >
             {t('pool')}
-          </StyledNavLink>
+          </StyledNavLink> */}
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
