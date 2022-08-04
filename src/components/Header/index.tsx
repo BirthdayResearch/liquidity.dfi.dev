@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Text } from 'rebass'
 import { NavLink } from 'react-router-dom'
 import { darken } from 'polished'
-import { useTranslation } from 'react-i18next'
+// import { useTranslation } from 'react-i18next'
 
 import styled from 'styled-components'
 
@@ -264,7 +264,7 @@ const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
 
 export default function Header() {
   const { account, chainId } = useActiveWeb3React()
-  const { t } = useTranslation()
+  // const { t } = useTranslation()
 
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   // const [isDark] = useDarkModeManager()
@@ -296,7 +296,7 @@ export default function Header() {
           </UniIcon>
         </Title>
         <HeaderLinks>
-          {/* <StyledNavLink
+          <StyledNavLink
             id={`pool-nav-link`}
             to={'/pool'}
             isActive={(match, { pathname }) =>
@@ -307,8 +307,8 @@ export default function Header() {
               pathname.startsWith('/find')
             }
           >
-            {t('pool')}
-          </StyledNavLink> */}
+            {/* {t('pool')} */}
+          </StyledNavLink>
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
