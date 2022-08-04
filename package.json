@@ -9,7 +9,7 @@
     "start": "react-scripts start",
     "start:service-worker": "yarn build && yarn serve -s build",
     "test": "react-scripts test --env=jsdom",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings 18",
     "lint:fix": "yarn run lint --fix",
     "format": "prettier --check \"**/*.{js,ts,jsx,tsx,yml,md,json}\"",
     "format:fix": "prettier --write \"**/*.{js,ts,jsx,tsx,yml,md,json}\""
