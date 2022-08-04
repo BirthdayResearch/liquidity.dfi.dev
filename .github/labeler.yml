@@ -34,18 +34,18 @@ labels:
   - label: area/workflow
     sync: true
     matcher:
-      files: ".github/**"
+      files: '.github/**'
 
   - label: area/docs
     sync: true
     matcher:
-      files: "docs/**"
+      files: 'docs/**'
 
 checks:
-  - context: "Semantic Pull Request"
+  - context: 'Semantic Pull Request'
     description:
       success: Ready for review & merge.
-      failure: "Missing semantic title or label for merge [kind(directory): title]"
+      failure: 'Missing semantic title or label for merge [kind(directory): title]'
     labels:
       any:
         - kind/feature

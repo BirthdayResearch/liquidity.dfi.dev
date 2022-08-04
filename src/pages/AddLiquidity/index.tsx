@@ -507,7 +507,9 @@ export default function AddLiquidity({
                       {'DFI/ETH'}
                     </StyledNavLink>
                     <StyledNavLink
-                      onClick={() => {}}
+                      onClick={() => {
+                        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+                      }}
                       id={`pool-nav-link`}
                       to={`/add/${DFI[chainId!].address}/${WETH[chainId!].address}`}
                     >
