@@ -507,10 +507,6 @@ export default function AddLiquidity({
                       {'DFI/ETH'}
                     </StyledNavLink>
                     <StyledNavLink
-                      onClick={() => {
-                        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-                      }}
-                      id={`pool-nav-link`}
                       to={`/add/${DFI[chainId!].address}/${WETH[chainId!].address}`}
                     >
                       {'DFI/WETH'}
@@ -546,6 +542,7 @@ export default function AddLiquidity({
               currency={currencies[Field.CURRENCY_A]}
               id="add-liquidity-input-tokena"
               showCommonBases
+              disableCurrencySelect = {false}
             />
             <ColumnCenter>
               <Plus size="16" color={theme.text2} />
@@ -561,6 +558,7 @@ export default function AddLiquidity({
               currency={currencies[Field.CURRENCY_B]}
               id="add-liquidity-input-tokenb"
               showCommonBases
+              disableCurrencySelect = {true}
             />
             {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
               <>
