@@ -23,7 +23,6 @@ export const DataCard = styled(AutoColumn)<{ disabled?: boolean }>`
   position: relative;
   overflow: hidden;
 `
-
 export const CardBGImage = styled.span<{ desaturate?: boolean }>`
   background: url(${uImage});
   width: 1000px;
