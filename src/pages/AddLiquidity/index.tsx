@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, currencyEquals, ETHER, TokenAmount, WETH } from '@uniswap/sdk'
+import { Currency, currencyEquals, ETHER, Percent, TokenAmount, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useState } from 'react'
 import { Plus } from 'react-feather'
 import ReactGA from 'react-ga4'
@@ -22,7 +22,7 @@ import Row, { RowBetween, RowFlat } from '../../components/Row'
 import { USDT, USDC, DFI } from '../../constants/index'
 
 import { PROXIES } from '../../constants'
-import { PairState } from '../../data/Reserves'
+import { PairState, ProxyPair, usePairs2 } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
@@ -49,7 +49,8 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
-
+import { useProxies } from 'state/wallet/hooks'
+import { useTotalStake } from 'data/TotalSupply'
 const LpFrame = styled.div`
   display: grid;
   grid-template-columns: 20% 20% 20% 20%;
@@ -150,7 +151,6 @@ export default function AddLiquidity({
     price,
     noLiquidity,
     liquidityMinted,
-    poolTokenPercentage,
     error
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
 
@@ -194,15 +194,36 @@ export default function AddLiquidity({
     {}
   )
 
-  //ETH APPROVAL
+  // ETH approval
   const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[2].address)
   const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[2].address)
-  //USDT APPROVAL
+  // USDT approval
   const [approvalC, approveCCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[0].address)
   const [approvalD, approveDCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[0].address)
-  //USDC APPROVAL
+  // USDC approval
   const [approvalE, approveECallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], PROXIES[1].address)
   const [approvalF, approveFCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], PROXIES[1].address)
+
+  // get rewards pool share
+  const proxies = useProxies()
+  const currentProxy = proxies.filter(p => {
+    return oneCurrencyIsETH
+      ? (currencyIdA === p.tokenA.address && '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6' === p.tokenB.address) ||
+          (currencyIdA === p.tokenB.address && '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6' === p.tokenA.address)
+      : (currencyIdA === p.tokenA.address && currencyIdB === p.tokenB.address) ||
+          (currencyIdA === p.tokenB.address && currencyIdB === p.tokenA.address)
+  })
+
+  const proxyV2Pairs2 = usePairs2(currentProxy.map(p => [p.tokenA, p.tokenB, p.address]))
+  const proxyV2PairsWithLiquidity2 = proxyV2Pairs2
+    .map(([, pair]) => pair)
+    .filter((v2Pair): v2Pair is ProxyPair => Boolean(v2Pair))
+  const currentProxyStake = useTotalStake(currentProxy[0].address, proxyV2PairsWithLiquidity2[0]?.liquidityToken)
+
+  const rewardsPoolPercentage =
+    liquidityMinted && currentProxyStake
+      ? new Percent(liquidityMinted?.raw, currentProxyStake?.add(liquidityMinted).raw)
+      : undefined
 
   function checkAPendingApprove() {
     if (oneCurrencyIsWETH || oneCurrencyIsETH) {
@@ -412,7 +433,7 @@ export default function AddLiquidity({
         parsedAmounts={parsedAmounts}
         noLiquidity={noLiquidity}
         onAdd={onAdd}
-        poolTokenPercentage={poolTokenPercentage}
+        poolTokenPercentage={rewardsPoolPercentage}
       />
     )
   }
@@ -573,7 +594,7 @@ export default function AddLiquidity({
                   <LightCard padding="1rem" borderRadius={'20px'}>
                     <PoolPriceBar
                       currencies={currencies}
-                      poolTokenPercentage={poolTokenPercentage}
+                      poolTokenPercentage={rewardsPoolPercentage}
                       noLiquidity={noLiquidity}
                       price={price}
                     />
