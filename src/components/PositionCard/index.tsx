@@ -163,8 +163,8 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
 }
 
 export default function FullPositionCard({ pair, border, stakedBalance, claimable, proxyAddress }: PositionCardProps) {
-  const currency1 = unwrappedToken(pair.token0)
-  const currency0 = unwrappedToken(pair.token1)
+  const currency0 = unwrappedToken(pair.token0)
+  const currency1 = unwrappedToken(pair.token1)
 
   const [showMore, setShowMore] = useState(false)
 
@@ -186,8 +186,8 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
     JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? [
-          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false),
-          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false)
+          pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
+          pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
         ]
       : [undefined, undefined]
 
