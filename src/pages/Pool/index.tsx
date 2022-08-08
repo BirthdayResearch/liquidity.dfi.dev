@@ -128,7 +128,7 @@ export default function Pool() {
                     Add Liquidity
                   </Text>
                 </ResponsiveButtonPrimary>
-                <ResponsiveButtonPrimary
+                {/* <ResponsiveButtonPrimary
                   id="join-pool-button"
                   as={Link}
                   padding="5px 8px"
@@ -138,7 +138,7 @@ export default function Pool() {
                   <Text fontWeight={500} fontSize={16}>
                     Remove Liquidity
                   </Text>
-                </ResponsiveButtonPrimary>
+                </ResponsiveButtonPrimary> */}
               </ButtonRow>
             </TitleRow>
 

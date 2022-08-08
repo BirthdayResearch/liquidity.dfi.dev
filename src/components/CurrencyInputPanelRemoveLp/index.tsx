@@ -14,7 +14,6 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
-//import { USDC_LP_ABI_INTERFACE } from 'constants/abis/erc20'
 import { PROXIES } from './../../constants/index'
 
 const InputRow = styled.div<{ selected: boolean }>`

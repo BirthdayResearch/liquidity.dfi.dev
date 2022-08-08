@@ -5,9 +5,9 @@ import { ArrowDown, Plus } from 'react-feather'
 import ReactGA from 'react-ga4'
 import { RouteComponentProps } from 'react-router'
 import { Text } from 'rebass'
-import { NavLink } from 'react-router-dom'
-import styled from 'styled-components'
-import { darken } from 'polished'
+// import { NavLink } from 'react-router-dom'
+// import styled from 'styled-components'
+// import { darken } from 'polished'
 import { ThemeContext } from 'styled-components'
 import { ButtonPrimary, ButtonLight, ButtonError } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
@@ -15,12 +15,11 @@ import { AutoColumn, ColumnCenter } from '../../components/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
-//import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFixed } from '../../components/Row'
 
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { DFI, USDC, USDT } from '../../constants'
+import { /*DFI, USDC,*/ USDT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
@@ -30,7 +29,7 @@ import { StyledInternalLink, TYPE } from '../../theme'
 import {
   calculateGasMargin,
   calculateSlippageAmount,
-  /* getRouterContract,*/ getETHProxyContract,
+  getETHProxyContract,
   getUSDTProxyContract,
   getUSDCProxyContract
 } from '../../utils'
@@ -47,63 +46,63 @@ import { useUserSlippageTolerance } from '../../state/user/hooks'
 import CurrencyInputPanelRemoveLp from '../../components/CurrencyInputPanelRemoveLp'
 import { BigNumber } from '@ethersproject/bignumber'
 
-const LpFrame = styled.div`
-  display: grid;
-  grid-template-columns: 20% 20% 20% 20%;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  width: 92%;
-  top: 0;
-  position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  z-index: 2;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    grid-template-columns: 1fr;
-    padding: 0 1rem;
-    width: calc(100%);
-    position: relative;
-  `};
+// const LpFrame = styled.div`
+//   display: grid;
+//   grid-template-columns: 20% 20% 20% 20%;
+//   align-items: center;
+//   justify-content: space-between;
+//   flex-direction: row;
+//   width: 92%;
+//   top: 0;
+//   position: relative;
+//   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+//   padding: 1rem;
+//   z-index: 2;
+//   ${({ theme }) => theme.mediaWidth.upToMedium`
+//     grid-template-columns: 1fr;
+//     padding: 0 1rem;
+//     width: calc(100%);
+//     position: relative;
+//   `};
 
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-        padding: 0.5rem 1rem;
-  `}
-  -ms-overflow-style: none;
+//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+//         padding: 0.5rem 1rem;
+//   `}
+//   -ms-overflow-style: none;
 
-  &::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, and Opera */
-  }
-`
+//   &::-webkit-scrollbar {
+//     display: none; /* for Chrome, Safari, and Opera */
+//   }
+// `
 
-const activeClassName = 'ACTIVE'
+// const activeClassName = 'ACTIVE'
 
-const StyledNavLink = styled(NavLink).attrs({
-  activeClassName
-})`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: right;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme }) => theme.text2};
-  font-size: 1rem;
-  width: fit-content;
-  margin: 0 12px;
-  font-weight: 450;
+// const StyledNavLink = styled(NavLink).attrs({
+//   activeClassName
+// })`
+//   ${({ theme }) => theme.flexRowNoWrap}
+//   align-items: right;
+//   border-radius: 3rem;
+//   outline: none;
+//   cursor: pointer;
+//   text-decoration: none;
+//   color: ${({ theme }) => theme.text2};
+//   font-size: 1rem;
+//   width: fit-content;
+//   margin: 0 12px;
+//   font-weight: 450;
 
-  &.${activeClassName} {
-    border-radius: 15px;
-    font-weight: 500;
-    color: ${({ theme }) => theme.text1};
-  }
+//   &.${activeClassName} {
+//     border-radius: 15px;
+//     font-weight: 500;
+//     color: ${({ theme }) => theme.text1};
+//   }
 
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
-`
+//   :hover,
+//   :focus {
+//     color: ${({ theme }) => darken(0.1, theme.text1)};
+//   }
+// `
 
 export default function RemoveLiquidity({
   history,
@@ -454,7 +453,7 @@ export default function RemoveLiquidity({
             )}
             pendingText={pendingText}
           />
-          <LpFrame>
+          {/* <LpFrame>
             <StyledNavLink id={`pool-nav-link`} to={`/remove/${DFI[chainId!].address}/ETH`}>
               {'DFI/ETH'}
             </StyledNavLink>
@@ -467,7 +466,7 @@ export default function RemoveLiquidity({
             <StyledNavLink id={`pool-nav-link`} to={`/remove/${DFI[chainId!].address}/${USDC[chainId!].address}`}>
               {'DFI/USDC'}
             </StyledNavLink>
-          </LpFrame>
+          </LpFrame> */}
           <AutoColumn gap="md">
             <BlueCard>
               <AutoColumn gap="10px">
@@ -582,7 +581,7 @@ export default function RemoveLiquidity({
                     onUserInput(Field.LIQUIDITY_PERCENT, '100')
                   }}
                   showMaxButton={!atMaxAmount}
-                  disableCurrencySelect
+                  disableCurrencySelect={true}
                   currency={pair?.liquidityToken}
                   pair={pair}
                   id="liquidity-amount"
@@ -599,6 +598,7 @@ export default function RemoveLiquidity({
                   onUserInput={onCurrencyAInput}
                   onMax={() => onUserInput(Field.LIQUIDITY_PERCENT, '100')}
                   showMaxButton={!atMaxAmount}
+                  disableCurrencySelect={true}
                   currency={currencyA}
                   label={'Output'}
                   onCurrencySelect={handleSelectCurrencyA}
