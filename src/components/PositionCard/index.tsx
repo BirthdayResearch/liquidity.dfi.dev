@@ -178,7 +178,6 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
       ? new Percent(userPoolBalance.raw, totalStake.raw)
       : undefined
 
-  // pair.token1 -> token0Deposited and pair.token0 -> token1Deposited is intended
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -279,7 +278,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                 Your pool share:
               </Text>
               <Text fontSize={16} fontWeight={500}>
-                {poolTokenPercentage
+                {poolTokenPercentage?.greaterThan('0')
                   ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
                   : '-'}
               </Text>
@@ -296,35 +295,39 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
               </FixedHeightRow>
             )}
 
-            {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, BIG_INT_ZERO) && (
+            {userPoolBalance && (
               <RowBetween marginTop="10px">
                 <ButtonPrimary
                   padding="8px"
                   borderRadius="8px"
                   as={Link}
                   to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}
-                  width="32%"
+                  width={JSBI.greaterThan(userPoolBalance.raw, BIG_INT_ZERO) ? '32%' : '100%'}
                 >
                   Add
                 </ButtonPrimary>
-                <ButtonPrimary
-                  padding="8px"
-                  borderRadius="8px"
-                  as={Link}
-                  width="32%"
-                  to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
-                >
-                  Remove
-                </ButtonPrimary>
-                <ButtonPrimary
-                  padding="8px"
-                  borderRadius="8px"
-                  onClick={claimCallback}
-                  disabled={claimable && claimable.greaterThan('0') ? false : true}
-                  width="32%"
-                >
-                  Claim
-                </ButtonPrimary>
+                {JSBI.greaterThan(userPoolBalance.raw, BIG_INT_ZERO) && (
+                  <>
+                    <ButtonPrimary
+                      padding="8px"
+                      borderRadius="8px"
+                      as={Link}
+                      width="32%"
+                      to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}
+                    >
+                      Remove
+                    </ButtonPrimary>
+                    <ButtonPrimary
+                      padding="8px"
+                      borderRadius="8px"
+                      onClick={claimCallback}
+                      disabled={claimable && claimable.greaterThan('0') ? false : true}
+                      width="32%"
+                    >
+                      Claim
+                    </ButtonPrimary>
+                  </>
+                )}
               </RowBetween>
             )}
           </AutoColumn>

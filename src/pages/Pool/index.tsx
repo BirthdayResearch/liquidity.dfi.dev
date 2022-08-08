@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { Link } from 'react-router-dom'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
@@ -67,12 +67,8 @@ export default function Pool() {
 
   const proxies = useProxies()
   const [userProxyLiquidity, fetchingProxyLiquidity] = useGetProxyLiquidityOfUser(account ?? undefined, proxies)
-  const proxyWithBalance = useMemo(() => proxies.filter(p => userProxyLiquidity[p.address]?.greaterThan('0')), [
-    proxies,
-    userProxyLiquidity
-  ])
 
-  const proxyV2Pairs2 = usePairs2(proxyWithBalance.map(p => [p.tokenA, p.tokenB, p.address]))
+  const proxyV2Pairs2 = usePairs2(proxies.map(p => [p.tokenA, p.tokenB, p.address]))
   const proxyV2PairsWithLiquidity2 = proxyV2Pairs2
     .map(([, pair]) => pair)
     .filter((v2Pair): v2Pair is ProxyPair => Boolean(v2Pair))
@@ -82,7 +78,7 @@ export default function Pool() {
   const userProxyLiquidityIsLoading =
     fetchingProxyLiquidity ||
     fetchingClaimable ||
-    proxyV2Pairs2?.length < proxyWithBalance.length ||
+    proxyV2Pairs2?.length < proxies.length ||
     proxyV2Pairs2?.some(V2Pair => !V2Pair)
 
   return (
@@ -154,7 +150,7 @@ export default function Pool() {
                   <Dots>Loading</Dots>
                 </TYPE.body>
               </EmptyProposals>
-            ) : proxyWithBalance?.length > 0 ? (
+            ) : proxies?.length > 0 ? (
               <>
                 {proxyV2PairsWithLiquidity2.map(v2Pair => (
                   <FullPositionCard
