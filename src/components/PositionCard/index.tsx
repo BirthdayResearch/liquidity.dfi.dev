@@ -316,7 +316,13 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                 >
                   Remove
                 </ButtonPrimary>
-                <ButtonPrimary padding="8px" borderRadius="8px" onClick={claimCallback} width="32%">
+                <ButtonPrimary
+                  padding="8px"
+                  borderRadius="8px"
+                  onClick={claimCallback}
+                  disabled={claimable && claimable.greaterThan('0') ? false : true}
+                  width="32%"
+                >
                   Claim
                 </ButtonPrimary>
               </RowBetween>
