@@ -6,9 +6,9 @@ import { Plus } from 'react-feather'
 import ReactGA from 'react-ga4'
 import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
-import { NavLink } from 'react-router-dom'
-import styled from 'styled-components'
-import { darken } from 'polished'
+//import { NavLink } from 'react-router-dom'
+//import styled from 'styled-components'
+//import { darken } from 'polished'
 import { ThemeContext } from 'styled-components'
 import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
@@ -19,7 +19,7 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 ///import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import { USDT, USDC, DFI } from '../../constants/index'
+import { USDT/*,USDC, DFI*/ } from '../../constants/index'
 
 import { PROXIES } from '../../constants'
 import { PairState } from '../../data/Reserves'
@@ -50,63 +50,63 @@ import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 
-const LpFrame = styled.div`
-  display: grid;
-  grid-template-columns: 20% 20% 20% 20%;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  width: 92%;
-  top: 0;
-  position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  z-index: 2;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    grid-template-columns: 1fr;
-    padding: 0 1rem;
-    width: calc(100%);
-    position: relative;
-  `};
+// const LpFrame = styled.div`
+//   display: grid;
+//   grid-template-columns: 20% 20% 20% 20%;
+//   align-items: center;
+//   justify-content: space-between;
+//   flex-direction: row;
+//   width: 92%;
+//   top: 0;
+//   position: relative;
+//   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+//   padding: 1rem;
+//   z-index: 2;
+//   ${({ theme }) => theme.mediaWidth.upToMedium`
+//     grid-template-columns: 1fr;
+//     padding: 0 1rem;
+//     width: calc(100%);
+//     position: relative;
+//   `};
 
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-        padding: 0.5rem 1rem;
-  `}
+//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+//         padding: 0.5rem 1rem;
+//   `}
 
-  -ms-overflow-style: none;
+//   -ms-overflow-style: none;
 
-  &::-webkit-scrollbar {
-    display: none; /* for Chrome, Safari, and Opera */
-  }
-`
-const activeClassName = 'ACTIVE'
+//   &::-webkit-scrollbar {
+//     display: none; /* for Chrome, Safari, and Opera */
+//   }
+// `
+//const activeClassName = 'ACTIVE'
 
-const StyledNavLink = styled(NavLink).attrs({
-  activeClassName
-})`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: right;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme }) => theme.text2};
-  font-size: 1rem;
-  width: fit-content;
-  margin: 0 10px;
-  font-weight: 450;
+// const StyledNavLink = styled(NavLink).attrs({
+//   activeClassName
+// })`
+//   ${({ theme }) => theme.flexRowNoWrap}
+//   align-items: right;
+//   border-radius: 3rem;
+//   outline: none;
+//   cursor: pointer;
+//   text-decoration: none;
+//   color: ${({ theme }) => theme.text2};
+//   font-size: 1rem;
+//   width: fit-content;
+//   margin: 0 10px;
+//   font-weight: 450;
 
-  &.${activeClassName} {
-    border-radius: 15px;
-    font-weight: 500;
-    color: ${({ theme }) => theme.text1};
-  }
+//   &.${activeClassName} {
+//     border-radius: 15px;
+//     font-weight: 500;
+//     color: ${({ theme }) => theme.text1};
+//   }
 
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
-`
+//   :hover,
+//   :focus {
+//     color: ${({ theme }) => darken(0.1, theme.text1)};
+//   }
+// `
 
 export default function AddLiquidity({
   match: {
@@ -122,13 +122,13 @@ export default function AddLiquidity({
 
   const oneCurrencyIsWETH = Boolean(
     chainId &&
-      ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
-        (currencyB && currencyEquals(currencyB, WETH[chainId])))
+    ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
+      (currencyB && currencyEquals(currencyB, WETH[chainId])))
   )
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
-      ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
-        (currencyB && currencyEquals(currencyB, USDT[chainId])))
+    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+      (currencyB && currencyEquals(currencyB, USDT[chainId])))
   )
   const oneCurrencyIsETH = Boolean(
     chainId && ((currencyA && currencyEquals(currencyA, ETHER)) || (currencyB && currencyEquals(currencyB, ETHER)))
@@ -417,9 +417,8 @@ export default function AddLiquidity({
     )
   }
 
-  const pendingText = `Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
-    currencies[Field.CURRENCY_A]?.symbol
-  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
+  const pendingText = `Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${currencies[Field.CURRENCY_A]?.symbol
+    } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
 
   const handleCurrencyASelect = useCallback(
     (currencyA: Currency) => {
@@ -502,11 +501,11 @@ export default function AddLiquidity({
                 </ColumnCenter>
               ) : (
                 <>
-                  <LpFrame>
-                    <StyledNavLink id={`pool-nav-link`} to={`/add/${DFI[chainId!].address}/ETH`}>
-                      {'DFI/ETH'}
-                    </StyledNavLink>
-                    <StyledNavLink
+               
+                    {/* <StyledNavLink id={`pool-nav-link`} to={`/add/${DFI[chainId!].address}/ETH`}>
+                      {'DFI/ETH'}   <LpFrame>
+                    </StyledNavLink> */}
+                    {/* <StyledNavLink
                       to={`/add/${DFI[chainId!].address}/${WETH[chainId!].address}`}
                     >
                       {'DFI/WETH'}
@@ -515,9 +514,9 @@ export default function AddLiquidity({
                       {'DFI/USDT'}
                     </StyledNavLink>
                     <StyledNavLink id={`pool-nav-link`} to={`/add/${DFI[chainId!].address}/${USDC[chainId!].address}`}>
-                      {'DFI/USDC'}
-                    </StyledNavLink>
-                  </LpFrame>
+                      {'DFI/USDC'}    </LpFrame>
+                    </StyledNavLink> */}
+              
                   <ColumnCenter>
                     <BlueCard>
                       <AutoColumn gap="30px">
@@ -541,8 +540,8 @@ export default function AddLiquidity({
               showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
               currency={currencies[Field.CURRENCY_A]}
               id="add-liquidity-input-tokena"
-              showCommonBases
-              disableCurrencySelect = {false}
+              //showCommonBases
+              disableCurrencySelect={true}
             />
             <ColumnCenter>
               <Plus size="16" color={theme.text2} />
@@ -558,7 +557,7 @@ export default function AddLiquidity({
               currency={currencies[Field.CURRENCY_B]}
               id="add-liquidity-input-tokenb"
               showCommonBases
-              disableCurrencySelect = {true}
+              disableCurrencySelect={false}
             />
             {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
               <>
@@ -597,8 +596,8 @@ export default function AddLiquidity({
                             oneCurrencyIsWETH || oneCurrencyIsETH
                               ? approveACallback
                               : oneCurrencyIsUSDT
-                              ? approveCCallback
-                              : approveECallback
+                                ? approveCCallback
+                                : approveECallback
                           }
                           disabled={checkAPendingApprove()}
                           width={checkBApprove() ? '48%' : '100%'}
@@ -616,8 +615,8 @@ export default function AddLiquidity({
                             oneCurrencyIsWETH || oneCurrencyIsETH
                               ? approveBCallback
                               : oneCurrencyIsUSDT
-                              ? approveDCallback
-                              : approveFCallback
+                                ? approveDCallback
+                                : approveFCallback
                           }
                           disabled={checkBPendingApprove()}
                           width={checkAApprove() ? '48%' : '100%'}
