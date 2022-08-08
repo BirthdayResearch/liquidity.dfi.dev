@@ -17,7 +17,6 @@ import {
   RedirectOldAddLiquidityPathStructure
   //RedirectToAddLiquidity
 } from './AddLiquidity/redirects'
-import ComingSoon from './ComingSoon'
 //import Earn from './Earn'
 //import Manage from './Earn/Manage'
 import Pool from './Pool'
@@ -84,7 +83,7 @@ export default function App() {
           <TopLevelModals />
           <Web3ReactManager>
             <Switch>
-              <Route exact strict path="/" component={ComingSoon} />
+              <Route exact strict path="/" component={Pool} />
               <Route exact strict path="/pool" component={Pool} />
               <Route exact path="/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
               <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
