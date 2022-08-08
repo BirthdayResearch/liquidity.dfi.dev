@@ -14,7 +14,6 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import useTheme from '../../hooks/useTheme'
-//import { USDC_LP_ABI_INTERFACE } from 'constants/abis/erc20'
 import { PROXIES } from './../../constants/index'
 
 const InputRow = styled.div<{ selected: boolean }>`
@@ -63,7 +62,7 @@ const Aligner = styled.span`
   justify-content: space-between;
 `
 
-const StyledDropDown = styled(DropDown) <{ selected: boolean }>`
+const StyledDropDown = styled(DropDown)<{ selected: boolean }>`
   margin: 0 0.25rem 0 0.5rem;
   height: 35%;
 
@@ -246,8 +245,8 @@ export default function CurrencyInputPanelRemoveLp({
                 <StyledTokenName className="token-symbol-container" active={Boolean(currency && currency.symbol)}>
                   {(currency && currency.symbol && currency.symbol.length > 20
                     ? currency.symbol.slice(0, 4) +
-                    '...' +
-                    currency.symbol.slice(currency.symbol.length - 5, currency.symbol.length)
+                        '...' +
+                        currency.symbol.slice(currency.symbol.length - 5, currency.symbol.length)
                     : currency?.symbol) || t('selectToken')}
                 </StyledTokenName>
               )}
