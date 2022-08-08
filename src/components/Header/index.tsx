@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Text } from 'rebass'
 import { NavLink } from 'react-router-dom'
 import { darken } from 'polished'
-// import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 
 import styled from 'styled-components'
 
@@ -226,6 +226,33 @@ const StyledNavLink = styled(NavLink).attrs({
   }
 `
 
+const StyledAnchorLink = styled('a').attrs({
+  activeClassName
+})`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items: left;
+  border-radius: 3rem;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: ${({ theme }) => theme.text2};
+  font-size: 1rem;
+  width: fit-content;
+  margin: 0 12px;
+  font-weight: 500;
+
+  &.${activeClassName} {
+    border-radius: 12px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text1};
+  }
+
+  :hover,
+  :focus {
+    color: ${({ theme }) => darken(0.1, theme.text1)};
+  }
+`
+
 export const StyledMenuButton = styled.button`
   position: relative;
   width: 100%;
@@ -264,7 +291,7 @@ const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
 
 export default function Header() {
   const { account, chainId } = useActiveWeb3React()
-  // const { t } = useTranslation()
+  const { t } = useTranslation()
 
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   // const [isDark] = useDarkModeManager()
@@ -307,8 +334,18 @@ export default function Header() {
               pathname.startsWith('/find')
             }
           >
-            {/* {t('pool')} */}
+            {t('pool')}
           </StyledNavLink>
+          <StyledAnchorLink href="https://defichain.com/" target="_blank" rel="noreferrer noopener">
+            About DeFiChain
+          </StyledAnchorLink>
+          <StyledAnchorLink
+            href="https://birthdayresearch.notion.site/DFI-Liquidity-Mining-Program-1696a9cb66fd4fc38d9ccf14c782cba0#2115244652264ef192174da5d2c047de"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Get ERC-20 $DFI
+          </StyledAnchorLink>
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
