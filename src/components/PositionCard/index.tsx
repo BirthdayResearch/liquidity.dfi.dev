@@ -1,4 +1,4 @@
-import { JSBI, Pair, Percent, TokenAmount } from '@uniswap/sdk'
+import { ChainId, JSBI, Pair, Percent, TokenAmount } from '@uniswap/sdk'
 import { darken } from 'polished'
 import React, { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'react-feather'
@@ -24,8 +24,11 @@ import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
 import { Dots } from '../swap/styleds'
-import { BIG_INT_ZERO } from '../../constants'
+import { BIG_INT_ZERO, DFI } from '../../constants'
 import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
+import useUSDCPrice from 'utils/useUSDCPrice'
+import { useCheckAddressReward, useRewardSpeed } from 'data/Rewards'
+import { useWeb3React } from '@web3-react/core'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -166,6 +169,8 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   const currency0 = unwrappedToken(pair.token0)
   const currency1 = unwrappedToken(pair.token1)
 
+  const { account } = useWeb3React()
+
   const [showMore, setShowMore] = useState(false)
 
   const totalPoolTokens = useTotalSupply(pair.liquidityToken)
@@ -193,6 +198,17 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   const backgroundColor = useColor(pair?.token0)
 
   const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
+
+  // calculate APY = yearlyRewardDFI * priceDFI / totalLiquidityUSD * 52
+  console.log(useUSDCPrice(DFI[ChainId.MAINNET])?.raw)
+
+  const rewardSpeed = useRewardSpeed(proxyAddress)
+
+  const yearlyRewardDFI = rewardSpeed ? rewardSpeed.mul(12).mul(6000) : undefined
+  const priceDFI = 1
+  const totalLiquidityUSD = 750000 // where do we get this? Uniswap GraphQL?
+  console.log(yearlyRewardDFI, priceDFI, totalLiquidityUSD)
+  console.log('reward', useCheckAddressReward(account))
 
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
@@ -291,6 +307,17 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
                   {claimable?.toFixed(4, { groupSeparator: ',' })} DFI
+                </Text>
+              </FixedHeightRow>
+            )}
+
+            {claimable && (
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  APY:
+                </Text>
+                <Text fontSize={16} fontWeight={500}>
+                  -%
                 </Text>
               </FixedHeightRow>
             )}
