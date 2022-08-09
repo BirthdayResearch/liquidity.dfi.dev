@@ -4,6 +4,7 @@ import ERC20_BYTES32_ABI from './erc20_bytes32.json'
 import ETH_LP_ABI from './eth-lp-proxy.json'
 import USDC_LP_ABI from './usdc-lp-proxy.json'
 import USDT_LP_ABI from './usdt-lp-proxy.json'
+import LP_ABI from './uniswap-lp.json'
 
 const ERC20_INTERFACE = new Interface(ERC20_ABI)
 
@@ -15,6 +16,8 @@ const USDC_LP_ABI_INTERFACE = new Interface(USDC_LP_ABI)
 
 const USDT_LP_ABI_INTERFACE = new Interface(USDT_LP_ABI)
 
+const UNISWAP_PAIR_ABI = new Interface(LP_ABI)
+
 export default ERC20_INTERFACE
 export {
   ERC20_ABI,
@@ -22,5 +25,6 @@ export {
   ERC20_BYTES32_ABI,
   ETH_LP_ABI_INTERFACE,
   USDC_LP_ABI_INTERFACE,
-  USDT_LP_ABI_INTERFACE
+  USDT_LP_ABI_INTERFACE,
+  UNISWAP_PAIR_ABI
 }
