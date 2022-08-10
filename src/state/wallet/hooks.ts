@@ -9,8 +9,6 @@ import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
 import { useUserUnclaimedAmount } from '../claim/hooks'
 import { useTotalDfiEarned, useTotalUniEarned } from '../stake/hooks'
-//import { Interface } from '@ethersproject/abi'
-
 import PROXY_INTERFACE from 'constants/abis/proxy_staking'
 
 /**

@@ -108,6 +108,35 @@ export const PROXIES: ProxyInfo[] = [
     tokenB: WETH[ChainId.MAINNET]
   }
 ]
+// export const PROXIES: ProxyInfo[] = [
+//   {
+//     //Need to update the address with Mainnet
+//     address: '0xE83B630eD6a26a2D671d49BF81fC908Cf2167d88',
+//     chainId: ChainId.GÖRLI,
+//     symbol: 'USDT',
+//     underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
+//     tokenA: DFI[ChainId.GÖRLI],
+//     tokenB: USDT[ChainId.GÖRLI]
+//   },
+//   {
+//     //Need to update the address with Mainnet
+//     address: '0x972365Bc8bB0C645951Eb866f2A731D28782E5C1',
+//     chainId: ChainId.GÖRLI,
+//     symbol: 'USDC',
+//     underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
+//     tokenA: DFI[ChainId.GÖRLI],
+//     tokenB: USDC[ChainId.GÖRLI]
+//   },
+//   {
+//     //Need to update the address with Mainnet
+//     address: '0xbbe68b748fb96851058fC2b415e55C8CbFBfA8D7',
+//     chainId: ChainId.GÖRLI,
+//     symbol: 'WETH',
+//     underlyingPairAddress: '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',
+//     tokenA: DFI[ChainId.GÖRLI],
+//     tokenB: WETH[ChainId.GÖRLI]
+//   }
+// ]
 
 const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 export const UNI: { [chainId in ChainId]: Token } = {
