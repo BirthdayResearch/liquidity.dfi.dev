@@ -183,13 +183,22 @@ export default function AddLiquidity({
     if (oneCurrencyIsETH && oneCurrencyIsWETH){
       return ethRewardrate!
     } else if (oneCurrencyIsUSDT){
-      return usdtRewardrate!
+      return usdtRewardrate![0]
     } else {
       return usdcRewardrate!
     }
   }
-  if (lpPair && totalSupply && checkRewardContract()){
-  const totalLP = apr(lpPair, totalSupply, checkRewardContract())
+  function checkTotalStake(): BigNumber{
+    if (oneCurrencyIsETH && oneCurrencyIsWETH){
+      return ethRewardrate!
+    } else if (oneCurrencyIsUSDT){
+      return usdtRewardrate![1]
+    } else {
+      return usdcRewardrate!
+    }
+  }
+  if (lpPair && totalSupply && checkRewardContract() && checkTotalStake()){
+  const totalLP = apr(lpPair, totalSupply, checkRewardContract(), checkTotalStake())
   console.log(totalLP, chainId)}
 
   const rewardsPoolPercentage =

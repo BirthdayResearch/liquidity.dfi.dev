@@ -24,8 +24,9 @@ export function useTotalSupplyLP(address?: string) {
 export function useUsdtRewardRate() {
 
   const rewardRate: BigNumber = (useSingleCallResult(useUsdtLpContract(), 'rewardSpeed')?.result?.[0])
+  const totalStake: BigNumber = (useSingleCallResult(useUsdtLpContract(), 'totalStake')?.result?.[0])
 
-  return rewardRate ? rewardRate : undefined
+  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
 }
 export function useUsdcRewardRate() {
 
