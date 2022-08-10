@@ -6,7 +6,14 @@ import { ChevronDown, ChevronUp } from 'react-feather'
 import { Link } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled from 'styled-components'
-import { useTotalStake, useTotalSupply, useTotalSupplyLP, useUsdcRewardRate, useUsdtRewardRate, useWethRewardRate } from '../../data/TotalSupply'
+import {
+  useTotalStake,
+  useTotalSupply,
+  useTotalSupplyLP,
+  useUsdcRewardRate,
+  useUsdtRewardRate,
+  useWethRewardRate
+} from '../../data/TotalSupply'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -197,45 +204,44 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   const backgroundColor = useColor(pair?.token0)
 
   const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
-    
+
   ///////////////////////////////////////////////////////////////////////
-    const totalSupply = useTotalSupplyLP(pair.liquidityToken.address)!
-    const ethRewardrate = useWethRewardRate()
-    const usdtRewardrate = useUsdtRewardRate()
-    const usdcRewardrate = useUsdcRewardRate()
-    
-    const oneCurrencyIsUSDT = Boolean(
-      chainId &&
-        ((currency0 && currencyEquals(currency0, USDT[chainId])) ||
-          (currency1 && currencyEquals(currency1, USDT[chainId])))
-    )
-    const oneCurrencyIsUSDC = Boolean(
-      chainId &&
-        ((currency0 && currencyEquals(currency0, USDC[chainId])) ||
-          (currency1 && currencyEquals(currency1, USDC[chainId])))
-    )
-    
-    function checkRewardContract(): BigNumber{
-      if (oneCurrencyIsUSDC){
-        return usdcRewardrate![0]
-      } else if (oneCurrencyIsUSDT){
-        return usdtRewardrate![0]
-      } else {
-        return ethRewardrate![0]
-      }
+  const totalSupply = useTotalSupplyLP(pair.liquidityToken.address)!
+  const ethRewardrate = useWethRewardRate()
+  const usdtRewardrate = useUsdtRewardRate()
+  const usdcRewardrate = useUsdcRewardRate()
+
+  const oneCurrencyIsUSDT = Boolean(
+    chainId &&
+      ((currency0 && currencyEquals(currency0, USDT[chainId])) ||
+        (currency1 && currencyEquals(currency1, USDT[chainId])))
+  )
+  const oneCurrencyIsUSDC = Boolean(
+    chainId &&
+      ((currency0 && currencyEquals(currency0, USDC[chainId])) ||
+        (currency1 && currencyEquals(currency1, USDC[chainId])))
+  )
+
+  function checkRewardContract(): BigNumber {
+    if (oneCurrencyIsUSDC) {
+      return usdcRewardrate![0]
+    } else if (oneCurrencyIsUSDT) {
+      return usdtRewardrate![0]
+    } else {
+      return ethRewardrate![0]
     }
-    function checkTotalStake(): BigNumber{
-      if (oneCurrencyIsUSDC){
-        return usdcRewardrate![1]
-      } else if (oneCurrencyIsUSDT)
-      {
-        return usdtRewardrate![1]
-      } else {
-        return ethRewardrate![1]
-      }
+  }
+  function checkTotalStake(): BigNumber {
+    if (oneCurrencyIsUSDC) {
+      return usdcRewardrate![1]
+    } else if (oneCurrencyIsUSDT) {
+      return usdtRewardrate![1]
+    } else {
+      return ethRewardrate![1]
     }
-  let aprValue:number = 0
-  if (pair && totalSupply && checkRewardContract() && checkTotalStake()){
+  }
+  let aprValue: number = 0
+  if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
     aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
     console.log(aprValue, chainId)
   }
@@ -332,10 +338,10 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
 
             <FixedHeightRow>
               <Text fontSize={16} fontWeight={500}>
-                Pool {currency0.symbol+ '-' + currency1.symbol} APR:
+                Pool {currency0.symbol + '-' + currency1.symbol} APR:
               </Text>
               <Text fontSize={16} fontWeight={500}>
-                {aprValue? Math.round(aprValue) +'%' : ''}
+                {aprValue ? Math.round(aprValue) + '%' : ''}
               </Text>
             </FixedHeightRow>
             {claimable && (

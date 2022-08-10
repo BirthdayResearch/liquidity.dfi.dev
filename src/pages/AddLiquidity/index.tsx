@@ -46,7 +46,7 @@ import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import { useProxies } from 'state/wallet/hooks'
-import {  useTotalStake } from 'data/TotalSupply'
+import { useTotalStake } from 'data/TotalSupply'
 
 export default function AddLiquidity({
   match: {

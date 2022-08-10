@@ -17,8 +17,6 @@ import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 import { DFI } from '../../constants/index'
 
-
-
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
   width: 100%;
