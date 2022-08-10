@@ -181,6 +181,10 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
 
   const totalPoolTokens = useTotalSupply(pair.liquidityToken)
   const totalStake = useTotalStake(proxyAddress, pair.liquidityToken)
+  const rewardsPoolSharePercentage =
+    !!totalStake && !!totalPoolTokens // handle totalPoolTokens = 0 to prevent division by zero
+      ? new Percent(totalStake.raw, totalPoolTokens.raw)
+      : undefined
 
   const userPoolBalance = stakedBalance
 
@@ -281,6 +285,15 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
 
         {showMore && (
           <AutoColumn gap="8px">
+            <FixedHeightRow>
+              <Text fontSize={16} fontWeight={500}>
+                Rewards pool share:
+              </Text>
+              <Text fontSize={16} fontWeight={500}>
+                {rewardsPoolSharePercentage ? rewardsPoolSharePercentage.toSignificant(2) + '%' : '-'}
+              </Text>
+            </FixedHeightRow>
+
             <FixedHeightRow>
               <Text fontSize={16} fontWeight={500}>
                 Your total pool tokens:
