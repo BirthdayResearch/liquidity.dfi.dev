@@ -65,6 +65,14 @@ const ContentCard = styled.div`
   align-items: center;
 `
 
+const HideOnMobile = styled.div`
+  display: none;
+
+  @media only screen and (min-width: 768px) {
+    display: block;
+  }
+`
+
 interface PositionCardProps {
   pair: Pair
   showUnwrapped?: boolean
@@ -285,12 +293,12 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
             >
               {showMore ? (
                 <>
-                  Manage
+                  <HideOnMobile>Manage</HideOnMobile>
                   <ChevronUp size="20" style={{ marginLeft: '10px' }} />
                 </>
               ) : (
                 <>
-                  Manage
+                  <HideOnMobile>Manage</HideOnMobile>
                   <ChevronDown size="20" style={{ marginLeft: '10px' }} />
                 </>
               )}
