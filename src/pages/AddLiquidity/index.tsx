@@ -18,7 +18,7 @@ import Row, { RowBetween, RowFlat } from '../../components/Row'
 import { USDT } from '../../constants/index'
 
 import { PROXIES } from '../../constants'
-import { PairState, ProxyPair, usePair, usePairs2 } from '../../data/Reserves'
+import { PairState, ProxyPair, usePairs2 } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
@@ -46,9 +46,7 @@ import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import { useProxies } from 'state/wallet/hooks'
-import { useUsdtRewardRate, useTotalStake, useTotalSupplyLP, useWethRewardRate, useUsdcRewardRate } from 'data/TotalSupply'
-import { apr } from './APRCalculation'
-//import { userewardRate } from 'data/rewardRate'
+import {  useTotalStake } from 'data/TotalSupply'
 
 export default function AddLiquidity({
   match: {
@@ -162,44 +160,6 @@ export default function AddLiquidity({
     .map(([, pair]) => pair)
     .filter((v2Pair): v2Pair is ProxyPair => Boolean(v2Pair))
   const currentProxyStake = useTotalStake(currentProxy[0]?.address, proxyV2PairsWithLiquidity2[0]?.liquidityToken)
-
-  ///////////////////////////////////////////////////////////////////////
-   ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-     ///////////////////////////////////////////////////////////////////////
-      ///////////////////////////////////////////////////////////////////////
-       ///////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////
-         ///////////////////////////////////////////////////////////////////////
-          ///////////////////////////////////////////////////////////////////////
-  const [ , lpPair] = usePair(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])
-  
-  const totalSupply = useTotalSupplyLP(lpPair?.liquidityToken.address)
-  const ethRewardrate = useWethRewardRate()
-  const usdtRewardrate = useUsdtRewardRate()
-  const usdcRewardrate = useUsdcRewardRate()
-
-  function checkRewardContract(): BigNumber{
-    if (oneCurrencyIsETH && oneCurrencyIsWETH){
-      return ethRewardrate!
-    } else if (oneCurrencyIsUSDT){
-      return usdtRewardrate![0]
-    } else {
-      return usdcRewardrate!
-    }
-  }
-  function checkTotalStake(): BigNumber{
-    if (oneCurrencyIsETH && oneCurrencyIsWETH){
-      return ethRewardrate!
-    } else if (oneCurrencyIsUSDT){
-      return usdtRewardrate![1]
-    } else {
-      return usdcRewardrate!
-    }
-  }
-  if (lpPair && totalSupply && checkRewardContract() && checkTotalStake()){
-  const totalLP = apr(lpPair, totalSupply, checkRewardContract(), checkTotalStake())
-  console.log(totalLP, chainId)}
 
   const rewardsPoolPercentage =
     liquidityMinted && currentProxyStake

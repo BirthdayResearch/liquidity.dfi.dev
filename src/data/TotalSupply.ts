@@ -31,16 +31,20 @@ export function useUsdtRewardRate() {
 export function useUsdcRewardRate() {
 
   const rewardRate: BigNumber = (useSingleCallResult(useUsdcLpContract(), 'rewardSpeed')?.result?.[0])
+  const totalStake: BigNumber = (useSingleCallResult(useUsdcLpContract(), 'totalStake')?.result?.[0])
 
-  return rewardRate ? rewardRate : undefined
+  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
 }
+
 
 export function useWethRewardRate() {
 
   const rewardRate: BigNumber = (useSingleCallResult(useEthLpContract(), 'rewardSpeed')?.result?.[0])
+  const totalStake: BigNumber = (useSingleCallResult(useEthLpContract(), 'totalStake')?.result?.[0])
 
-  return rewardRate ? rewardRate : undefined
+  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
 }
+
 
 export function useTotalStake(proxyAddress?: string, token?: Token): TokenAmount | undefined {
   const contract = useProxyToClaimContract(proxyAddress, false)
