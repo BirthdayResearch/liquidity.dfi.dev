@@ -35,6 +35,7 @@ import { Dots } from '../swap/styleds'
 import { BIG_INT_ZERO, USDC, USDT } from '../../constants'
 import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
 import { apr } from 'pages/AddLiquidity/APRCalculation'
+import { useTotalRewardsAccrued } from 'data/Rewards'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -185,6 +186,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
     !!totalStake && !!totalPoolTokens // handle totalPoolTokens = 0 to prevent division by zero
       ? new Percent(totalStake.raw, totalPoolTokens.raw)
       : undefined
+  const totalRewardsAccrued = useTotalRewardsAccrued(proxyAddress)
 
   const userPoolBalance = stakedBalance
 
@@ -286,6 +288,11 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
         {showMore && (
           <AutoColumn gap="8px">
             <FixedHeightRow>
+              <Text fontSize={16} fontWeight={700}>
+                Rewards pool stats
+              </Text>
+            </FixedHeightRow>
+            <FixedHeightRow>
               <Text fontSize={16} fontWeight={500}>
                 Rewards pool share:
               </Text>
@@ -293,7 +300,20 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                 {rewardsPoolSharePercentage ? rewardsPoolSharePercentage.toSignificant(2) + '%' : '-'}
               </Text>
             </FixedHeightRow>
+            <FixedHeightRow>
+              <Text fontSize={16} fontWeight={500}>
+                Total rewards accrued:
+              </Text>
+              <Text fontSize={16} fontWeight={500}>
+                {totalRewardsAccrued ? totalRewardsAccrued.toSignificant(4) + ' DFI' : '0'}
+              </Text>
+            </FixedHeightRow>
 
+            <FixedHeightRow>
+              <Text fontSize={16} fontWeight={700}>
+                Your liquidity position
+              </Text>
+            </FixedHeightRow>
             <FixedHeightRow>
               <Text fontSize={16} fontWeight={500}>
                 Your total pool tokens:
