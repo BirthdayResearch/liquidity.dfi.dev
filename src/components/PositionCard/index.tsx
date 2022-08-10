@@ -73,6 +73,24 @@ const HideOnMobile = styled.div`
   }
 `
 
+const Badge = styled.div`
+  box-sizing: border-box;
+  margin: 0 8px 0 0;
+  color: rgb(255 255 255);
+  font-size: 14px;
+  line-height: 1.5715;
+  list-style: none;
+  display: inline-block;
+  height: auto;
+  padding: 0 7px;
+  font-size: 12px;
+  white-space: nowrap;
+  background: rgb(255 51 191);
+  border-radius: 8px;
+  opacity: 1;
+  transition: all 0.3s;
+`
+
 interface PositionCardProps {
   pair: Pair
   showUnwrapped?: boolean
@@ -281,7 +299,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
               {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${currency0.symbol}/${currency1.symbol}`}
             </Text>
             <Text fontWeight={500} fontSize={14}>
-              {aprValue ? Math.round(aprValue) + '% APR' : ''}
+              <Badge>{aprValue ? Math.round(aprValue) + '% APR' : ''}</Badge>
             </Text>
           </AutoRow>
           <RowFixed gap="8px">
@@ -315,6 +333,14 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
             </FixedHeightRow>
 
             <ContentCard>
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  APR:
+                </Text>
+                <Text fontSize={16} fontWeight={500}>
+                  {aprValue ? Math.round(aprValue) + '%' : ''}
+                </Text>
+              </FixedHeightRow>
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
                   Rewards pool share:
