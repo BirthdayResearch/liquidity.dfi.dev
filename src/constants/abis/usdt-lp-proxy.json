@@ -23,7 +23,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_rewardSpeed",
+        "name": "_admin_speed",
         "type": "uint256"
       }
     ],
@@ -244,6 +244,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "admin_speed",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -268,7 +281,12 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "_rewardForRecipient",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalRewardAccrued",
         "type": "uint256"
       }
     ],
@@ -290,6 +308,19 @@
   },
   {
     "inputs": [],
+    "name": "contract_stage",
+    "outputs": [
+      {
+        "internalType": "enum LiquidityMiningLogic.STAGE",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "emergency",
     "outputs": [
       {
@@ -299,19 +330,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_rewardSpeed",
-        "type": "uint256"
-      }
-    ],
-    "name": "endColdStart",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -330,6 +348,13 @@
   {
     "inputs": [],
     "name": "enterEmergencyMode",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "enterNextStage",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -385,19 +410,6 @@
       }
     ],
     "name": "hasRole",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "inColdStart",
     "outputs": [
       {
         "internalType": "bool",
@@ -714,6 +726,19 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalRewardAccrued",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
