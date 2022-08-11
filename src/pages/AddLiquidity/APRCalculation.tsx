@@ -1,12 +1,12 @@
 import { JSBI, Pair } from '@uniswap/sdk'
 import { BigNumber } from '@ethersproject/bignumber'
 
-export function apr(
+export const apr = (
   lpPair: Pair,
   totalSupplyUni: BigNumber,
   rewardRate: BigNumber | undefined,
   totalStake: BigNumber | undefined
-): number | undefined {
+): number | undefined => {
   if (rewardRate === undefined || totalStake === undefined) return undefined
   const blocksPerWeek = 6000 * 7
   const tokenAreserve = lpPair.reserveOf(lpPair.token0).raw
@@ -17,7 +17,6 @@ export function apr(
   const totalLp = tokenOneLiquidity + JSBI.toNumber(tokenTwoLiquidity)
   const rewardSpeed = rewardRate.mul(blocksPerWeek)
   const rewardinTookenA = rewardSpeed.toNumber() * tokenAPrice
-  //totalSupplyinCirculation = totalLp/totalSupplyUni
   const totalSupplyinCirculation = totalLp / JSBI.toNumber(JSBI.BigInt(totalSupplyUni.toString()))
   const APR = ((rewardinTookenA * 52) / (totalSupplyinCirculation * totalStake.toNumber())) * 100
   return APR
