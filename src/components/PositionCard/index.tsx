@@ -264,25 +264,25 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
         (currency1 && currencyEquals(currency1, USDC[chainId])))
   )
 
-  function checkRewardContract(): BigNumber {
+  function checkRewardContract(): BigNumber | undefined {
     if (oneCurrencyIsUSDC) {
-      return usdcRewardrate![0]
+      return usdcRewardrate ? usdcRewardrate[0] : undefined
     } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate![0]
+      return usdtRewardrate ? usdtRewardrate[0] : undefined
     } else {
-      return ethRewardrate![0]
+      return ethRewardrate ? ethRewardrate[0] : undefined
     }
   }
-  function checkTotalStake(): BigNumber {
+  function checkTotalStake(): BigNumber | undefined {
     if (oneCurrencyIsUSDC) {
-      return usdcRewardrate![1]
+      return usdcRewardrate ? usdcRewardrate[1] : undefined
     } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate![1]
+      return usdtRewardrate ? usdtRewardrate[1] : undefined
     } else {
-      return ethRewardrate![1]
+      return ethRewardrate ? ethRewardrate[1] : undefined
     }
   }
-  let aprValue: number = 0
+  let aprValue: number | undefined = 0
   if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
     aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
     //console.log(aprValue, chainId)

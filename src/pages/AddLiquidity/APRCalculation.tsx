@@ -1,7 +1,13 @@
 import { JSBI, Pair } from '@uniswap/sdk'
 import { BigNumber } from '@ethersproject/bignumber'
 
-export function apr(lpPair: Pair, totalSupplyUni: BigNumber, rewardRate: BigNumber, totalStake: BigNumber) {
+export function apr(
+  lpPair: Pair,
+  totalSupplyUni: BigNumber,
+  rewardRate: BigNumber | undefined,
+  totalStake: BigNumber | undefined
+): number | undefined {
+  if (rewardRate === undefined || totalStake === undefined) return undefined
   const blocksPerWeek = 6000 * 7
   const tokenAreserve = lpPair.reserveOf(lpPair.token0).raw
   const tokenBreserve = lpPair.reserveOf(lpPair.token1).raw
