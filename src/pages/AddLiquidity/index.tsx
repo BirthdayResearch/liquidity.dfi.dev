@@ -16,7 +16,7 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
 import { USDT } from '../../constants/index'
-//import { useHistory } from "react-router-dom";
+
 import { PROXIES } from '../../constants'
 import { PairState, ProxyPair, usePairs2 } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
@@ -77,10 +77,6 @@ export default function AddLiquidity({
   const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
 
   const expertMode = useIsExpertMode()
-
-  //Navigation
-  const pathLink =
-    'https://birthdayresearch.notion.site/DFI-Liquidity-Mining-Program-1696a9cb66fd4fc38d9ccf14c782cba0#2115244652264ef192174da5d2c047de'
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState()
@@ -488,7 +484,8 @@ export default function AddLiquidity({
                 onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
               }}
               onCurrencySelect={handleCurrencyASelect}
-              showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+              showMaxButton={!atMaxAmounts[Field.CURRENCY_A] && maxAmounts[Field.CURRENCY_A]?.toExact() !== '0'}
+              showGetDFI={maxAmounts[Field.CURRENCY_A]?.toExact() === '0'}
               currency={currencies[Field.CURRENCY_A]}
               id="add-liquidity-input-tokena"
               //showCommonBases
@@ -593,17 +590,6 @@ export default function AddLiquidity({
                   </Text>
                 </ButtonError>
               </AutoColumn>
-            )}
-            {maxAmounts[Field.CURRENCY_A]?.toExact() === '0' ? (
-              <AutoColumn gap={'md'}>
-                <ButtonPrimary onClick={() => window.open(pathLink)}>
-                  <Text fontSize={20} fontWeight={500}>
-                    {'Get Some DFI!!'}
-                  </Text>
-                </ButtonPrimary>
-              </AutoColumn>
-            ) : (
-              ''
             )}
           </AutoColumn>
         </Wrapper>

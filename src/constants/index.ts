@@ -108,6 +108,8 @@ export const PROXIES: ProxyInfo[] = [
     tokenB: WETH[ChainId.MAINNET]
   }
 ]
+
+//testnet Address
 // export const PROXIES: ProxyInfo[] = [
 //   {
 //     //Need to update the address with Mainnet
