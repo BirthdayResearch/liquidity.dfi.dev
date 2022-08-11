@@ -593,7 +593,7 @@ export default function AddLiquidity({
                 </ButtonError>
               </AutoColumn>
             )}
-            {maxAmounts[Field.CURRENCY_A]?.toExact() == '0' ? (
+            {maxAmounts[Field.CURRENCY_A]?.toExact() === '0' ? (
               <AutoColumn gap={'md'}>
                 <ButtonPrimary onClick={() => window.open(pathLink)}>
                   <Text fontSize={20} fontWeight={500}>
