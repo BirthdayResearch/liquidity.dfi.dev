@@ -79,64 +79,64 @@ export const USDC: { [chainId in ChainId]: Token } = {
 }
 
 // Proxy contact addresses
-export const PROXIES: ProxyInfo[] = [
-  {
-    //Need to update the address with Mainnet
-    address: '0xC13A1F46B58fCe16C3A583DF8E26BbeF1a497aD2',
-    chainId: ChainId.MAINNET,
-    symbol: 'USDT',
-    underlyingPairAddress: '0x9e251daEB17981477509779612dC2FFa8075AA8E',
-    tokenA: DFI[ChainId.MAINNET],
-    tokenB: USDT[ChainId.MAINNET]
-  },
-  {
-    //Need to update the address with Mainnet
-    address: '0x8cc61dfd87b256ce2be3da9ffa98ede3f018fa0e',
-    chainId: ChainId.MAINNET,
-    symbol: 'USDC',
-    underlyingPairAddress: '0xd239216ac7E44A09dA67d6852CD757fc5e829FE2',
-    tokenA: DFI[ChainId.MAINNET],
-    tokenB: USDC[ChainId.MAINNET]
-  },
-  {
-    //Need to update the address with Mainnet
-    address: '0x743c5b2f134290741b6de9c330d5a2ff43c773d3',
-    chainId: ChainId.MAINNET,
-    symbol: 'WETH',
-    underlyingPairAddress: '0xb079D6bE3faf5771e354586DbC47d0a3D37C34fb',
-    tokenA: DFI[ChainId.MAINNET],
-    tokenB: WETH[ChainId.MAINNET]
-  }
-]
 // export const PROXIES: ProxyInfo[] = [
 //   {
 //     //Need to update the address with Mainnet
-//     address: '0xE83B630eD6a26a2D671d49BF81fC908Cf2167d88',
-//     chainId: ChainId.GÖRLI,
+//     address: '0xC13A1F46B58fCe16C3A583DF8E26BbeF1a497aD2',
+//     chainId: ChainId.MAINNET,
 //     symbol: 'USDT',
-//     underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
-//     tokenA: DFI[ChainId.GÖRLI],
-//     tokenB: USDT[ChainId.GÖRLI]
+//     underlyingPairAddress: '0x9e251daEB17981477509779612dC2FFa8075AA8E',
+//     tokenA: DFI[ChainId.MAINNET],
+//     tokenB: USDT[ChainId.MAINNET]
 //   },
 //   {
 //     //Need to update the address with Mainnet
-//     address: '0x972365Bc8bB0C645951Eb866f2A731D28782E5C1',
-//     chainId: ChainId.GÖRLI,
+//     address: '0x8cc61dfd87b256ce2be3da9ffa98ede3f018fa0e',
+//     chainId: ChainId.MAINNET,
 //     symbol: 'USDC',
-//     underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
-//     tokenA: DFI[ChainId.GÖRLI],
-//     tokenB: USDC[ChainId.GÖRLI]
+//     underlyingPairAddress: '0xd239216ac7E44A09dA67d6852CD757fc5e829FE2',
+//     tokenA: DFI[ChainId.MAINNET],
+//     tokenB: USDC[ChainId.MAINNET]
 //   },
 //   {
 //     //Need to update the address with Mainnet
-//     address: '0xbbe68b748fb96851058fC2b415e55C8CbFBfA8D7',
-//     chainId: ChainId.GÖRLI,
+//     address: '0x743c5b2f134290741b6de9c330d5a2ff43c773d3',
+//     chainId: ChainId.MAINNET,
 //     symbol: 'WETH',
-//     underlyingPairAddress: '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',
-//     tokenA: DFI[ChainId.GÖRLI],
-//     tokenB: WETH[ChainId.GÖRLI]
+//     underlyingPairAddress: '0xb079D6bE3faf5771e354586DbC47d0a3D37C34fb',
+//     tokenA: DFI[ChainId.MAINNET],
+//     tokenB: WETH[ChainId.MAINNET]
 //   }
 // ]
+export const PROXIES: ProxyInfo[] = [
+  {
+    //Need to update the address with Mainnet
+    address: '0xE83B630eD6a26a2D671d49BF81fC908Cf2167d88',
+    chainId: ChainId.GÖRLI,
+    symbol: 'USDT',
+    underlyingPairAddress: '0xdb01EE311F15E870eE44d882b6256944f3f3129f',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: USDT[ChainId.GÖRLI]
+  },
+  {
+    //Need to update the address with Mainnet
+    address: '0x972365Bc8bB0C645951Eb866f2A731D28782E5C1',
+    chainId: ChainId.GÖRLI,
+    symbol: 'USDC',
+    underlyingPairAddress: '0x1157A50B6ac97F2A5CD686998D0DdBEB5175927a',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: USDC[ChainId.GÖRLI]
+  },
+  {
+    //Need to update the address with Mainnet
+    address: '0xbbe68b748fb96851058fC2b415e55C8CbFBfA8D7',
+    chainId: ChainId.GÖRLI,
+    symbol: 'WETH',
+    underlyingPairAddress: '0xad1c0376a026c148438ee89e1aa8a55d83ad0250',
+    tokenA: DFI[ChainId.GÖRLI],
+    tokenB: WETH[ChainId.GÖRLI]
+  }
+]
 
 const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 export const UNI: { [chainId in ChainId]: Token } = {
