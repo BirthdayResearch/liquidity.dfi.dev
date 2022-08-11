@@ -79,8 +79,9 @@ export default function AddLiquidity({
   const expertMode = useIsExpertMode()
 
   //Navigation
-  const pathLink = "https://birthdayresearch.notion.site/DFI-Liquidity-Mining-Program-1696a9cb66fd4fc38d9ccf14c782cba0#2115244652264ef192174da5d2c047de"
-  
+  const pathLink =
+    'https://birthdayresearch.notion.site/DFI-Liquidity-Mining-Program-1696a9cb66fd4fc38d9ccf14c782cba0#2115244652264ef192174da5d2c047de'
+
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState()
   const {
@@ -593,18 +594,17 @@ export default function AddLiquidity({
                 </ButtonError>
               </AutoColumn>
             )}
-             {maxAmounts[Field.CURRENCY_A]?.toExact()== "0" ? (
+            {maxAmounts[Field.CURRENCY_A]?.toExact() == '0' ? (
               <AutoColumn gap={'md'}>
-              <ButtonPrimary 
-              onClick={()=>window.open(pathLink)}
-              
-              >
-               <Text fontSize={20} fontWeight={500}>
-                    { "Get Some DFI!!"}
-              </Text>
-              </ButtonPrimary>
+                <ButtonPrimary onClick={() => window.open(pathLink)}>
+                  <Text fontSize={20} fontWeight={500}>
+                    {'Get Some DFI!!'}
+                  </Text>
+                </ButtonPrimary>
               </AutoColumn>
-             ) : ''}
+            ) : (
+              ''
+            )}
           </AutoColumn>
         </Wrapper>
       </AppBody>
