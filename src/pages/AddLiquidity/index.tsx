@@ -62,13 +62,13 @@ export default function AddLiquidity({
 
   const oneCurrencyIsWETH = Boolean(
     chainId &&
-    ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
-      (currencyB && currencyEquals(currencyB, WETH[chainId])))
+      ((currencyA && currencyEquals(currencyA, WETH[chainId])) ||
+        (currencyB && currencyEquals(currencyB, WETH[chainId])))
   )
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
-    ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
-      (currencyB && currencyEquals(currencyB, USDT[chainId])))
+      ((currencyA && currencyEquals(currencyA, USDT[chainId])) ||
+        (currencyB && currencyEquals(currencyB, USDT[chainId])))
   )
   const oneCurrencyIsETH = Boolean(
     chainId && ((currencyA && currencyEquals(currencyA, ETHER)) || (currencyB && currencyEquals(currencyB, ETHER)))
@@ -152,11 +152,11 @@ export default function AddLiquidity({
   const currentProxy = proxies.filter(p => {
     return oneCurrencyIsETH
       ? (currencyIdA === p.tokenA.address &&
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' === p.tokenB.address.toLocaleLowerCase()) ||
-      (currencyIdA === p.tokenB.address &&
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' === p.tokenA.address.toLocaleLowerCase())
+          '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' === p.tokenB.address.toLocaleLowerCase()) ||
+          (currencyIdA === p.tokenB.address &&
+            '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' === p.tokenA.address.toLocaleLowerCase())
       : (currencyIdA === p.tokenA.address && currencyIdB === p.tokenB.address) ||
-      (currencyIdA === p.tokenB.address && currencyIdB === p.tokenA.address)
+          (currencyIdA === p.tokenB.address && currencyIdB === p.tokenA.address)
   })
 
   const proxyV2Pairs2 = usePairs2(currentProxy.map(p => [p.tokenA, p.tokenB, p.address]))
@@ -383,8 +383,9 @@ export default function AddLiquidity({
     )
   }
 
-  const pendingText = `Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${currencies[Field.CURRENCY_A]?.symbol
-    } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
+  const pendingText = `Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
+    currencies[Field.CURRENCY_A]?.symbol
+  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
 
   const handleCurrencyASelect = useCallback(
     (currencyA: Currency) => {
@@ -546,8 +547,8 @@ export default function AddLiquidity({
                             oneCurrencyIsWETH || oneCurrencyIsETH
                               ? approveACallback
                               : oneCurrencyIsUSDT
-                                ? approveCCallback
-                                : approveECallback
+                              ? approveCCallback
+                              : approveECallback
                           }
                           disabled={checkAPendingApprove()}
                           width={checkBApprove() ? '48%' : '100%'}
@@ -565,8 +566,8 @@ export default function AddLiquidity({
                             oneCurrencyIsWETH || oneCurrencyIsETH
                               ? approveBCallback
                               : oneCurrencyIsUSDT
-                                ? approveDCallback
-                                : approveFCallback
+                              ? approveDCallback
+                              : approveFCallback
                           }
                           disabled={checkBPendingApprove()}
                           width={checkAApprove() ? '48%' : '100%'}
