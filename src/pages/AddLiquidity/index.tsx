@@ -286,6 +286,12 @@ export default function AddLiquidity({
       value = null
     }
 
+    ReactGA.event({
+      category: 'Liquidity',
+      action: 'Add Attempt',
+      label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/')
+    })
+
     setAttemptingTxn(true)
     await estimate(...args, value ? { value } : {})
       .then(estimatedGasLimit =>

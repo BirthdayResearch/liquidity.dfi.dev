@@ -274,6 +274,12 @@ export default function RemoveLiquidity({
       const methodName = methodNames[indexOfSuccessfulEstimation]
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
 
+      ReactGA.event({
+        category: 'Liquidity',
+        action: 'Remove Attempt',
+        label: [currencyA?.symbol, currencyB?.symbol].join('/')
+      })
+
       await checkContract()
         [methodName](...args, {
           gasLimit: safeGasEstimate
