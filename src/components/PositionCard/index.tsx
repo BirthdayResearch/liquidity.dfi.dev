@@ -285,7 +285,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   let aprValue: number = 0
   if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
     aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
-    console.log(aprValue, chainId)
+    //console.log(aprValue, chainId)
   }
 
   return (

@@ -484,7 +484,8 @@ export default function AddLiquidity({
                 onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
               }}
               onCurrencySelect={handleCurrencyASelect}
-              showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+              showMaxButton={!atMaxAmounts[Field.CURRENCY_A] && maxAmounts[Field.CURRENCY_A]?.toExact() !== '0'}
+              showGetDFI={maxAmounts[Field.CURRENCY_A]?.toExact() === '0'}
               currency={currencies[Field.CURRENCY_A]}
               id="add-liquidity-input-tokena"
               //showCommonBases

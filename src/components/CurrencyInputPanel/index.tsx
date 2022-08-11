@@ -121,6 +121,7 @@ interface CurrencyInputPanelProps {
   onUserInput: (value: string) => void
   onMax?: () => void
   showMaxButton: boolean
+  showGetDFI?: boolean
   label?: string
   onCurrencySelect?: (currency: Currency) => void
   currency?: Currency | null
@@ -139,6 +140,7 @@ export default function CurrencyInputPanel({
   onUserInput,
   onMax,
   showMaxButton,
+  showGetDFI,
   label = 'Input',
   onCurrencySelect,
   currency,
@@ -152,6 +154,10 @@ export default function CurrencyInputPanel({
   customBalanceText
 }: CurrencyInputPanelProps) {
   const { t } = useTranslation()
+
+  //Navigation
+  const pathLink =
+    'https://birthdayresearch.notion.site/DFI-Liquidity-Mining-Program-1696a9cb66fd4fc38d9ccf14c782cba0#2115244652264ef192174da5d2c047de'
 
   const [modalOpen, setModalOpen] = useState(false)
   const { account } = useActiveWeb3React()
@@ -200,6 +206,7 @@ export default function CurrencyInputPanel({
               {account && currency && showMaxButton && label !== 'To' && (
                 <StyledBalanceMax onClick={onMax}>MAX</StyledBalanceMax>
               )}
+              {showGetDFI ? <StyledBalanceMax onClick={() => window.open(pathLink)}>Get DFI</StyledBalanceMax> : ''}
             </>
           )}
           <CurrencySelect

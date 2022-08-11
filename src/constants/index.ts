@@ -78,7 +78,7 @@ export const USDC: { [chainId in ChainId]: Token } = {
   [ChainId.KOVAN]: new Token(ChainId.GÖRLI, '0xD14C4C4a024f15318a393A43De3b7DD9ad0Ce565', 6, 'MUSDC', 'Mock USDC')
 }
 
-// Proxy contact addresses
+//Proxy contact addresses
 export const PROXIES: ProxyInfo[] = [
   {
     //Need to update the address with Mainnet
@@ -108,6 +108,8 @@ export const PROXIES: ProxyInfo[] = [
     tokenB: WETH[ChainId.MAINNET]
   }
 ]
+
+//testnet Address
 // export const PROXIES: ProxyInfo[] = [
 //   {
 //     //Need to update the address with Mainnet
