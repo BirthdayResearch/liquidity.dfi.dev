@@ -1,5 +1,8 @@
 # The DeFiChain DFI Liquidity Mining Program
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c6e3e43b-5770-47b2-bf58-386b0044beb3/deploy-status)](https://app.netlify.com/sites/liquidity-dfi/deploys)
+
+
 DeFiChain has allocated one million DFI tokens from a [Community Funding Proposal](https://github.com/DeFiCh/dfips/issues/186) to incentivize liquidity mining for the DFI/ETH, DFI/USDT, and the new DFI/USDC pair on Uniswap, and to increase the utility of ERC-20 DFI.
 
 To participate in the liquidity mining program, liquidity providers can do so through a dedicated dApp at [`liquidity.dfi.dev`](https://liquidity.dfi.dev/).
