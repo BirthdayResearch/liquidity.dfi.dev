@@ -4,7 +4,7 @@
 
 DeFiChain has allocated one million DFI tokens from a [Community Funding Proposal](https://github.com/DeFiCh/dfips/issues/186) to incentivize liquidity mining for the DFI/ETH, DFI/USDT, and the new DFI/USDC pair on Uniswap, and to increase the utility of ERC-20 DFI.
 
-To participate in the liquidity mining program, liquidity providers can do so through a dedicated dApp at [`liquidity.dfi.dev`](https://liquidity.dfi.dev/).
+To participate in the liquidity mining program, liquidity providers can do so through a dedicated dApp at [`uniswap.defichain.com`](https://uniswap.defichain.com/).
 
 For more information, check out the [FAQs](https://birthdayresearch.notion.site/DFI-Liquidity-Mining-Program-1696a9cb66fd4fc38d9ccf14c782cba0#b9abfb7103464d148bcf5a2572c9f624).
 
