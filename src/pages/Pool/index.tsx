@@ -6,7 +6,6 @@ import FullPositionCard from '../../components/PositionCard'
 import { useGetClaimableRewardOfUser, useGetProxyLiquidityOfUser, useProxies } from '../../state/wallet/hooks'
 import { TYPE, HideSmall } from '../../theme'
 import { Text } from 'rebass'
-import Card from '../../components/Card'
 import { RowBetween, RowFixed } from '../../components/Row'
 import { ButtonPrimary } from '../../components/Button'
 import { AutoColumn } from '../../components/Column'
@@ -136,13 +135,7 @@ export default function Pool() {
               </ButtonRow>
             </TitleRow>
 
-            {!account ? (
-              <Card padding="40px">
-                <TYPE.body color={theme.text3} textAlign="center">
-                  Connect to a wallet to view your liquidity.
-                </TYPE.body>
-              </Card>
-            ) : userProxyLiquidityIsLoading ? (
+            {userProxyLiquidityIsLoading ? (
               <EmptyProposals>
                 <TYPE.body color={theme.text3} textAlign="center">
                   <Dots>Loading</Dots>

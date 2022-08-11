@@ -364,72 +364,77 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                 Your liquidity position
               </Text>
             </FixedHeightRow>
-            <ContentCard>
-              <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
-                  Your total pool tokens:
-                </Text>
-                <Text fontSize={16} fontWeight={500}>
-                  {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-                </Text>
-              </FixedHeightRow>
-              <FixedHeightRow>
-                <RowFixed>
-                  <Text fontSize={16} fontWeight={500}>
-                    Pooled {currency0.symbol}:
-                  </Text>
-                </RowFixed>
-                {token0Deposited ? (
-                  <RowFixed>
-                    <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                      {token0Deposited?.toSignificant(6)}
-                    </Text>
-                    <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />
-                  </RowFixed>
-                ) : (
-                  '-'
-                )}
-              </FixedHeightRow>
 
-              <FixedHeightRow>
-                <RowFixed>
-                  <Text fontSize={16} fontWeight={500}>
-                    Pooled {currency1.symbol}:
-                  </Text>
-                </RowFixed>
-                {token1Deposited ? (
-                  <RowFixed>
-                    <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                      {token1Deposited?.toSignificant(6)}
-                    </Text>
-                    <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />
-                  </RowFixed>
-                ) : (
-                  '-'
-                )}
-              </FixedHeightRow>
-
-              <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
-                  Your pool share:
-                </Text>
-                <Text fontSize={16} fontWeight={500}>
-                  {poolTokenPercentage?.greaterThan('0')
-                    ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
-                    : '-'}
-                </Text>
-              </FixedHeightRow>
-              {claimable && (
+            {userPoolBalance ? (
+              <ContentCard>
                 <FixedHeightRow>
                   <Text fontSize={16} fontWeight={500}>
-                    Claimable DFI:
+                    Your total pool tokens:
                   </Text>
                   <Text fontSize={16} fontWeight={500}>
-                    {claimable?.toFixed(4, { groupSeparator: ',' })} DFI
+                    {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
                   </Text>
                 </FixedHeightRow>
-              )}
-            </ContentCard>
+                <FixedHeightRow>
+                  <RowFixed>
+                    <Text fontSize={16} fontWeight={500}>
+                      Pooled {currency0.symbol}:
+                    </Text>
+                  </RowFixed>
+                  {token0Deposited ? (
+                    <RowFixed>
+                      <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
+                        {token0Deposited?.toSignificant(6)}
+                      </Text>
+                      <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />
+                    </RowFixed>
+                  ) : (
+                    '-'
+                  )}
+                </FixedHeightRow>
+
+                <FixedHeightRow>
+                  <RowFixed>
+                    <Text fontSize={16} fontWeight={500}>
+                      Pooled {currency1.symbol}:
+                    </Text>
+                  </RowFixed>
+                  {token1Deposited ? (
+                    <RowFixed>
+                      <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
+                        {token1Deposited?.toSignificant(6)}
+                      </Text>
+                      <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />
+                    </RowFixed>
+                  ) : (
+                    '-'
+                  )}
+                </FixedHeightRow>
+
+                <FixedHeightRow>
+                  <Text fontSize={16} fontWeight={500}>
+                    Your pool share:
+                  </Text>
+                  <Text fontSize={16} fontWeight={500}>
+                    {poolTokenPercentage?.greaterThan('0')
+                      ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
+                      : '-'}
+                  </Text>
+                </FixedHeightRow>
+                {claimable && (
+                  <FixedHeightRow>
+                    <Text fontSize={16} fontWeight={500}>
+                      Claimable DFI:
+                    </Text>
+                    <Text fontSize={16} fontWeight={500}>
+                      {claimable?.toFixed(4, { groupSeparator: ',' })} DFI
+                    </Text>
+                  </FixedHeightRow>
+                )}
+              </ContentCard>
+            ) : (
+              <ContentCard>Please connect to a wallet to view your position.</ContentCard>
+            )}
 
             {userPoolBalance && (
               <RowBetween marginTop="10px">
