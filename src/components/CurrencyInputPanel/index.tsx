@@ -206,7 +206,7 @@ export default function CurrencyInputPanel({
               {account && currency && showMaxButton && label !== 'To' && (
                 <StyledBalanceMax onClick={onMax}>MAX</StyledBalanceMax>
               )}
-              {showGetDFI ? <StyledBalanceMax onClick={() => window.open(pathLink)}>Get DFI!!</StyledBalanceMax> : ''}
+              {showGetDFI ? <StyledBalanceMax onClick={() => window.open(pathLink)}>Get DFI</StyledBalanceMax> : ''}
             </>
           )}
           <CurrencySelect
