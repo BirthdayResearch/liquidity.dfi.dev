@@ -247,11 +247,11 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
 
   const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
 
-  ///////////////////////////////////////////////////////////////////////
+  // APR calculations
   const totalSupply = useTotalSupplyLP(pair.liquidityToken.address)!
-  const ethRewardrate = useWethRewardRate()
-  const usdtRewardrate = useUsdtRewardRate()
-  const usdcRewardrate = useUsdcRewardRate()
+  const rewardRateETH = useWethRewardRate()
+  const rewardRateUSDT = useUsdtRewardRate()
+  const rewardRateUSDC = useUsdcRewardRate()
 
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
@@ -266,20 +266,20 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
 
   function checkRewardContract(): BigNumber | undefined {
     if (oneCurrencyIsUSDC) {
-      return usdcRewardrate ? usdcRewardrate[0] : undefined
+      return rewardRateUSDC ? rewardRateUSDC[0] : undefined
     } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate ? usdtRewardrate[0] : undefined
+      return rewardRateUSDT ? rewardRateUSDT[0] : undefined
     } else {
-      return ethRewardrate ? ethRewardrate[0] : undefined
+      return rewardRateETH ? rewardRateETH[0] : undefined
     }
   }
   function checkTotalStake(): BigNumber | undefined {
     if (oneCurrencyIsUSDC) {
-      return usdcRewardrate ? usdcRewardrate[1] : undefined
+      return rewardRateUSDC ? rewardRateUSDC[1] : undefined
     } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate ? usdtRewardrate[1] : undefined
+      return rewardRateUSDT ? rewardRateUSDT[1] : undefined
     } else {
-      return ethRewardrate ? ethRewardrate[1] : undefined
+      return rewardRateETH ? rewardRateETH[1] : undefined
     }
   }
   let aprValue: number | undefined = 0
