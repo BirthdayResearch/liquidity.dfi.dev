@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { currencyEquals, JSBI, Pair, Percent, TokenAmount } from '@uniswap/sdk'
 import { BigNumber } from '@ethersproject/bignumber'
 import { darken } from 'polished'
@@ -34,7 +35,7 @@ import { RowBetween, RowFixed, AutoRow } from '../Row'
 import { Dots } from '../swap/styleds'
 import { BIG_INT_ZERO, USDC, USDT } from '../../constants'
 import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
-import { apr } from 'pages/AddLiquidity/APRCalculation'
+// import { apr } from 'pages/AddLiquidity/APRCalculation'
 import { useTotalRewardsAccrued } from 'data/Rewards'
 
 export const FixedHeightRow = styled(RowBetween)`
@@ -282,9 +283,9 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
       return rewardRateETH ? rewardRateETH[1] : undefined
     }
   }
-  let aprValue: number | undefined = 0
+  // let aprValue: number | undefined = 0
   if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
-    aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
+    // aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
     //console.log(aprValue, chainId)
   }
 
@@ -299,7 +300,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
               {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${currency0.symbol}/${currency1.symbol}`}
             </Text>
             <Text fontWeight={500} fontSize={14}>
-              <Badge>{aprValue ? Math.round(aprValue) + '% APR' : ''}</Badge>
+              <Badge>{/* {aprValue ? Math.round(aprValue) + '% APR' : ''} */}</Badge>
             </Text>
           </AutoRow>
           <RowFixed gap="8px">
@@ -333,14 +334,14 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
             </FixedHeightRow>
 
             <ContentCard>
-              <FixedHeightRow>
+              {/* <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
                   APR:
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
                   {aprValue ? Math.round(aprValue) + '%' : ''}
                 </Text>
-              </FixedHeightRow>
+              </FixedHeightRow> */}
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
                   Rewards pool share:
