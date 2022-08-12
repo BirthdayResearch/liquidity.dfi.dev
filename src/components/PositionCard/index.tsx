@@ -247,11 +247,11 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
 
   const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
 
-  ///////////////////////////////////////////////////////////////////////
+  // APR calculations
   const totalSupply = useTotalSupplyLP(pair.liquidityToken.address)!
-  const ethRewardrate = useWethRewardRate()
-  const usdtRewardrate = useUsdtRewardRate()
-  const usdcRewardrate = useUsdcRewardRate()
+  const rewardRateETH = useWethRewardRate()
+  const rewardRateUSDT = useUsdtRewardRate()
+  const rewardRateUSDC = useUsdcRewardRate()
 
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
@@ -264,25 +264,25 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
         (currency1 && currencyEquals(currency1, USDC[chainId])))
   )
 
-  function checkRewardContract(): BigNumber {
+  function checkRewardContract(): BigNumber | undefined {
     if (oneCurrencyIsUSDC) {
-      return usdcRewardrate![0]
+      return rewardRateUSDC ? rewardRateUSDC[0] : undefined
     } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate![0]
+      return rewardRateUSDT ? rewardRateUSDT[0] : undefined
     } else {
-      return ethRewardrate![0]
+      return rewardRateETH ? rewardRateETH[0] : undefined
     }
   }
-  function checkTotalStake(): BigNumber {
+  function checkTotalStake(): BigNumber | undefined {
     if (oneCurrencyIsUSDC) {
-      return usdcRewardrate![1]
+      return rewardRateUSDC ? rewardRateUSDC[1] : undefined
     } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate![1]
+      return rewardRateUSDT ? rewardRateUSDT[1] : undefined
     } else {
-      return ethRewardrate![1]
+      return rewardRateETH ? rewardRateETH[1] : undefined
     }
   }
-  let aprValue: number = 0
+  let aprValue: number | undefined = 0
   if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
     aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
     //console.log(aprValue, chainId)
