@@ -299,7 +299,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
               {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${currency0.symbol}/${currency1.symbol}`}
             </Text>
             <Text fontWeight={500} fontSize={14}>
-              <Badge>{aprValue ? Math.round(aprValue*100)/100 + '% APR' : ''}</Badge>
+              <Badge>{aprValue ? Math.round(aprValue * 100) / 100 + '% APR' : ''}</Badge>
             </Text>
           </AutoRow>
           <RowFixed gap="8px">
@@ -338,7 +338,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                   APR:
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
-                  {aprValue ? Math.round(aprValue*100)/100 + '%' : ''}
+                  {aprValue ? Math.round(aprValue * 100) / 100 + '%' : ''}
                 </Text>
               </FixedHeightRow>
               <FixedHeightRow>
