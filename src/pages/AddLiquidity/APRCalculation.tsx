@@ -16,8 +16,10 @@ export const apr = (
   const tokenTwoLiquidity = tokenBreserve
   const totalLp = tokenOneLiquidity + JSBI.toNumber(tokenTwoLiquidity)
   const rewardSpeed = rewardRate.mul(blocksPerWeek)
-  const rewardinTookenA = rewardSpeed.toNumber() * tokenAPrice
+
+  const rewardinTookenA = (rewardSpeed.toNumber() * tokenAPrice) / 10 ** 5
   const totalSupplyinCirculation = totalLp / JSBI.toNumber(JSBI.BigInt(totalSupplyUni.toString()))
-  const APR = ((rewardinTookenA * 52) / (totalSupplyinCirculation * totalStake.toNumber())) * 100
+  const totalStake1 = totalStake.div(10 ** 5)
+  const APR = ((rewardinTookenA * 52) / (totalSupplyinCirculation * totalStake1.toNumber())) * 100
   return APR
 }
