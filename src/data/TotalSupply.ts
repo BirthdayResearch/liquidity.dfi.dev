@@ -30,23 +30,38 @@ export function useTotalSupplyLP(address?: string) {
 
 export function useUsdtRewardRate() {
   const rewardRate: BigNumber = useSingleCallResult(useUsdtLpContract(), 'rewardSpeed')?.result?.[0]
+
+  return rewardRate ? rewardRate : undefined
+}
+
+export function useUsdtTotalStake() {
   const totalStake: BigNumber = useSingleCallResult(useUsdtLpContract(), 'totalStake')?.result?.[0]
 
-  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
+  return totalStake ? totalStake : undefined
 }
 
 export function useUsdcRewardRate() {
   const rewardRate: BigNumber = useSingleCallResult(useUsdcLpContract(), 'rewardSpeed')?.result?.[0]
+
+  return rewardRate ? rewardRate : undefined
+}
+
+export function useUsdcTotalStake() {
   const totalStake: BigNumber = useSingleCallResult(useUsdcLpContract(), 'totalStake')?.result?.[0]
 
-  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
+  return totalStake ? totalStake : undefined
 }
 
 export function useWethRewardRate() {
   const rewardRate: BigNumber = useSingleCallResult(useEthLpContract(), 'rewardSpeed')?.result?.[0]
+
+  return rewardRate ? rewardRate : undefined
+}
+
+export function useWethTotalStake() {
   const totalStake: BigNumber = useSingleCallResult(useEthLpContract(), 'totalStake')?.result?.[0]
 
-  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
+  return totalStake ? totalStake : undefined
 }
 
 export function useTotalStake(proxyAddress?: string, token?: Token): TokenAmount | undefined {

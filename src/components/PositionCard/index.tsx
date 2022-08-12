@@ -1,4 +1,4 @@
-import { currencyEquals, JSBI, Pair, Percent, TokenAmount } from '@uniswap/sdk'
+import { currencyEquals, ETHER, JSBI, Pair, Percent, TokenAmount, WETH } from '@uniswap/sdk'
 import { BigNumber } from '@ethersproject/bignumber'
 import { darken } from 'polished'
 import React, { useState } from 'react'
@@ -11,8 +11,11 @@ import {
   useTotalSupply,
   useTotalSupplyLP,
   useUsdcRewardRate,
+  useUsdcTotalStake,
   useUsdtRewardRate,
-  useWethRewardRate
+  useUsdtTotalStake,
+  useWethRewardRate,
+  useWethTotalStake
 } from '../../data/TotalSupply'
 
 import { useActiveWeb3React } from '../../hooks'
@@ -252,6 +255,9 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   const ethRewardrate = useWethRewardRate()
   const usdtRewardrate = useUsdtRewardRate()
   const usdcRewardrate = useUsdcRewardRate()
+  const usdtTotalStake = useUsdtTotalStake()
+  const usdcTotalStake = useUsdcTotalStake()
+  const ethTotalStake = useWethTotalStake()
 
   const oneCurrencyIsUSDT = Boolean(
     chainId &&
@@ -263,29 +269,41 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
       ((currency0 && currencyEquals(currency0, USDC[chainId])) ||
         (currency1 && currencyEquals(currency1, USDC[chainId])))
   )
+  const oneCurrencyIsWETH = Boolean(
+    chainId &&
+      ((currency0 && currencyEquals(currency0, WETH[chainId])) ||
+        (currency1 && currencyEquals(currency1, WETH[chainId])))
+  )
+  const oneCurrencyIsEth = Boolean(
+    chainId && ((currency0 && currencyEquals(currency0, ETHER)) || (currency1 && currencyEquals(currency1, ETHER)))
+  )
 
-  function checkRewardContract(): BigNumber {
-    if (oneCurrencyIsUSDC) {
-      return usdcRewardrate![0]
-    } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate![0]
+  function checkRewardContract(): BigNumber | undefined {
+    if (oneCurrencyIsUSDC && usdcRewardrate) {
+      return usdcRewardrate
+    } else if (oneCurrencyIsUSDT && usdtRewardrate) {
+      return usdtRewardrate
+    } else if ((oneCurrencyIsEth || oneCurrencyIsWETH) && ethRewardrate) {
+      return ethRewardrate
     } else {
-      return ethRewardrate![0]
+      return undefined
     }
   }
-  function checkTotalStake(): BigNumber {
-    if (oneCurrencyIsUSDC) {
-      return usdcRewardrate![1]
-    } else if (oneCurrencyIsUSDT) {
-      return usdtRewardrate![1]
+  function checkTotalStake(): BigNumber | undefined {
+    if (oneCurrencyIsUSDC && usdcTotalStake) {
+      return usdcTotalStake
+    } else if (oneCurrencyIsUSDT && usdtTotalStake) {
+      return usdcTotalStake
+    } else if ((oneCurrencyIsEth || oneCurrencyIsWETH) && ethTotalStake) {
+      return ethTotalStake
     } else {
-      return ethRewardrate![1]
+      return undefined
     }
   }
   let aprValue: number = 0
   if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
     aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
-    //console.log(aprValue, chainId)
+    console.log(aprValue, chainId)
   }
 
   return (
