@@ -32,7 +32,7 @@ import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
 import { Dots } from '../swap/styleds'
-import { BIG_INT_ZERO, USDC, USDT } from '../../constants'
+import { BIG_INT_ZERO, ONE_BIPS, USDC, USDT } from '../../constants'
 import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
 import { apr } from 'pages/AddLiquidity/APRCalculation'
 import { useTotalRewardsAccrued } from 'data/Rewards'
@@ -157,7 +157,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
             <AutoColumn gap="4px">
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
-                  Your pool share:
+                  Your Rewards pool share:
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
                   {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
@@ -343,7 +343,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
               </FixedHeightRow>
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
-                  Rewards pool share:
+                  Share of Uniswap pool:
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
                   {rewardsPoolSharePercentage ? rewardsPoolSharePercentage.toSignificant(2) + '%' : '-'}
@@ -353,9 +353,12 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                 <Text fontSize={16} fontWeight={500}>
                   Total rewards accrued:
                 </Text>
-                <Text fontSize={16} fontWeight={500}>
-                  {totalRewardsAccrued ? totalRewardsAccrued.toSignificant(4) + ' DFI' : '0'}
-                </Text>
+                <RowFixed>
+                  <Text fontSize={16} fontWeight={500}>
+                    {totalRewardsAccrued ? totalRewardsAccrued.toSignificant(4) : '0'}
+                  </Text>
+                  <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />
+                </RowFixed>
               </FixedHeightRow>
             </ContentCard>
 
@@ -369,7 +372,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
               <ContentCard>
                 <FixedHeightRow>
                   <Text fontSize={16} fontWeight={500}>
-                    Your total pool tokens:
+                    Your Rewards pool tokens:
                   </Text>
                   <Text fontSize={16} fontWeight={500}>
                     {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
@@ -413,11 +416,11 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
 
                 <FixedHeightRow>
                   <Text fontSize={16} fontWeight={500}>
-                    Your pool share:
+                    Your Rewards pool share:
                   </Text>
                   <Text fontSize={16} fontWeight={500}>
                     {poolTokenPercentage?.greaterThan('0')
-                      ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
+                      ? (poolTokenPercentage.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
                       : '-'}
                   </Text>
                 </FixedHeightRow>
@@ -426,9 +429,12 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                     <Text fontSize={16} fontWeight={500}>
                       Claimable DFI:
                     </Text>
-                    <Text fontSize={16} fontWeight={500}>
-                      {claimable?.toFixed(4, { groupSeparator: ',' })} DFI
-                    </Text>
+                    <RowFixed>
+                      <Text fontSize={16} fontWeight={500}>
+                        {claimable?.toFixed(4, { groupSeparator: ',' })}{' '}
+                      </Text>
+                      <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />
+                    </RowFixed>
                   </FixedHeightRow>
                 )}
               </ContentCard>
