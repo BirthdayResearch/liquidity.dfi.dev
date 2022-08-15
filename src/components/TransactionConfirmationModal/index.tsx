@@ -62,8 +62,7 @@ function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () 
 function TransactionSubmittedContent({
   onDismiss,
   chainId,
-  hash,
-  currencyToAdd
+  hash
 }: {
   onDismiss: () => void
   hash: string | undefined

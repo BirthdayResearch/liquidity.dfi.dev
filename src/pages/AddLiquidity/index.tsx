@@ -350,7 +350,7 @@ export default function AddLiquidity({
     ) : (
       <AutoColumn gap="25px">
         <RowFlat style={{ marginTop: '20px' }}>
-          <Text fontSize="30px" fontWeight={500} lineHeight="42px" marginRight={10}>
+          <Text fontSize="20px" fontWeight={500} lineHeight="42px" marginRight={10}>
             {liquidityMinted?.toSignificant(6)}
           </Text>
           <DoubleCurrencyLogo
