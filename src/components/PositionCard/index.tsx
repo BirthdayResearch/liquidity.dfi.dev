@@ -14,6 +14,7 @@ import {
   useUsdtRewardRate,
   useWethRewardRate
 } from '../../data/TotalSupply'
+import BN from 'bignumber.js'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -282,7 +283,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
       return rewardRateETH ? rewardRateETH[1] : undefined
     }
   }
-  let aprValue: number | undefined = 0
+  let aprValue: BN | undefined = new BN(0)
   if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
     aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
     //console.log(aprValue, chainId)
@@ -299,7 +300,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
               {!currency0 || !currency1 ? <Dots>Loading</Dots> : `${currency0.symbol}/${currency1.symbol}`}
             </Text>
             <Text fontWeight={500} fontSize={14}>
-              <Badge>{aprValue ? Math.round(aprValue * 100) / 100 + '% APR' : ''}</Badge>
+              <Badge>{aprValue ? aprValue.decimalPlaces(2)+ '% APR' : ''}</Badge>
             </Text>
           </AutoRow>
           <RowFixed gap="8px">
@@ -338,7 +339,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
                   APR:
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
-                  {aprValue ? Math.round(aprValue * 100) / 100 + '%' : ''}
+                  {aprValue ? aprValue.decimalPlaces(2) + '%' : ''}
                 </Text>
               </FixedHeightRow>
               <FixedHeightRow>
