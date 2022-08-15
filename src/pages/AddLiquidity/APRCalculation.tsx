@@ -7,7 +7,7 @@ export const apr = (
   totalSupplyUni: BigNumber,
   rewardRate: BigNumber | undefined,
   totalStake: BigNumber | undefined
-): BN | undefined => {
+): number | undefined => {
   if (rewardRate === undefined || totalStake === undefined) return undefined
   const rewardRateBN = new BN(rewardRate.toString())
   const totalStakeBN = new BN(totalStake.toString())
@@ -23,5 +23,5 @@ export const apr = (
   const rewardinTokenA = rewardSpeed.times(tokenAPrice)  
   const uniTokenPrice = totalLp.div(totalSupplyUniBN)
   const APR = rewardinTokenA.times(52).div(uniTokenPrice.times(totalStakeBN)).times(100)
-  return APR
+  return APR.toNumber()
 }
