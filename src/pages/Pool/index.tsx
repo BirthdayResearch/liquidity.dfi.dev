@@ -15,6 +15,7 @@ import { ProxyPair, usePairs2 } from '../../data/Reserves'
 import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 import { DFI } from '../../constants/index'
+//import { network } from 'connectors'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -63,7 +64,8 @@ const EmptyProposals = styled.div`
 export default function Pool() {
   const theme = useContext(ThemeContext)
   const { account, chainId } = useActiveWeb3React()
-
+  //const [show, setShow] = useState(true)
+  
   const proxies = useProxies()
   const [userProxyLiquidity, fetchingProxyLiquidity] = useGetProxyLiquidityOfUser(account ?? undefined, proxies)
 
@@ -134,7 +136,6 @@ export default function Pool() {
                 </ResponsiveButtonPrimary> */}
               </ButtonRow>
             </TitleRow>
-
             {userProxyLiquidityIsLoading ? (
               <EmptyProposals>
                 <TYPE.body color={theme.text3} textAlign="center">
@@ -156,7 +157,7 @@ export default function Pool() {
             ) : (
               <EmptyProposals>
                 <TYPE.body color={theme.text3} textAlign="center">
-                  <Dots>Loading</Dots>
+                  No liquidity found.
                 </TYPE.body>
               </EmptyProposals>
             )}
