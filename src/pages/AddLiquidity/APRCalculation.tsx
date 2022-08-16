@@ -1,6 +1,6 @@
 import { Pair } from '@uniswap/sdk'
 import { BigNumber } from '@ethersproject/bignumber'
-import BN from "bignumber.js"
+import BN from 'bignumber.js'
 
 export const apr = (
   lpPair: Pair,
@@ -20,8 +20,11 @@ export const apr = (
   const totalLp = tokenBreserve.times(2)
   const rewardSpeed = rewardRateBN.times(blocksPerWeek)
 
-  const rewardinTokenA = rewardSpeed.times(tokenAPrice)  
+  const rewardinTokenA = rewardSpeed.times(tokenAPrice)
   const uniTokenPrice = totalLp.div(totalSupplyUniBN)
-  const APR = rewardinTokenA.times(52).div(uniTokenPrice.times(totalStakeBN)).times(100)
+  const APR = rewardinTokenA
+    .times(52)
+    .div(uniTokenPrice.times(totalStakeBN))
+    .times(100)
   return APR.toNumber()
 }
