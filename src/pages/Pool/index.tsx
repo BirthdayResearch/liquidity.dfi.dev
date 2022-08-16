@@ -64,7 +64,6 @@ const EmptyProposals = styled.div`
 export default function Pool() {
   const theme = useContext(ThemeContext)
   const { account, chainId } = useActiveWeb3React()
-  //const [show, setShow] = useState(true)
   
   const proxies = useProxies()
   const [userProxyLiquidity, fetchingProxyLiquidity] = useGetProxyLiquidityOfUser(account ?? undefined, proxies)
@@ -81,6 +80,7 @@ export default function Pool() {
     fetchingClaimable ||
     proxyV2Pairs2?.length < proxies.length ||
     proxyV2Pairs2?.some(V2Pair => !V2Pair)
+
 
   return (
     <>
@@ -157,7 +157,7 @@ export default function Pool() {
             ) : (
               <EmptyProposals>
                 <TYPE.body color={theme.text3} textAlign="center">
-                  No liquidity found.
+                  Loading .... Unable too connect to Mainnet
                 </TYPE.body>
               </EmptyProposals>
             )}
