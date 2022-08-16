@@ -11,5 +11,4 @@ command = "yarn build"
     X-XSS-Protection = "1; mode=block"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     Content-Security-Policy = "default-src 'self' *.infura.com;"
-    style-src "'self' fonts.googleapis.com 'unsafe-inline'; font-src fonts.gstatic.com;"
-    prefetch-src 'self';
+    
