@@ -10,5 +10,5 @@ command = "yarn build"
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    Content-Security-Policy = "default-src 'self' *.infura.com; 'unsafe-inline'"
+    Content-Security-Policy = "script-src 'self' *.infura.com *.netlify.app *.netlify.com; 'unsafe-inline'"
     
