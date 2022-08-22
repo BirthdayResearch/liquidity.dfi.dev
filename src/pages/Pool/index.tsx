@@ -15,6 +15,7 @@ import { ProxyPair, usePairs2 } from '../../data/Reserves'
 import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 import { DFI } from '../../constants/index'
+//import { network } from 'connectors'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -134,7 +135,6 @@ export default function Pool() {
                 </ResponsiveButtonPrimary> */}
               </ButtonRow>
             </TitleRow>
-
             {userProxyLiquidityIsLoading ? (
               <EmptyProposals>
                 <TYPE.body color={theme.text3} textAlign="center">
@@ -156,7 +156,7 @@ export default function Pool() {
             ) : (
               <EmptyProposals>
                 <TYPE.body color={theme.text3} textAlign="center">
-                  No liquidity found.
+                  Loading .... Unable too connect to Mainnet
                 </TYPE.body>
               </EmptyProposals>
             )}
