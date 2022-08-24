@@ -6,7 +6,7 @@ import { Plus } from 'react-feather'
 import ReactGA from 'react-ga4'
 import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
-import { ThemeContext } from 'styled-components'
+import styled, { ThemeContext } from 'styled-components'
 import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { BlueCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
@@ -15,8 +15,8 @@ import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
-import { USDT } from '../../constants/index'
-
+import { DFI, USDT } from '../../constants/index'
+import { MetaMaskInpageProvider } from '@metamask/providers'
 import { PROXIES } from '../../constants'
 import { PairState, ProxyPair, usePairs2 } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
@@ -26,7 +26,6 @@ import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { Field } from '../../state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../state/mint/hooks'
-
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
@@ -44,9 +43,34 @@ import { ConfirmAddModalBottom } from './ConfirmAddModalBottom'
 import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
-import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import { useProxies } from 'state/wallet/hooks'
 import { useTotalStake } from 'data/TotalSupply'
+
+const StyledBalanceMax = styled.button`
+  margin-top: 5px;
+  height: 30px;
+  background-color: ${({ theme }) => theme.primary5};
+  border: 1px solid ${({ theme }) => theme.primary5};
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  text-decoration: underline;
+
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  color: ${({ theme }) => theme.primaryText1};
+  :hover {
+    border: 1px solid ${({ theme }) => theme.primary4};
+  }
+  :focus {
+    border: 1px solid ${({ theme }) => theme.primary1};
+    outline: none;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-right: 0.5rem;
+  `};
+`
 
 export default function AddLiquidity({
   match: {
@@ -331,6 +355,27 @@ export default function AddLiquidity({
       })
   }
 
+  async function addTokenFunction() {
+    const ethereum = window.ethereum as MetaMaskInpageProvider
+    try {
+      await ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            address: DFI[chainId!].address,
+            symbol: 'DFI',
+            decimals: 8,
+            image: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5804.png'
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const modalHeader = () => {
     return noLiquidity ? (
       <AutoColumn gap="25px">
@@ -600,14 +645,7 @@ export default function AddLiquidity({
           </AutoColumn>
         </Wrapper>
       </AppBody>
-      {!addIsUnsupported ? (
-        pair && !noLiquidity && pairState !== PairState.INVALID ? null : null // ) //   </AutoColumn> //     <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} /> //   <AutoColumn style={{ minWidth: '20rem', width: '100%', maxWidth: '400px', marginTop: '1rem' }}> // (
-      ) : (
-        <UnsupportedCurrencyFooter
-          show={addIsUnsupported}
-          currencies={[currencies.CURRENCY_A, currencies.CURRENCY_B]}
-        />
-      )}
+      {account ? <StyledBalanceMax onClick={() => addTokenFunction()}>{'Add DFI to Metamask'}</StyledBalanceMax> : ' '}
     </>
   )
 }
