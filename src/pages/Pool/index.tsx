@@ -143,11 +143,15 @@ export default function Pool() {
                     Add Liquidity
                   </Text>
                 </ResponsiveButtonPrimary>
-                <ResponsiveButtonPrimary padding="5px 8px" borderRadius="12px" onClick={() => addTokenFunction()}>
-                  <Text fontWeight={500} fontSize={16}>
-                    Add DFI to Metamask
-                  </Text>
-                </ResponsiveButtonPrimary>
+                {account ? (
+                  <ResponsiveButtonPrimary padding="5px 8px" borderRadius="12px" onClick={() => addTokenFunction()}>
+                    <Text fontWeight={500} fontSize={16}>
+                      Add DFI to Metamask
+                    </Text>
+                  </ResponsiveButtonPrimary>
+                ) : (
+                  ''
+                )}
               </ButtonRow>
             </TitleRow>
 
