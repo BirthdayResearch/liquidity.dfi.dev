@@ -29,24 +29,27 @@ export function useTotalSupplyLP(address?: string) {
 }
 
 export function useUsdtRewardRate() {
-  const rewardRate: BigNumber = useSingleCallResult(useUsdtLpContract(), 'rewardSpeed')?.result?.[0]
+  const rewardRate: BigNumber = useSingleCallResult(useUsdtLpContract(), 'admin_speed')?.result?.[0]
   const totalStake: BigNumber = useSingleCallResult(useUsdtLpContract(), 'totalStake')?.result?.[0]
+  const contractStage: BigNumber = useSingleCallResult(useUsdtLpContract(), 'contract_stage')?.result?.[0]
 
-  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
+  return rewardRate && totalStake && contractStage ? [rewardRate, totalStake, contractStage] : undefined
 }
 
 export function useUsdcRewardRate() {
-  const rewardRate: BigNumber = useSingleCallResult(useUsdcLpContract(), 'rewardSpeed')?.result?.[0]
+  const rewardRate: BigNumber = useSingleCallResult(useUsdcLpContract(), 'admin_speed')?.result?.[0]
   const totalStake: BigNumber = useSingleCallResult(useUsdcLpContract(), 'totalStake')?.result?.[0]
+  const contractStage: BigNumber = useSingleCallResult(useUsdcLpContract(), 'contract_stage')?.result?.[0]
 
-  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
+  return rewardRate && totalStake && contractStage ? [rewardRate, totalStake, contractStage] : undefined
 }
 
 export function useWethRewardRate() {
-  const rewardRate: BigNumber = useSingleCallResult(useEthLpContract(), 'rewardSpeed')?.result?.[0]
+  const rewardRate: BigNumber = useSingleCallResult(useEthLpContract(), 'admin_speed')?.result?.[0]
   const totalStake: BigNumber = useSingleCallResult(useEthLpContract(), 'totalStake')?.result?.[0]
+  const contractStage: BigNumber = useSingleCallResult(useEthLpContract(), 'contract_stage')?.result?.[0]
 
-  return rewardRate && totalStake ? [rewardRate, totalStake] : undefined
+  return rewardRate && totalStake && contractStage ? [rewardRate, totalStake, contractStage] : undefined
 }
 
 export function useTotalStake(proxyAddress?: string, token?: Token): TokenAmount | undefined {
