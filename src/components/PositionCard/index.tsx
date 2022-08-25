@@ -36,6 +36,7 @@ import { BIG_INT_ZERO, ONE_BIPS, USDC, USDT } from '../../constants'
 import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
 import { apr } from 'pages/AddLiquidity/APRCalculation'
 import { useTotalRewardsAccrued } from 'data/Rewards'
+//import { useBlockNumber } from 'state/application/hooks'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -246,7 +247,11 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   const backgroundColor = useColor(pair?.token0)
 
   const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
-
+  //const currBlockNum = useBlockNumber()
+  // if (currBlockNum) {
+  //   const blockNum = BigNumber.from(currBlockNum)
+  //   const rewardRateUSDC = useUsdcRewardRate(currBlockNum)
+  // }
   // APR calculations
   const totalSupply = useTotalSupplyLP(pair.liquidityToken.address)!
   const rewardRateETH = useWethRewardRate()
