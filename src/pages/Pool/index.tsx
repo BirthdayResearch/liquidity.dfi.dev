@@ -15,6 +15,7 @@ import { ProxyPair, usePairs2 } from '../../data/Reserves'
 import { Dots } from '../../components/swap/styleds'
 import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
 import { DFI } from '../../constants/index'
+import { MetaMaskInpageProvider } from '@metamask/providers'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 640px;
@@ -80,6 +81,27 @@ export default function Pool() {
     proxyV2Pairs2?.length < proxies.length ||
     proxyV2Pairs2?.some(V2Pair => !V2Pair)
 
+  async function addTokenFunction() {
+    const ethereum = window.ethereum as MetaMaskInpageProvider
+    try {
+      await ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            address: DFI[chainId!].address,
+            symbol: 'DFI',
+            decimals: 8,
+            image: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5804.png'
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <PageWrapper>
@@ -121,17 +143,15 @@ export default function Pool() {
                     Add Liquidity
                   </Text>
                 </ResponsiveButtonPrimary>
-                {/* <ResponsiveButtonPrimary
-                  id="join-pool-button"
-                  as={Link}
-                  padding="5px 8px"
-                  borderRadius="12px"
-                  to={`/remove/${DFI[chainId!].address}/ETH`}
-                >
-                  <Text fontWeight={500} fontSize={16}>
-                    Remove Liquidity
-                  </Text>
-                </ResponsiveButtonPrimary> */}
+                {account ? (
+                  <ResponsiveButtonPrimary padding="5px 8px" borderRadius="12px" onClick={() => addTokenFunction()}>
+                    <Text fontWeight={500} fontSize={16}>
+                      Add DFI to Metamask
+                    </Text>
+                  </ResponsiveButtonPrimary>
+                ) : (
+                  ''
+                )}
               </ButtonRow>
             </TitleRow>
 
