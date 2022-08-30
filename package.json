@@ -126,9 +126,6 @@
   },
   "dependencies": {
     "@metamask/providers": "^9.1.0",
-    "@walletconnect/client": "^1.8.0",
-    "@walletconnect/ethereum-provider": "^1.8.0",
-    "@walletconnect/web3-provider": "^1.8.0",
     "bignumber.js": "^9.1.0"
   }
 }
