@@ -48,7 +48,6 @@ export function CurrencySearch({
   showCommonBases,
   onDismiss,
   isOpen,
-  showManageView,
   showImportView,
   setImportToken
 }: CurrencySearchProps) {

@@ -150,7 +150,6 @@ export default function CurrencyInputPanel({
   hideInput = false,
   otherCurrency,
   id,
-  showCommonBases,
   customBalanceText
 }: CurrencyInputPanelProps) {
   const { t } = useTranslation()
