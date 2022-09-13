@@ -36,6 +36,7 @@ import { BIG_INT_ZERO, ONE_BIPS, USDC, USDT } from '../../constants'
 import { useClaimRewardProxyCallback } from 'hooks/useApproveCallback'
 import { apr } from 'pages/AddLiquidity/APRCalculation'
 import { useTotalRewardsAccrued } from 'data/Rewards'
+import { useBlockNumber } from 'state/application/hooks'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -246,7 +247,7 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
   const backgroundColor = useColor(pair?.token0)
 
   const claimCallback = useClaimRewardProxyCallback(proxyAddress ?? '')
-
+  const currBlockNum = useBlockNumber()
   // APR calculations
   const totalSupply = useTotalSupplyLP(pair.liquidityToken.address)!
   const rewardRateETH = useWethRewardRate()
@@ -282,9 +283,26 @@ export default function FullPositionCard({ pair, border, stakedBalance, claimabl
       return rewardRateETH ? rewardRateETH[1] : undefined
     }
   }
+
+  function getContractStage(): BigNumber | undefined {
+    if (oneCurrencyIsUSDC) {
+      return rewardRateUSDC ? rewardRateUSDC[2] : undefined
+    } else if (oneCurrencyIsUSDT) {
+      return rewardRateUSDT ? rewardRateUSDT[2] : undefined
+    } else {
+      return rewardRateETH ? rewardRateETH[2] : undefined
+    }
+  }
   let aprValue: number | undefined = 0
-  if (pair && totalSupply && checkRewardContract() && checkTotalStake()) {
-    aprValue = apr(pair, totalSupply, checkRewardContract(), checkTotalStake())
+  if (pair && totalSupply && checkRewardContract() && checkTotalStake() && getContractStage() && currBlockNum) {
+    aprValue = apr(
+      pair,
+      totalSupply,
+      checkRewardContract(),
+      checkTotalStake(),
+      getContractStage(),
+      BigNumber.from(currBlockNum)
+    )
     //console.log(aprValue, chainId)
   }
 
