@@ -11,7 +11,7 @@ export const apr = (
   currentBlockNum: BigNumber | undefined
 ): number | undefined => {
   let APR: number
-  const endColBlock = new BN(15389352)
+  const endColBlock = BigNumber.from(15389352)
   if (
     adminRate === undefined ||
     totalStake === undefined ||
@@ -20,24 +20,24 @@ export const apr = (
   )
     return undefined
   if (contractStage.toString() === '3') return (APR = 0)
-  let rewardRateBN = adminRate
+  let rewardPerBlock = adminRate
   const totalStakeBN = new BN(totalStake.toString())
   const totalSupplyUniBN = new BN(totalSupplyUni.toString())
   const blocksPerWeek = 6000 * 7
-  const currEpoch = currentBlockNum.div(BigNumber.from(endColBlock.toString())).div(blocksPerWeek)
+  const currEpoch = currentBlockNum.sub(endColBlock).div(blocksPerWeek)
   for (let i = 0; currEpoch.gt(i); i++) {
-    rewardRateBN = rewardRateBN.mul(96).div(100)
+    rewardPerBlock = rewardPerBlock.mul(96).div(100)
   }
   const tokenAreserve = new BN(lpPair.reserveOf(lpPair.token0).raw.toString())
   const tokenBreserve = new BN(lpPair.reserveOf(lpPair.token1).raw.toString())
   const tokenAPrice = tokenBreserve.div(tokenAreserve)
   // we consider the values of tokenBReserve and tokenAreserve are the same
   const totalLp = tokenBreserve.times(2)
-  const rewardSpeed = new BN(rewardRateBN.toString()).times(blocksPerWeek)
+  const rewardPerWeek = new BN(rewardPerBlock.toString()).times(blocksPerWeek)
 
-  const rewardinTokenA = rewardSpeed.times(tokenAPrice)
+  const rewardPerWeekMeasuredByTokenB = rewardPerWeek.times(tokenAPrice)
   const uniTokenPrice = totalLp.div(totalSupplyUniBN)
-  APR = rewardinTokenA
+  APR = rewardPerWeekMeasuredByTokenB
     .times(52)
     .div(uniTokenPrice.times(totalStakeBN))
     .times(100)
