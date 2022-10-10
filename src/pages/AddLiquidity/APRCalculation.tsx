@@ -23,7 +23,7 @@ export const apr = (
   let rewardPerBlock = adminRate
   const totalStakeBN = new BN(totalStake.toString())
   const totalSupplyUniBN = new BN(totalSupplyUni.toString())
-  const blocksPerWeek = 7200 * 7
+  const blocksPerWeek = 6000 * 7
   const currEpoch = currentBlockNum.sub(endColBlock).div(blocksPerWeek)
   for (let i = 0; currEpoch.gt(i); i++) {
     rewardPerBlock = rewardPerBlock.mul(96).div(100)
@@ -33,12 +33,11 @@ export const apr = (
   const tokenAPrice = tokenBreserve.div(tokenAreserve)
   // we consider the values of tokenBReserve and tokenAreserve are the same
   const totalLp = tokenBreserve.times(2)
-  const rewardPerWeek = new BN(rewardPerBlock.toString()).times(blocksPerWeek)
-
-  const rewardPerWeekMeasuredByTokenB = rewardPerWeek.times(tokenAPrice)
+  const rewardPerWeek = new BN(rewardPerBlock.toString()).times(54000)
+  const rewardPerYear = rewardPerWeek.times(52)
+  const rewardPerYearkMeasuredByTokenB = rewardPerYear.times(tokenAPrice)
   const uniTokenPrice = totalLp.div(totalSupplyUniBN)
-  APR = rewardPerWeekMeasuredByTokenB
-    .times(52)
+  APR = rewardPerYearkMeasuredByTokenB
     .div(uniTokenPrice.times(totalStakeBN))
     .times(100)
     .toNumber()
