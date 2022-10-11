@@ -33,7 +33,7 @@ export const apr = (
   const tokenAPrice = tokenBreserve.div(tokenAreserve)
   // we consider the values of tokenBReserve and tokenAreserve are the same
   const totalLp = tokenBreserve.times(2)
-  const rewardPerWeek = new BN(rewardPerBlock.toString()).times(54000)
+  const rewardPerWeek = new BN(rewardPerBlock.toString()).times(50400)
   const rewardPerYear = rewardPerWeek.times(52)
   const rewardPerYearkMeasuredByTokenB = rewardPerYear.times(tokenAPrice)
   const uniTokenPrice = totalLp.div(totalSupplyUniBN)
