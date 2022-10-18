@@ -20,5 +20,3 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: BirthdayResearch/oss-governance-bot@52367df5cdbc6ede6126a1db7a663f22cffe739c
-        with:
-          github-token: ${{ secrets.BIRTHDAYRESEARCH_BOT_GITHUB_TOKEN }}
